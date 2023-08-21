@@ -23,17 +23,14 @@ app.use(
     })
 );
 app.use(compression());
-app.use(errorMiddleware);
 app.use(morganMiddleware);
 
 // routes
-app.get('/', (req, res) => {
-    res.json({ message: 'hi' });
-});
-
 routes.forEach((route) => {
     app.use('/api', route);
 });
+
+app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
