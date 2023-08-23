@@ -7,6 +7,7 @@ import rateLimit from 'express-rate-limit';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import { routes } from '@/routes/index.js';
+import db from '@/database/index.js';
 
 const app = express();
 
@@ -33,6 +34,8 @@ routes.forEach((route) => {
 app.use(errorMiddleware);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+db.sequelize.sync({ force: false }).then(() => {
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
 });
