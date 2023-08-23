@@ -1,4 +1,5 @@
 'use strict';
+import { Sequelize } from "sequelize"; 
 
 export const post = (sequelize, DataTypes) => {
     const Post = sequelize.define('post', {
@@ -29,12 +30,12 @@ export const post = (sequelize, DataTypes) => {
             allowNull: true
         },
         created_at: {
-            type: DataTypes.DATETIME,
+            type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
         },
         updated_at: {
-            type: DataTypes.DATETIME,
+            type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
         }

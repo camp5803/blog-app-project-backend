@@ -1,4 +1,5 @@
 'use strict';
+import { Sequelize } from "sequelize"; 
 
 export const comment = (sequelize, DataTypes) => {
     const Comment = sequelize.define('comment', {
@@ -33,17 +34,17 @@ export const comment = (sequelize, DataTypes) => {
             allowNull: true
         },
         created_at: {
-            type: DataTypes.DATETIME,
+            type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
         },
         updated_at: {
-            type: DataTypes.DATETIME,
+            type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
         },
         deleted_at: {
-            type: DataTypes.DATETIME,
+            type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
         }

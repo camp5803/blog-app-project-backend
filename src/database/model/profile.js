@@ -1,4 +1,5 @@
 'use strict';
+import { Sequelize } from "sequelize"; 
 
 export const profile = (sequelize, DataTypes) => {
     const Profile = sequelize.define('profile', {
@@ -22,12 +23,12 @@ export const profile = (sequelize, DataTypes) => {
             allowNull: false
         },
         created_at: {
-            type: DataTypes.DATETIME,
+            type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
         },
         updated_at: {
-            type: DataTypes.DATETIME,
+            type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
         }
@@ -39,6 +40,6 @@ export const profile = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Profile.associate = (db) => {};
+    Profile.associate = (db) => {}
     return Profile;
 };
