@@ -25,6 +25,21 @@ export const user = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    User.associate = (db) => {};
+    User.associate = (models) => {
+        User.hasOne(models.SocialLogin, { foreignKey: "user_id", sourceKey: "user_id" });
+        User.hasOne(models.Password, { foreignKey: "user_id", sourceKey: "user_id" });
+        User.hasOne(models.Profile, { foreignKey: "user_id", sourceKey: "user_id" });
+        User.hasOne(models.Preference, { foreignKey: "user_id", sourceKey: "user_id" });
+        
+        User.hasMany(models.Neighbor, { foreignKey: "user_id", sourceKey: "user_id" });
+        User.hasMany(models.Neighbor, { foreignKey: "follows_to", sourceKey: "user_id" });
+        User.hasMany(models.UserKeyword, { foreignKey: "user_id", sourceKey: "user_id" });
+        User.hasMany(models.Block, { foreignKey: "user_id", sourceKey: "user_id" });
+        User.hasMany(models.Block, { foreignKey: "block_user_id", sourceKey: "user_id" });
+        User.hasMany(models.Category, { foreignKey: "user_id", sourceKey: "user_id" });
+        User.hasMany(models.Post, { foreignKey: "user_id", sourceKey: "user_id" });
+        User.hasMany(models.Like, { foreignKey: "user_id", sourceKey: "user_id" });
+        User.hasMany(models.Bookmark, { foreignKey: "user_id", sourceKey: "user_id" });
+    };
     return User;
 };
