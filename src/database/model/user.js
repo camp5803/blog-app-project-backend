@@ -26,15 +26,37 @@ export const user = (sequelize, DataTypes) => {
     });
 
     User.associate = (models) => {
-        User.hasOne(models.SocialLogin, { foreignKey: "user_id", sourceKey: "user_id" });
-        User.hasOne(models.Password, { foreignKey: "user_id", sourceKey: "user_id" });
+        // 생성될 관계 컬럼들에 대한 attribute 제공
+        User.hasOne(models.SocialLogin, { foreignKey: {
+            name: "user_id",
+            allowNull: false
+        }, sourceKey: "user_id" });
         
-        User.hasMany(models.Neighbor, { foreignKey: "follows_to", sourceKey: "user_id" });
-        User.hasMany(models.Comment, { foreignKey: "user_id", sourceKey: "user_id" });
-        User.hasMany(models.Block, { foreignKey: "block_user_id", sourceKey: "user_id" });
-        User.hasMany(models.Post, { foreignKey: "user_id", sourceKey: "user_id" });
+        User.hasOne(models.Password, { foreignKey: {
+            name: "user_id",
+            allowNull: false
+        }, sourceKey: "user_id" });
+        
+        User.hasMany(models.Neighbor, { foreignKey: {
+            name: "follows_to",
+            allowNull: false
+        }, sourceKey: "user_id" });
+        
+        User.hasMany(models.Comment, { foreignKey: {
+            name: "user_id",
+            allowNull: false
+        }, sourceKey: "user_id" });
+        
+        User.hasMany(models.Block, { foreignKey: {
+            name: "block_user_id",
+            allowNull: false
+        }, sourceKey: "user_id" });
+        
+        User.hasMany(models.Post, { foreignKey: {
+            name: "user_id",
+            allowNull: false
+        }, sourceKey: "user_id" });
 
-        // FK이면서 PK인 컬럼들에 대한 추가 설정 : primaryKey: true
         User.hasOne(models.Preference, { foreignKey: {
             name: "user_id",
             primaryKey: true,

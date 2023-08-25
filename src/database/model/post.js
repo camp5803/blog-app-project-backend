@@ -49,10 +49,27 @@ export const post = (sequelize, DataTypes) => {
 
     Post.associate = (models) => {
         Post.belongsTo(models.User, { foreignKey: "user_id", sourceKey: "user_id" });
-        Post.hasMany(models.Comment, { foreignKey: "post_id", sourceKey: "post_id" });
-        Post.hasMany(models.Category, { foreignKey: "post_id", sourceKey: "post_id" });
-        Post.hasMany(models.Bookmark, { foreignKey: "post_id", sourceKey: "post_id" });
-        Post.hasMany(models.Image, { foreignKey: "post_id", sourceKey: "post_id" });
+        
+        Post.hasMany(models.Comment, { foreignKey: {
+            name: "post_id",
+            allowNull: false
+        }, sourceKey: "post_id" });
+        
+        Post.hasMany(models.Category, { foreignKey: {
+            name: "post_id",
+            allowNull: false
+        }, sourceKey: "post_id" });
+        
+        Post.hasMany(models.Bookmark, { foreignKey: {
+            name: "post_id",
+            allowNull: false
+        }, sourceKey: "post_id" });
+        
+        Post.hasMany(models.Image, { foreignKey: {
+            name: "post_id",
+            allowNull: false
+        }, sourceKey: "post_id" });
+        
         Post.hasMany(models.Like, { foreignKey: {
             name: "post_id",
             primaryKey: true,
