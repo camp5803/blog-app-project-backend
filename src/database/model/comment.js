@@ -56,12 +56,14 @@ export const comment = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Comment.associate = (db) => {
+    Comment.associate = (models) => {
         Comment.hasMany(models.Comment, { foreignKey: {
             name: "parent_id",
             defaultValue: null,
             allowNull: true
         }, sourceKey: "comment_id" });
+        Comment.belongsTo(models.User, { foreignKey: "user_id", sourceKey: "user_id" });
+        Comment.belongsTo(models.Post, { foreignKey: "post_id", sourceKey: "user_id" });
     };
     return Comment;
 };

@@ -19,6 +19,13 @@ export const block = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Block.associate = (db) => {};
+    Block.associate = (models) => {
+        Block.belongsTo(models.User, { foreignKey: "block_user_id", sourceKey: "user_id" });
+        Block.belongsTo(models.User, { foreignKey: {
+            name: "user_id",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "user_id" });
+    };
     return Block;
 };

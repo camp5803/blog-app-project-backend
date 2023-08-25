@@ -40,6 +40,6 @@ export const profile = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Profile.associate = (db) => {}
+    Profile.associate = (models) => {}
     return Profile;
 };

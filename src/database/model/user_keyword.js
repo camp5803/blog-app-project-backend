@@ -20,6 +20,12 @@ export const userKeyword = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    UserKeyword.associate = (db) => {};
+    UserKeyword.associate = (models) => {
+        UserKeyword.belongsTo(models.User, { foreignKey: {
+            name: "user_id",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "user_id" });
+    };
     return UserKeyword;
 };

@@ -28,6 +28,8 @@ export const soicalLogin = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    SocialLogin.associate = (db) => {};
+    SocialLogin.associate = (models) => {
+        SocialLogin.belongsTo(models.User, { foreignKey: "user_id", sourceKey: "user_id" });
+    }
     return SocialLogin;
 };

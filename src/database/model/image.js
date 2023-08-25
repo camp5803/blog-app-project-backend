@@ -27,6 +27,8 @@ export const image = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Image.associate = (db) => {};
+    Image.associate = (models) => {
+        Image.belongsTo(models.Post, { foreignKey: "post_id", sourceKey: "post_id" });
+    };
     return Image;
 };

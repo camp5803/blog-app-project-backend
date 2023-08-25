@@ -31,6 +31,12 @@ export const preference = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Preference.associate = (db) => {};
+    Preference.associate = (models) => {
+        Preference.belongsTo(models.User, { foreignKey: {
+            name: "user_id",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "user_id" });
+    };
     return Preference;
 };

@@ -24,6 +24,8 @@ export const category = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Category.associate = (db) => {};
+    Category.associate = (models) => {
+        Category.belongsTo(models.Post, { foreignKey: "post_id", sourceKey: "post_id" });
+    };
     return Category;
 };

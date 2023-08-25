@@ -28,7 +28,6 @@ export const user = (sequelize, DataTypes) => {
     User.associate = (models) => {
         User.hasOne(models.SocialLogin, { foreignKey: "user_id", sourceKey: "user_id" });
         User.hasOne(models.Password, { foreignKey: "user_id", sourceKey: "user_id" });
-        User.hasOne(models.Preference, { foreignKey: "user_id", sourceKey: "user_id" });
         
         User.hasMany(models.Neighbor, { foreignKey: "follows_to", sourceKey: "user_id" });
         User.hasMany(models.Comment, { foreignKey: "follows_to", sourceKey: "user_id" });
@@ -36,6 +35,12 @@ export const user = (sequelize, DataTypes) => {
         User.hasMany(models.Post, { foreignKey: "user_id", sourceKey: "user_id" });
 
         // FK이면서 PK인 컬럼들에 대한 추가 설정 : primaryKey: true
+        User.hasOne(models.Preference, { foreignKey: {
+            name: "user_id",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "user_id" });
+        
         User.hasOne(models.Profile, { foreignKey: {
             name: "user_id",
             primaryKey: true,

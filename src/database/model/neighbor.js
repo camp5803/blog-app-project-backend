@@ -19,6 +19,13 @@ export const neighbor = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Neighbor.associate = (db) => {};
+    Neighbor.associate = (models) => {
+        Neighbor.belongsTo(models.User, { foreignKey: "follows_to", sourceKey: "user_id" });
+        Neighbor.belongsTo(models.User, { foreignKey: {
+            name: "user_id",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "user_id" });
+    };
     return Neighbor;
 };

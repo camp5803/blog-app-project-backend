@@ -20,6 +20,18 @@ export const like = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Like.associate = (db) => {};
+    Like.associate = (models) => {
+        Like.belongsTo(models.User, { foreignKey: {
+            name: "user_id",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "user_id" });
+
+        Like.belongsTo(models.Post, { foreignKey: {
+            name: "post_id",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "post_id" });
+    };
     return Like;
 };

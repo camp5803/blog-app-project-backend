@@ -19,6 +19,13 @@ export const bookmark = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Bookmark.associate = (db) => {};
+    Bookmark.associate = (models) => {
+        Bookmark.belongsTo(models.User, { foreignKey: {
+            name: "user_id",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "user_id" });
+        Bookmark.belongsTo(models.Post, { foreignKey: "post_id", sourceKey: "post_id" });
+    };
     return Bookmark;
 };
