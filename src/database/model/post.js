@@ -9,10 +9,10 @@ export const post = (sequelize, DataTypes) => {
             allowNull: false,
             autoIncrement: true,
         },
-        // user_id: {
-        //     type: DataTypes.INTEGER,
-        //     allowNull: false
-        // },
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         category_id: {
             type: DataTypes.INTEGER,
             allowNull: false

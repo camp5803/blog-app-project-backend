@@ -2,11 +2,11 @@
 
 export const preference = (sequelize, DataTypes) => {
     const Preference = sequelize.define('preference', {
-        // user_id: {
-        //     type: DataTypes.INTEGER,
-        //     primaryKey: true,
-        //     allowNull: false,
-        // },
+        user_id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            allowNull: false,
+        },
         darkmode_status: {
             type: DataTypes.BOOLEAN,
             allowNull: false

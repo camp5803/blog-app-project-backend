@@ -8,10 +8,10 @@ export const password = (sequelize, DataTypes) => {
             autoIncrement: true,
             allowNull: false,
         },
-        // user_id: {
-        //     type: DataTypes.INTEGER,
-        //     allowNull: false
-        // },
+        user_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         password: {
             type: DataTypes.STRING(500),
             allowNull: false,
