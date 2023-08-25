@@ -30,7 +30,7 @@ export const user = (sequelize, DataTypes) => {
         User.hasOne(models.Password, { foreignKey: "user_id", sourceKey: "user_id" });
         
         User.hasMany(models.Neighbor, { foreignKey: "follows_to", sourceKey: "user_id" });
-        User.hasMany(models.Comment, { foreignKey: "follows_to", sourceKey: "user_id" });
+        User.hasMany(models.Comment, { foreignKey: "user_id", sourceKey: "user_id" });
         User.hasMany(models.Block, { foreignKey: "block_user_id", sourceKey: "user_id" });
         User.hasMany(models.Post, { foreignKey: "user_id", sourceKey: "user_id" });
 
@@ -40,7 +40,7 @@ export const user = (sequelize, DataTypes) => {
             primaryKey: true,
             allowNull: false
         }, sourceKey: "user_id" });
-        
+
         User.hasOne(models.Profile, { foreignKey: {
             name: "user_id",
             primaryKey: true,

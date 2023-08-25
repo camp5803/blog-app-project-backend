@@ -2,15 +2,14 @@
 
 export const keyword = (sequelize, DataTypes) => {
     const Keyword = sequelize.define('keyword', {
-        user_id: {
+        keyword_id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
             autoIncrement: true,
         },
-        keyword_id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
+        keyword: {
+            type: DataTypes.STRING(45),
             allowNull: false,
             unique: true
         },
@@ -23,7 +22,7 @@ export const keyword = (sequelize, DataTypes) => {
     });
 
     Keyword.associate = (models) => {
-        Keyword.belongsTo(models.UserKeyword, { foreignKey: {
+        Keyword.hasMany(models.UserKeyword, { foreignKey: {
             name: "keyword_id",
             primaryKey: true,
             allowNull: false

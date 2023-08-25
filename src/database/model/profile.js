@@ -3,12 +3,12 @@ import { Sequelize } from "sequelize";
 
 export const profile = (sequelize, DataTypes) => {
     const Profile = sequelize.define('profile', {
-        user_id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            allowNull: false,
-            autoIncrement: true,
-        },
+        // user_id: {
+        //     type: DataTypes.INTEGER,
+        //     primaryKey: true,
+        //     allowNull: false,
+        //     autoIncrement: true,
+        // },
         nickname: {
             type: DataTypes.STRING(45),
             allowNull: false,
@@ -40,6 +40,8 @@ export const profile = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Profile.associate = (models) => {}
+    Profile.associate = (models) => {
+        Profile.belongsTo(models.User, { foreignKey: "user_id", sourceKey: "user_id" });
+    }
     return Profile;
 };
