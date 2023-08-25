@@ -8,8 +8,10 @@ import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import { routes } from '@/routes/index.js';
 import db from '@/database/index.js';
+import { dotenv } from 'dotenv';
 
 const app = express();
+dotenv.config();
 
 // middlewares
 app.use(express.json());
