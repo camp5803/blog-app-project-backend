@@ -5,6 +5,7 @@ export const image = (sequelize, DataTypes) => {
         image_id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
+            autoIncrement: true,
             allowNull: false,
         },
         // post_id: {
