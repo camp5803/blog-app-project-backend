@@ -8,10 +8,10 @@ export const password = (sequelize, DataTypes) => {
             autoIncrement: true,
             allowNull: false,
         },
-        user_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
+        // user_id: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false
+        // },
         password: {
             type: DataTypes.STRING(500),
             allowNull: false,
@@ -24,6 +24,8 @@ export const password = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Password.associate = (db) => {};
+    Password.associate = (models) => {
+        Password.belongsTo(models.User, { foreignKey: "user_id", sourceKey: "user_id" });
+    };
     return Password;
 };

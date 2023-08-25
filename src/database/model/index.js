@@ -1,6 +1,6 @@
 import { user } from "./user"
 import { userKeyword } from "./user_keyword";
-import { soicalLogin } from "./soical_login";
+import { socialLogin } from "./soical_login";
 import { profile } from "./profile";
 import { preference } from "./preference";
 import { post } from "./post";
@@ -17,7 +17,7 @@ import { block } from "./block";
 export const models = {
     User: user,
     UserKeyword: userKeyword,
-    SoicalLogin: soicalLogin,
+    SocialLogin: socialLogin,
     Profile: profile,
     Preference: preference,
     Post: post,

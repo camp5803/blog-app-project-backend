@@ -8,10 +8,10 @@ export const category = (sequelize, DataTypes) => {
             allowNull: false,
             autoIncrement: true,
         },
-        user_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
+        // post_id: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false
+        // },
         category: {
             type: DataTypes.STRING(45),
             allowNull: false,
@@ -24,6 +24,8 @@ export const category = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Category.associate = (db) => {};
+    Category.associate = (models) => {
+        Category.belongsTo(models.Post, { foreignKey: "post_id", sourceKey: "post_id" });
+    };
     return Category;
 };

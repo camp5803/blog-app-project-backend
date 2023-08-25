@@ -2,16 +2,16 @@
 
 export const userKeyword = (sequelize, DataTypes) => {
     const UserKeyword = sequelize.define('user_keyword', {
-        user_id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            allowNull: false,
-        },
-        keyword_id: {
-            type: DataTypes.INTEGER,
-            primaryKey: true,
-            allowNull: false
-        },
+        // user_id: {
+        //     type: DataTypes.INTEGER,
+        //     primaryKey: true,
+        //     allowNull: false,
+        // },
+        // keyword_id: {
+        //     type: DataTypes.INTEGER,
+        //     primaryKey: true,
+        //     allowNull: false
+        // },
     }, {
         tableName: 'user_keyword',
         // sequelize,
@@ -20,6 +20,17 @@ export const userKeyword = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    UserKeyword.associate = (db) => {};
+    UserKeyword.associate = (models) => {
+        UserKeyword.belongsTo(models.User, { foreignKey: {
+            name: "user_id",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "user_id" });
+        UserKeyword.belongsTo(models.Keyword, { foreignKey: {
+            name: "keyword_id",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "keyword_id" });
+    };
     return UserKeyword;
 };

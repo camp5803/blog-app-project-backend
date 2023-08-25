@@ -1,6 +1,6 @@
 'use strict';
 
-export const soicalLogin = (sequelize, DataTypes) => {
+export const socialLogin = (sequelize, DataTypes) => {
     const SocialLogin = sequelize.define('social_login', {
         social_id: {
             type: DataTypes.INTEGER,
@@ -8,10 +8,10 @@ export const soicalLogin = (sequelize, DataTypes) => {
             autoIncrement: true,
             allowNull: false,
         },
-        user_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
+        // user_id: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false
+        // },
         social_code: {
             type: DataTypes.INTEGER,
             allowNull: false,
@@ -28,6 +28,8 @@ export const soicalLogin = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    SocialLogin.associate = (db) => {};
+    SocialLogin.associate = (models) => {
+        SocialLogin.belongsTo(models.User, { foreignKey: "user_id", sourceKey: "user_id" });
+    }
     return SocialLogin;
 };
