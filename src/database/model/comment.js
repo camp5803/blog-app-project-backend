@@ -13,14 +13,14 @@ export const comment = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        user_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        parent_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
+        // user_id: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false
+        // },
+        // parent_id: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false
+        // },
         content: {
             type: DataTypes.TEXT('tiny'),
             allowNull: false
@@ -56,6 +56,12 @@ export const comment = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Comment.associate = (db) => {};
+    Comment.associate = (db) => {
+        Comment.hasMany(models.Comment, { foreignKey: {
+            name: "parent_id",
+            defaultValue: null,
+            allowNull: true
+        }, sourceKey: "comment_id" });
+    };
     return Comment;
 };

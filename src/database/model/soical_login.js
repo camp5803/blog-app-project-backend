@@ -8,10 +8,10 @@ export const soicalLogin = (sequelize, DataTypes) => {
             autoIncrement: true,
             allowNull: false,
         },
-        user_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
+        // user_id: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false
+        // },
         social_code: {
             type: DataTypes.INTEGER,
             allowNull: false,

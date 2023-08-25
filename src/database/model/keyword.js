@@ -22,6 +22,12 @@ export const keyword = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Keyword.associate = (db) => {};
+    Keyword.associate = (db) => {
+        Keyword.hasMany(models.UserKeyword, { foreignKey: {
+            name: "keyword_id",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "keyword_id" });
+    };
     return Keyword;
 };

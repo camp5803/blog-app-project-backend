@@ -7,10 +7,10 @@ export const image = (sequelize, DataTypes) => {
             primaryKey: true,
             allowNull: false,
         },
-        post_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
+        // post_id: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false
+        // },
         image: {
             type: DataTypes.TEXT('long'),
             allowNull: false

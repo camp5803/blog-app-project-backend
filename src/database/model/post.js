@@ -9,10 +9,10 @@ export const post = (sequelize, DataTypes) => {
             allowNull: false,
             autoIncrement: true,
         },
-        user_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
+        // user_id: {
+        //     type: DataTypes.INTEGER,
+        //     allowNull: false
+        // },
         category_id: {
             type: DataTypes.INTEGER,
             allowNull: false
@@ -47,6 +47,16 @@ export const post = (sequelize, DataTypes) => {
         collate: 'utf8_general_ci',
     });
 
-    Post.associate = (db) => {};
+    Post.associate = (db) => {
+        Post.hasMany(models.Comment, { foreignKey: "post_id", sourceKey: "post_id" });
+        Post.hasMany(models.Category, { foreignKey: "user_id", sourceKey: "user_id" });
+        Post.hasMany(models.Bookmark, { foreignKey: "post_id", sourceKey: "post_id" });
+        Post.hasMany(models.Image, { foreignKey: "post_id", sourceKey: "post_id" });
+        Post.hasMany(models.Like, { foreignKey: {
+            name: "post_id",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "post_id" });
+    };
     return Post;
 };
