@@ -10,5 +10,5 @@ export const createLocalUser = asyncWrapper(async (req, res) => {
             message: user.message
         });
     }
-    return res.status(StatusCodes.CREATED).end(); // 객체 날려주는거 수정해야 함
+    return res.status(StatusCodes.CREATED).end();
 })
