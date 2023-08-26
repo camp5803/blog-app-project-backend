@@ -2,7 +2,7 @@ import { asyncWrapper } from '@/common';
 import { userRepository } from '@/repository/index';
 
 export const userService = {
-    createUser: asyncWrapper(async (data) => { // data의 key는 email, login_type, nickname
+    createUser: async (data) => { // data의 key는 email, login_type, nickname
         const user = await userRepository.findByEmail({ email: data.email });
         if (!user) {
             return {
@@ -12,7 +12,7 @@ export const userService = {
         }
 
         return await userRepository.createUser(data);
-    })
+    }
 }
 
 

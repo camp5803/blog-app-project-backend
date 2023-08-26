@@ -1,9 +1,9 @@
 import express from 'express';
-import { createUser } from '@/controller/index';
+import { createLocalUser } from '@/controller/index';
 
 const router = express.Router();
 
-router.route('/user').post()
+router.route('/user').post(createLocalUser);
 
 // 예시 제거
 

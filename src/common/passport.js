@@ -25,7 +25,7 @@ const verifyUser = async (payload, done) => {
     return await userRepository.findByUserId(payload.user_id);
 };
 
-const strategyHandler = asyncWrapper(async (payload, done) => {
+const strategyHandler = async (payload, done) => {
     const user = await verifyUser(payload);
     try {
         if (user) {
@@ -35,7 +35,7 @@ const strategyHandler = asyncWrapper(async (payload, done) => {
     } catch (error) {
         return done(error, false);
     }
-})
+}
 
 passport.use(new LocalStrategy(localOptions, strategyHandler));
 passport.use(new JwtStrategy(jwtOptions, strategyHandler));

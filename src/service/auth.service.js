@@ -7,7 +7,7 @@ export const authService = {
     createLocal: async (userData) => {
     },
 
-    createToken: asyncWrapper(async (user) => {
+    createToken: async (user) => {
         const secret = process.env.PRIVATE_KEY;
         const accessToken = jwt.sign(user.toJSON(), secret, {
             expiresIn: '30m' 
@@ -18,5 +18,5 @@ export const authService = {
         });
 
         return { accessToken, refreshToken };
-    }),
+    },
 }
