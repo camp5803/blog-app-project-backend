@@ -1,15 +1,18 @@
+import { asyncWrapper } from '@/common';
 import { userRepository } from '@/repository/index';
 
 export const userService = {
-
-    createUser: async (userData) => {
-        try {
-            const user = await userRepository.createUser(userData);
-            return user;
-        } catch (error) {
-            throw new Error('Error creating user');
+    createUser: asyncWrapper(async (data) => { // data의 key는 email, login_type, nickname
+        const user = await userRepository.findByEmail({ email: data.email });
+        if (!user) {
+            return {
+                error: true,
+                message: "[Signup Error#1] Email Already exists."
+            }
         }
-    }
+
+        return await userRepository.createUser(data);
+    })
 }
 
 
