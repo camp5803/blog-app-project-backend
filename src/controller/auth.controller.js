@@ -1,4 +1,4 @@
-import { asyncWrapper, customResponse } from '@/common/index';
+import { asyncWrapper } from '@/common/index';
 import { StatusCodes } from 'http-status-codes';
 import { passport } from 'passport';
 import { authService } from '@/service/index';
@@ -13,7 +13,7 @@ export const createAuth = asyncWrapper(async (req, res) => {
             })
         }
 
-        req.login(user, { session: false }, (err) => {
+        req.login(user, { session: false }, async (err) => {
             if (err) {
                 return res.status(StatusCodes.BAD_REQUEST).json({
                     status: "error",
@@ -23,11 +23,7 @@ export const createAuth = asyncWrapper(async (req, res) => {
 
             const token = await authService.createToken(user);
             await redisClient.set(user.user_id, token.refreshToken);
-            return res.status(StatusCodes.OK).json({
-                status: "success".
-                user, // 필요한 정보만 줘야함 !! 수정해야함 !!
-                token
-            });
+            return res.status(StatusCodes.OK).json(token);
         });
     })(req, res);
 });
