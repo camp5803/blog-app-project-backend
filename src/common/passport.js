@@ -1,8 +1,7 @@
 import { passport } from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
-import { UserRepository } from '@/repository/user.repository'
-import { User } from '@/database/index'
+import { userRepository } from '@/repository/user.repository'
 import { asyncWrapper } from '@/common/index'
 import { createPassword } from '@/utils/index'
 
@@ -18,12 +17,12 @@ const localOptions = {
 
 const verifyUser = async (payload, done) => {
     if (payload.password) {
-        return await UserRepository.findByPassword({
+        return await userRepository.findByPassword({
             email: payload.email, 
             password: createPassword(payload.password) 
         });
     }
-    return await UserRepository.findByUserId(payload.userId);
+    return await userRepository.findByUserId(payload.user_id);
 };
 
 const strategyHandler = asyncWrapper(async (payload, done) => {
