@@ -1,6 +1,7 @@
-import { User, Password, Profile, sequelize } from '@/database/index'
+import { db } from '@/database/index'
 import { asyncWrapper } from '@/common/index';
 import { createPassword } from '../utils/security';
+const { User, Password, Profile, sequelize } = db;
 
 export const userRepository = {
     findByPassword: async (data) => {
