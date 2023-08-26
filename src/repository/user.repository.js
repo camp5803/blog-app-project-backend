@@ -1,4 +1,4 @@
-import { db } from '@/database/index'
+import db from '@/database/index'
 import { asyncWrapper } from '@/common/index';
 import { createPassword } from '../utils/security';
 const { User, Password, Profile, sequelize } = db;
