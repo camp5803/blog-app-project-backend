@@ -9,19 +9,23 @@ export const preference = (sequelize, DataTypes) => {
         // },
         darkmode_status: {
             type: DataTypes.BOOLEAN,
-            allowNull: false
+            allowNull: true,
+            defaultValue: false
         },
         neighbor_alert: {
             type: DataTypes.BOOLEAN,
-            allowNull: false
+            allowNull: true,
+            defaultValue: true
         },
         comment_alert: {
             type: DataTypes.BOOLEAN,
-            allowNull: false
+            allowNull: true,
+            defaultValue: true
         },
         chat_alert: {
             type: DataTypes.BOOLEAN,
-            allowNull: false
+            allowNull: true,
+            defaultValue: true
         },
     }, {
         tableName: 'preference',
