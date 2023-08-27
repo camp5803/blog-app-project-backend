@@ -1,8 +1,7 @@
 import { asyncWrapper } from '@/common/index';
 import { StatusCodes } from 'http-status-codes';
-import { passport } from 'passport';
+import passport from 'passport';
 import { authService } from '@/service/index';
-import { redisCli as redisClient } from '@/utils/index'
 
 export const createAuth = asyncWrapper(async (req, res) => {
     passport.authenticate('local', { session: false }, (err, user) => {
@@ -20,9 +19,13 @@ export const createAuth = asyncWrapper(async (req, res) => {
                     message: "[Login Failed #2] Bad request"
                 });
             }
-
             const token = await authService.createToken(user);
-            await redisClient.set(user.user_id, token.refreshToken);
+            if (token.error) {
+                return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    status: "error",
+                    message: token.error
+                });
+            }
             return res.status(StatusCodes.OK).json(token);
         });
     })(req, res);
@@ -44,11 +47,10 @@ export const createSocialAuth = asyncWrapper(async (req, res) => {
 
 })
 
-export const updateAuth = asyncWrapper(async (req, res) => {
-    const response = customResponse(res);
-    try {
-        response.success({ code: StatusCodes.OK });
-    } catch (err) {
-        response.error(err);
+export const reissueAccessToken = asyncWrapper(async (req, res) => { // body: accessToken
+    const accessToken = await authService.reissueToken(token);
+    if (refreshToken.error) {
+        return res.status(StatusCodes.BAD_REQUEST).end();
     }
+    return res.status(200).json({ accessToken });
 });
