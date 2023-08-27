@@ -11,4 +11,15 @@ export const createLocalUser = asyncWrapper(async (req, res) => {
         });
     }
     return res.status(StatusCodes.CREATED).end();
-})
+});
+
+export const deleteUser = asyncWrapper(async (req, res) => {
+    const user = await userService.deleteUser(req.data);
+    if (user.error) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            status: "error",
+            message: user.message
+        });
+    }
+    return res.status(StatusCodes.OK).end();
+});

@@ -1,5 +1,4 @@
 import db from '@/database/index'
-import { asyncWrapper } from '@/common/index';
 import { createPassword } from '../utils/security';
 const { User, Password, Profile, sequelize } = db;
 
@@ -20,15 +19,30 @@ export const userRepository = {
         return await User.findOne({ where: { email }});
     },
     createUser: async (data) => {
-        return await sequelize.transaction(async (transaction) => {
-            const user = await User.create({
-                email: data.email,
-                login_type: data.login_type
+        try {
+            return await sequelize.transaction(async (transaction) => {
+                const user = await User.create({
+                    email: data.email,
+                    login_type: data.login_type
+                }, { transaction });
+                await Password.create({
+                    user_id: user.user_id,
+                    password: createPassword(data.password)
+                }, { transaction });
+                return await Profile.create({
+                    user_id: user.user_id,
+                    nickname: data.nickname
+                } , { transaction });
             });
-            return await Profile.create({
-                user_id: user.user_id,
-                nickname: data.nickname
-            });
-        });
+        } catch (e) {
+            return {
+                error: true,
+                message: '[Signup Error#2] Transaction failed.'
+            }
+        }
+        
+    },
+    deleteUser: async (userId) => {
+        return await User.destory({ where : { user_id: userId }});
     }
 }

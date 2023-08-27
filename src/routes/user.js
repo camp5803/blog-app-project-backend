@@ -1,10 +1,10 @@
 import express from 'express';
-import { createLocalUser } from '@/controller/index';
+import { createLocalUser, deleteUser } from '@/controller/index';
 
 const router = express.Router();
 
-router.route('/user').post(createLocalUser);
-
-// 예시 제거
+router.route('/user')
+    .post(createLocalUser)
+    .delete(deleteUser);
 
 export default router;
