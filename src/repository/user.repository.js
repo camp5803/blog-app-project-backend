@@ -1,5 +1,7 @@
 import db from '@/database/index'
 import { createPassword } from '../utils/security';
+import { preference } from '@/database/model/preference';
+import { socialLogin } from '@/database/model/soical_login';
 const { User, Password, Profile, sequelize } = db;
 
 export const userRepository = {
@@ -18,21 +20,35 @@ export const userRepository = {
     findByEmail: async (email) => {
         return await User.findOne({ where: { email }});
     },
-    createUser: async (data) => {
+    createUser: async (data, socialData = { type: "local" }) => {
         try {
             return await sequelize.transaction(async (transaction) => {
                 const user = await User.create({
                     email: data.email,
-                    login_type: data.login_type
+                    login_type: socialData.type
                 }, { transaction });
-                await Password.create({
-                    user_id: user.user_id,
-                    password: createPassword(data.password)
+
+                if (socialData.type != "local") {
+                    await socialLogin.create({
+                        user_id: user.user.id,
+                        social_code: socialData.code,
+                        external_id: socialData.id
+                    }, { transaction });
+                } else {
+                    await Password.create({
+                        user_id: user.user_id,
+                        password: createPassword(data.password)
+                    }, { transaction });
+                }
+
+                await preference.create({
+                    user_id: user.user_id
                 }, { transaction });
+
                 return await Profile.create({
                     user_id: user.user_id,
                     nickname: data.nickname
-                } , { transaction });
+                }, { transaction });
             });
         } catch (e) {
             return {
