@@ -2,7 +2,7 @@ import { userRepository } from '@/repository/index';
 
 export const userService = {
     createUser: async (data) => { // data의 key는 email, login_type, nickname, password
-        const user = await userRepository.findByEmail({ email: data.email });
+        const user = await userRepository.findByEmail(data.email);
         if (user) {
             return {
                 error: true,
