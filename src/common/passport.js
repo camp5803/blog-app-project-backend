@@ -31,7 +31,9 @@ export default () => {
     
     const verifyUser = async (payload, done) => {
         if (payload.password) {
+            const user = userRepository.findByEmail(payload.email);
             return await userRepository.findByPassword({
+                user_id: user.user_id,
                 email: payload.email, 
                 password: createPassword(payload.password) 
             });
@@ -39,8 +41,8 @@ export default () => {
         return await userRepository.findByUserId(payload.user_id);
     };
     
-    const strategyHandler = async (payload, done) => {
-        const user = await verifyUser(payload);
+    const strategyHandler = async (email, password, done) => {
+        const user = await verifyUser({ email, password });
         try {
             if (user) {
                 return done(null, user);
