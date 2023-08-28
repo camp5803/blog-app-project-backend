@@ -1,33 +1,29 @@
-import { asyncWrapper, customResponse } from '@/common/index';
+import { asyncWrapper } from '@/common/index';
 import { StatusCodes } from 'http-status-codes';
-import { passport } from 'passport';
+import passport from 'passport';
 import { authService } from '@/service/index';
-import { redisCli as redisClient } from '@/utils/index'
 
 export const createAuth = asyncWrapper(async (req, res) => {
     passport.authenticate('local', { session: false }, (err, user) => {
         if (err || !user) {
             return res.status(StatusCodes.UNAUTHORIZED).json({
-                status: "error",
                 message: "[Login Failed #1] Please check your email and password"
             })
         }
 
-        req.login(user, { session: false }, (err) => {
+        req.login(user, { session: false }, async (err) => {
             if (err) {
                 return res.status(StatusCodes.BAD_REQUEST).json({
-                    status: "error",
                     message: "[Login Failed #2] Bad request"
                 });
             }
-
             const token = await authService.createToken(user);
-            await redisClient.set(user.user_id, token.refreshToken);
-            return res.status(StatusCodes.OK).json({
-                status: "success".
-                user, // 필요한 정보만 줘야함 !! 수정해야함 !!
-                token
-            });
+            if (token.error) {
+                return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+                    message: token.error
+                });
+            }
+            return res.status(StatusCodes.OK).json(token);
         });
     })(req, res);
 });
@@ -38,7 +34,6 @@ export const isAuthenticated = (req, res) => {
             return res.status(StatusCodes.OK).json({ status: "success" });
         }
         return res.status(StatusCodes.UNAUTHORIZED).json({
-            status: "error",
             message: "[Unauthorized Error] Please log in again"
         });
     })(req, res);
@@ -48,11 +43,10 @@ export const createSocialAuth = asyncWrapper(async (req, res) => {
 
 })
 
-export const updateAuth = asyncWrapper(async (req, res) => {
-    const response = customResponse(res);
-    try {
-        response.success({ code: StatusCodes.OK });
-    } catch (err) {
-        response.error(err);
+export const reissueAccessToken = asyncWrapper(async (req, res) => { // body: accessToken
+    const accessToken = await authService.reissueToken(req.body.token);
+    if (accessToken.error) {
+        return res.status(StatusCodes.BAD_REQUEST).end();
     }
+    return res.status(200).json({ accessToken });
 });

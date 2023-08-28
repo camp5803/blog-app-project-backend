@@ -3,12 +3,12 @@ import { Sequelize } from "sequelize";
 
 export const profile = (sequelize, DataTypes) => {
     const Profile = sequelize.define('profile', {
-        // user_id: {
-        //     type: DataTypes.INTEGER,
-        //     primaryKey: true,
-        //     allowNull: false,
-        //     autoIncrement: true,
-        // },
+        user_id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            allowNull: false,
+            autoIncrement: true,
+        },
         nickname: {
             type: DataTypes.STRING(45),
             allowNull: false,
@@ -17,10 +17,6 @@ export const profile = (sequelize, DataTypes) => {
         image_url: {
             type: DataTypes.TEXT('long'),
             allowNull: true
-        },
-        description: {
-            type: DataTypes.TEXT,
-            allowNull: false
         },
         created_at: {
             type: DataTypes.DATE,
