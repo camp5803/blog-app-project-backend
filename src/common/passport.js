@@ -52,8 +52,8 @@ export default () => {
     };
     
     const strategyHandler = async (email, password, done) => {
-        const user = await verifyUser({ email, password });
         try {
+            const user = await verifyUser({ email, password });
             if (user) {
                 return done(null, user);
             }

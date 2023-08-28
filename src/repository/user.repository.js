@@ -7,7 +7,7 @@ const {
 export const userRepository = {
     findByPassword: async (data) => {
         const user = await User.findOne({ where: { email: data.email }});
-        const password = await Password.fineOne({ where : { user_id: user.user_id, password: createPassword(data.password) }});
+        const password = await Password.findOne({ where : { user_id: user.user_id, password: createPassword(data.password) }});
 
         if (password) {
             return user;
@@ -15,7 +15,7 @@ export const userRepository = {
         return null;
     },
     findByUserId: async (data) => {
-        return await User.findOne({ where: { user_id: data.userId }});
+        return await User.findOne({ where: { user_id: data }});
     },
     findByEmail: async (email) => {
         return await User.findOne({ where: { email }});
