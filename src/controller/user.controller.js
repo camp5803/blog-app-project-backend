@@ -12,10 +12,18 @@ export const createLocalUser = asyncWrapper(async (req, res) => {
     return res.status(StatusCodes.CREATED).end();
 });
 
-export const deleteUser = asyncWrapper(async (req, res) => { // 만약에 조회했는데 없는 경우 200 말고 다른거 줘야함
-    const error = await userService.deleteUser(req.body); // 그리고 사용자 인증정보 받아서 자기랑 다르면 403이나 401 줘야함
+export const deleteUser = asyncWrapper(async (req, res) => {
+    if (req.user.user_id !== req.body.user_id) { 
+        return res.status(StatusCodes.FORBIDDEN).end();
+    }
+    const error = await userService.deleteUser(req.body);
     if (error) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
+        if (error = 404) {
+            return res.status(StatusCodes.NOT_FOUND).json({
+                message: error.message
+            });
+        }
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             message: error.message
         });
     }

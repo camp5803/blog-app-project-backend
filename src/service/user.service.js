@@ -14,12 +14,17 @@ export const userService = {
     },
     deleteUser: async (data) => {
         try {
-            await userRepository.deleteUser(data.user_id);
-            return;
+            const count = await userRepository.deleteUser(data.user_id);
+            if (count != 0) {
+                return {
+                    error: 404,
+                    message: "[Withdrawal Error#1] User not found"
+                }
+            }
         } catch (error) {
             return {
-                error: true,
-                message: '[Withdrawal Error#1] Delete query failed.'
+                error: 500,
+                message: "[Withdrawal Error#2] Delete query failed."
             }
         }
     }
