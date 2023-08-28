@@ -15,7 +15,7 @@ export const authService = {
             }
         }
         
-        const accessToken = jwt.sign({ user_id: userId }, privateKey, {
+        const accessToken = jwt.sign({ user_id: payload.user_id }, privateKey, {
             algorithm: "RS512",
             expiresIn: '30m'
         });

@@ -48,8 +48,8 @@ export const createSocialAuth = asyncWrapper(async (req, res) => {
 })
 
 export const reissueAccessToken = asyncWrapper(async (req, res) => { // body: accessToken
-    const accessToken = await authService.reissueToken(token);
-    if (refreshToken.error) {
+    const accessToken = await authService.reissueToken(req.body.token);
+    if (accessToken.error) {
         return res.status(StatusCodes.BAD_REQUEST).end();
     }
     return res.status(200).json({ accessToken });
