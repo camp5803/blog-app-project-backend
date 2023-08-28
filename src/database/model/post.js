@@ -25,6 +25,10 @@ export const post = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: true
         },
+        like: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            allowNull: true
+        },
         created_at: {
             type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
