@@ -35,7 +35,7 @@ export const createPost = async (postData) => {
                 image: img,
             });
             const dbCategories = await post.getCategories();
-            const dbPost = await Post.findOne({where: post.post_id});
+            const dbPost = await Post.findOne({ where: {post_id: post.post_id} });
 
             console.log('dbCategories::', dbCategories);
             console.log('dbPost::', dbPost);
@@ -56,3 +56,35 @@ export const createPost = async (postData) => {
         }   
     }
 
+
+export const updatePost = async (postData) => {
+    
+    try {
+        console.log('repository', postData);
+    
+        const { post_id, title, content, img } = postData;
+        
+        console.log(postData)
+        const post = await Post.update({title, content, updated_at: new Date()}, 
+        { where: { post_id: post_id } }) 
+
+        const image = await Image.update({image: img}, { where: {post_id: post_id } });
+
+        const updatedPost = await Post.findOne({ where: { post_id } });
+        const updatedImage = await Image.findOne({ where: { post_id } });
+
+        const resData = {
+            post_id: updatedPost.post_id,
+            title: updatedPost.title,
+            content: updatedPost.content,
+            img: updatedImage.image,
+            updateDt: updatedPost.updated_at
+        };
+
+        return resData;
+        
+    } catch (error) {
+        console.log(error);
+        throw new Error('Error updating post in repository');
+    }
+}

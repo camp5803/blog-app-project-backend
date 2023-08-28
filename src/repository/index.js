@@ -1,2 +1,2 @@
 export { userRepository } from './user.repository';
-export { createPost } from './post.repository';
+export { createPost, updatePost } from './post.repository';

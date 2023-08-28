@@ -19,3 +19,23 @@ export const createPost = asyncWrapper(async (req, res) => {
             res.status(500).send(error);
         }
 })
+
+export const updatePost = asyncWrapper(async (req, res) => {
+
+    try {
+        const { title, content, img } = req.body;
+        
+        const postData = {
+            post_id: req.params.id,
+            title: title,
+            content: content,
+            img: img
+        }
+        console.log(postData);
+        const post = await postService.updatePost(postData);
+        res.status(201).send({ data: post });
+    } catch (error) {  
+        res.status(500).send(error);
+    }
+
+})
