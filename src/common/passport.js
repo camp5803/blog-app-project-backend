@@ -24,7 +24,7 @@ export default () => {
     };
 
     const githubOptions = {
-        clientId: process.env.GITHUB_ID,
+        clientID: process.env.GITHUB_ID,
         clientSecret: process.env.GITHUB_SECRET,
         callbackURL: `http://${process.env.SERVER_URL}/api/auth/login?login_type=github`
     }
