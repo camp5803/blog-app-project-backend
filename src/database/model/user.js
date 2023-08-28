@@ -13,6 +13,10 @@ export const user = (sequelize, DataTypes) => {
             allowNull: false,
             unique: true,
         },
+        nickname: {
+            type: DataTypes.STRING(45),
+            allowNull: true,
+        },
         login_type: {
             type: DataTypes.INTEGER,
             allowNull: false
