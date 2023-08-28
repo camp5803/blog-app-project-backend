@@ -2,6 +2,8 @@ import passport from 'passport';
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
 import { Strategy as LocalStrategy } from 'passport-local';
 import { Strategy as GithubStrategy } from 'passport-github2';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth2';
+import { Strategy as KakaoStrategy } from 'passport-kakao';
 import { userRepository } from '@/repository'
 import { socialLoginRepository } from '@/repository';
 import { createPassword } from '@/utils/index'
@@ -17,16 +19,24 @@ export default () => {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         secretOrKey: process.env.PUBLIC_KEY
     };
-    
     const localOptions = {
         usernameField: 'email',
         passwordField: 'password'
     };
-
     const githubOptions = {
         clientID: process.env.GITHUB_ID,
         clientSecret: process.env.GITHUB_SECRET,
         callbackURL: `http://${process.env.SERVER_URL}/api/auth/login?login_type=github`
+    }
+    const googleOptions = {
+        clientID: process.env.GOOGLE_ID,
+        clientSecret: process.env.GOOGLE_SECRET,
+        callbackURL: `http://${process.env.SERVER_URL}/api/auth/login?login_type=google`
+    }
+    const kakaoOptions = {
+        clientID: process.env.KAKAO_ID,
+        clientSecret: process.env.KAKAO_SECRET,
+        callbackURL: `http://${process.env.SERVER_URL}/api/auth/login?login_type=kakao`
     }
     
     const verifyUser = async (payload, done) => {
@@ -53,7 +63,7 @@ export default () => {
         }
     }
 
-    const githubStrategyHandler = async (accessToken, refreshToken, profile, done) => {
+    const socialStrategyHandler = async (accessToken, refreshToken, profile, done) => {
         const user = await userRepository.findByEmail(profile.email);
         if (user) {
             user.socialId = profile.id;
@@ -75,5 +85,5 @@ export default () => {
     
     passport.use(new LocalStrategy(localOptions, strategyHandler));
     passport.use(new JwtStrategy(jwtOptions, strategyHandler));
-    passport.use(new GithubStrategy(githubOptions, githubStrategyHandler));
+    passport.use(new GithubStrategy(githubOptions, socialStrategyHandler));
 }
