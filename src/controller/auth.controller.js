@@ -7,7 +7,6 @@ export const createAuth = asyncWrapper(async (req, res) => {
     passport.authenticate('local', { session: false }, (err, user) => {
         if (err || !user) {
             return res.status(StatusCodes.UNAUTHORIZED).json({
-                status: "error",
                 message: "[Login Failed #1] Please check your email and password"
             })
         }
@@ -15,14 +14,12 @@ export const createAuth = asyncWrapper(async (req, res) => {
         req.login(user, { session: false }, async (err) => {
             if (err) {
                 return res.status(StatusCodes.BAD_REQUEST).json({
-                    status: "error",
                     message: "[Login Failed #2] Bad request"
                 });
             }
             const token = await authService.createToken(user);
             if (token.error) {
                 return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                    status: "error",
                     message: token.error
                 });
             }
@@ -37,7 +34,6 @@ export const isAuthenticated = (req, res) => {
             return res.status(StatusCodes.OK).json({ status: "success" });
         }
         return res.status(StatusCodes.UNAUTHORIZED).json({
-            status: "error",
             message: "[Unauthorized Error] Please log in again"
         });
     })(req, res);

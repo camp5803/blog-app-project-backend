@@ -28,13 +28,15 @@ export const authService = {
             const result = await redisClient.set(user.user_id.toString(), token.refreshToken, "EX", 1209600); // 14d
             if (result.error) {
                 return {
-                    error: "[Login Failed #4] ".concat(result.error) ,
+                    error: true,
+                    message: "[Login Failed #4] ".concat(result.error) ,
                 }
             }
             return token;
         } catch (e) {
             return {
-                error: "[Login Failed #5] Token creation failed.",
+                error: true,
+                message: "[Login Failed #5] Token creation failed.",
             }
         }
     }

@@ -6,7 +6,6 @@ export const createLocalUser = asyncWrapper(async (req, res) => {
     const user = await userService.createUser(req.body);
     if (user.error) {
         return res.status(StatusCodes.BAD_REQUEST).json({
-            status: "error",
             message: user.message
         });
     }
@@ -17,7 +16,6 @@ export const deleteUser = asyncWrapper(async (req, res) => { // 만약에 조회
     const error = await userService.deleteUser(req.body); // 그리고 사용자 인증정보 받아서 자기랑 다르면 403이나 401 줘야함
     if (error) {
         return res.status(StatusCodes.BAD_REQUEST).json({
-            status: "error",
             message: error.message
         });
     }
