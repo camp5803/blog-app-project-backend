@@ -50,3 +50,15 @@ export const deletePost = asyncWrapper(async (req, res) => {
         res.status(500).send(error);
     }
 })
+
+export const getByPostDetail = asyncWrapper (async (req, res) => {
+    try {
+        const post_id = req.query.id;
+        console.log(post_id)
+        const post = await postService.getByPostDetail(post_id);
+        res.status(201).send({data: post, message: 'getByPostDetail success'});
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error);
+    }
+})

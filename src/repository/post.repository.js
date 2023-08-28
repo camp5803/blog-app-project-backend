@@ -1,5 +1,5 @@
 import db from '../database/index.js';
-const { Post, Image, Category } = db;
+const { Post, Image, Category, User } = db;
 
 export const createPost = async (postData) => {
 
@@ -97,5 +97,32 @@ export const deletePost = async (postId) => {
     } catch (error) {
         console.log(error);
         throw new Error('Error delete post in repository');
+    }
+}
+
+export const getByPostDetail = async (postId) => {
+    try {
+        console.log('repository ::', postId)
+        const post = await Post.findOne({where: { post_id: postId }});
+        const image = await Image.findOne({where: {post_id: postId}});
+        const user = await User.findOne({where: {user_id: post.user_id}})
+
+        const categories = await post.getCategories();
+
+        const resData = {
+            post_id: post.post_id,
+            email: user.email,
+            title: post.title,
+            content: post.content,
+            view: post.view,
+            like: post.like,
+            img: image.image,
+            categories: categories.map((category) => category.category),
+            createdDt: post.created_at
+        };
+        console.log(resData)
+        return resData;
+    } catch (error) {
+        
     }
 }
