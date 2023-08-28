@@ -13,10 +13,6 @@ export const post = (sequelize, DataTypes) => {
         //     type: DataTypes.INTEGER,
         //     allowNull: false
         // },
-        category_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
         title: {
             type: DataTypes.STRING(45),
             allowNull: false,
