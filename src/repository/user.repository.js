@@ -1,8 +1,8 @@
 import db from '@/database/index'
 import { createPassword } from '../utils/security';
-import { preference } from '@/database/model/preference';
-import { socialLogin } from '@/database/model/soical_login';
-const { User, Password, Profile, sequelize } = db;
+const { 
+    User, Password, Profile, Preference, SoicalLogin, sequelize 
+} = db;
 
 export const userRepository = {
     findByPassword: async (data) => {
@@ -41,7 +41,7 @@ export const userRepository = {
                     }, { transaction });
                 }
 
-                await preference.create({
+                await Preference.create({
                     user_id: user.user_id
                 }, { transaction });
 
