@@ -26,7 +26,7 @@ export const keyword = (sequelize, DataTypes) => {
             name: "keyword_id",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "keyword_id" });
+        }, sourceKey: "keyword_id", onDelete: 'CASCADE' });
     };
     return Keyword;
 };
