@@ -63,3 +63,13 @@ export const getByPostDetail = asyncWrapper (async (req, res) => {
         res.status(500).send(error);
     }
 })
+
+export const getByAllList = asyncWrapper (async (req, res) => {
+    try {
+        const post = await postService.getByAllList();
+        res.status(201).send(post);
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error);
+    }
+})
