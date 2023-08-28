@@ -40,5 +40,6 @@ export const postService = {
             console.log(error);
             throw new Error('Error get detail post');
         }
-    }
+    },
+    
 }

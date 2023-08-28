@@ -108,18 +108,18 @@ export const getByPostDetail = async (postId) => {
 
         const resData = {
             post_id: post.post_id,
-            email: user.email,
+            nickname: user.nickname,
             title: post.title,
             content: post.content,
             view: post.view,
             like: post.like,
-            img: image.image,
             categories: categories.map((category) => category.category),
             createdDt: post.created_at
         };
         console.log(resData)
         return resData;
     } catch (error) {
-        
+        console.log(error);
+        throw new Error('Error delete post in repository');
     }
 }

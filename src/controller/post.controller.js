@@ -34,7 +34,7 @@ export const updatePost = asyncWrapper(async (req, res) => {
         }
         console.log(postData);
         const post = await postService.updatePost(postData);
-        res.status(201).send({ data: post });
+        res.status(201).send(post);
     } catch (error) {  
         res.status(500).send(error);
     }
@@ -57,7 +57,7 @@ export const getByPostDetail = asyncWrapper (async (req, res) => {
         const post_id = req.query.id;
         console.log(post_id)
         const post = await postService.getByPostDetail(post_id);
-        res.status(201).send({data: post, message: 'getByPostDetail success'});
+        res.status(201).send(post);
     } catch (error) {
         console.log(error)
         res.status(500).send(error);
