@@ -1,2 +1,2 @@
-export { createUser, getUser, getAllUsers, updateUser, deleteUser } from './user.controller';
-export { createAuth, updateAuth } from './auth.controller';
+export { createLocalUser, deleteUser } from './user.controller';
+export { createAuth, reissueAccessToken } from './auth.controller';
