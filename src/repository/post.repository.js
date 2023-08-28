@@ -88,3 +88,14 @@ export const updatePost = async (postData) => {
         throw new Error('Error updating post in repository');
     }
 }
+
+export const deletePost = async (postId) => {
+
+    try {
+        console.log('repository:::', postId)
+        const post = await Post.destroy({where: { post_id: postId }});
+    } catch (error) {
+        console.log(error);
+        throw new Error('Error delete post in repository');
+    }
+}

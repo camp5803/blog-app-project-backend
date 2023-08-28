@@ -39,3 +39,14 @@ export const updatePost = asyncWrapper(async (req, res) => {
     }
 
 })
+
+export const deletePost = asyncWrapper(async (req, res) => {
+    try {
+       const post_id = req.params.id;
+        const post = await postService.deletePost(post_id);
+        res.status(201).send({result: true, message: 'delete success'});
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error);
+    }
+})

@@ -1,4 +1,4 @@
-import { createPost, updatePost } from '@/repository/index';
+import { createPost, updatePost, deletePost } from '@/repository/index';
 
 export const postService = {
     createPost: async (postData) => {
@@ -8,7 +8,7 @@ export const postService = {
             console.log('repository -> service', post);
             return post;
         } catch (error) {
-            throw new Error('Error creating user');
+            throw new Error('Error creating post');
         }
     },
 
@@ -19,7 +19,17 @@ export const postService = {
             return post;
         } catch (error) {
             console.log(error)
-            throw new Error('Error creating user');
+            throw new Error('Error updating post');
+        }
+    },
+
+    deletePost: async (post_id) => {
+        try {
+            console.log('service', post_id)
+            const post = await deletePost(post_id);
+        } catch (error) {
+            console.log(error)
+            throw new Error('Error delete post');
         }
     }
 }
