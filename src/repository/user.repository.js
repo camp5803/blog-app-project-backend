@@ -58,7 +58,7 @@ export const userRepository = {
         }
         
     },
-    deleteUser: async (userId) => {
-        return await User.destory({ where : { user_id: userId }});
+    deleteUser: async (user_id) => {
+        return await User.destroy({ where : { user_id: user_id }});
     }
 }
