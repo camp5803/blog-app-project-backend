@@ -1,13 +1,13 @@
 import jwt from 'jsonwebtoken';
 import { authRepository } from '@/repository';
-import { createToken } from '@/utils';
+import { createToken, redisCli as redisClient } from '@/utils/index';
 
 export const authService = {
     reissueToken: async (token) => { 
         const privateKey = process.env.PRIVATE_KEY;
         const payload = jwt.decode(token);
 
-        const refreshToken = await authRepository.getRefreshToken (payload.user_id);
+        const refreshToken = await authRepository.getRefreshToken(payload.user_id);
         if (refreshToken === null) {
             return {
                 error: true,
@@ -25,7 +25,7 @@ export const authService = {
     createToken: async (user) => {
         try {
             const token = createToken(user);
-            const result = await redisClient.set(user.user_id, token.refreshToken, "EX", 1209600); // 14d
+            const result = await redisClient.set(user.user_id.toString(), token.refreshToken, "EX", 1209600); // 14d
             if (result.error) {
                 return {
                     error: "[Login Failed #4] ".concat(result.error) ,
