@@ -1,7 +1,7 @@
 import db from '../database/index.js';
 const { Post, Image, Category, User } = db;
 
-export const createPost = asyncWrapper(async (postData) => {
+export const createPost = async (postData) => {
         try {
             const { user_id, title, content, categories, img } = postData;
             console.log('repository', postData);
@@ -51,7 +51,7 @@ export const createPost = asyncWrapper(async (postData) => {
             console.log(error)
             throw new Error('Error creating post in repository');
         }
-    })
+    }
 
 
 export const updatePost = async (postData) => {
