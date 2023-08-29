@@ -41,7 +41,7 @@ export const isAuthenticated = (req, res) => {
 
 export const createSocialAuth = asyncWrapper(async (req, res) => {
     const type = req.params.type;
-    if (type in ['github', 'kakao', 'google']) {
+    if (['github', 'kakao', 'google'].includes(type)) {
         passport.authenticate(type, { session: false })(req, res);
         return;
     }
@@ -52,14 +52,14 @@ export const createSocialAuth = asyncWrapper(async (req, res) => {
 
 export const socialCallbackHandler = asyncWrapper(async (req, res) => {
     const type = req.params.type;
-    if (type in ['github', 'kakao', 'google']) {
-        passport.authenticate(type, { session: false }, (err, user) => {
-            if (err || !user) {
+    if (['github', 'kakao', 'google'].includes(type)) {
+        passport.authenticate(type, { session: false }, async (req, res) => {
+            if (!req.user) {
                 return res.status(StatusCodes.BAD_REQUEST).json({
                     message: "[Login Error#8] Social log-in failed."
                 });
             }
-            const token = await authService.createToken(user.user_id);
+            const token = await authService.createToken(req.user.user_id);
             if (token.error) {
                 return res.status(StatusCodes.BAD_REQUEST).json({
                     message: token.error
@@ -67,10 +67,11 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
             }
             return res.status(StatusCodes.OK).json(token);
         })(req, res);
+    } else {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: "[Login Error#7] Bad request."
+        });
     }
-    return res.status(StatusCodes.BAD_REQUEST).json({
-        message: "[Login Error#7] Bad request."
-    });
 });
 
 export const reissueAccessToken = asyncWrapper(async (req, res) => { // body: accessToken
