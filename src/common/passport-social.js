@@ -42,7 +42,7 @@ const githubStrategyHandler = async (accessToken, refreshToken, profile, done) =
             message: "[Login Error#6] Social login failed."
         }, false);
     }
-    return done(null, user); // 실패시 error 넘기는 done도 만들어야함
+    return done(null, newSocialUser); // 실패시 error 넘기는 done도 만들어야함
 }
 
 const githubPassport = new GithubStrategy(githubOptions, githubStrategyHandler)
