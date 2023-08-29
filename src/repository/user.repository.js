@@ -22,7 +22,7 @@ export const userRepository = {
                 if (socialData.type != "local") {
                     await socialLogin.create({
                         user_id: user.user.id,
-                        social_code: socialData.code,
+                        social_code: socialData.type,
                         external_id: socialData.id
                     }, { transaction });
                 } else {
