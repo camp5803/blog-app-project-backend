@@ -5,8 +5,9 @@ import { Strategy as GithubStrategy } from 'passport-github2';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth2';
 import { Strategy as KakaoStrategy } from 'passport-kakao';
 import { userRepository } from '@/repository'
+import { passwordRepository } from '@/repository';
 import { socialLoginRepository } from '@/repository';
-import { createPassword } from '@/utils/index'
+import bcrypt from 'bcrypt';
 
 const socialCode = {
     KAKAO: 0,
@@ -39,14 +40,17 @@ export default () => {
         callbackURL: `http://${process.env.SERVER_URL}/api/auth/login?login_type=kakao`
     }
     
-    const verifyUser = async (payload, done) => {
+    const verifyUser = async (payload) => {
         if (payload.password) {
-            const user = userRepository.findByEmail(payload.email);
-            return await userRepository.findByPassword({
+            const user = await userRepository.findByEmail(payload.email);
+            const password = await passwordRepository.findByUserId({
                 user_id: user.user_id,
-                email: payload.email, 
-                password: createPassword(payload.password) 
             });
+
+            if (bcrypt.compareSync(payload.password, password.password)) {
+                return user;
+            }
+            return null;
         }
         return await userRepository.findByUserId(payload.user_id);
     };
@@ -57,7 +61,7 @@ export default () => {
             if (user) {
                 return done(null, user);
             }
-            return done(null, false);
+            return done(true, false);
         } catch (error) {
             return done(error, false);
         }
