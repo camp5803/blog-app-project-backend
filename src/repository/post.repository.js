@@ -1,4 +1,5 @@
 import db from '../database/index.js';
+import { Op } from 'sequelize';
 const { Post, Image, Category, User } = db;
 
 export const createPost = async (postData) => {
@@ -122,3 +123,49 @@ export const getByPostDetail = async (postId) => {
         throw new Error('Error delete post in repository');
     }
 }
+
+export const getPostsByPage = async (page, pageSize, after) => {
+    try {
+        const offset = (page - 1) * pageSize;
+        const whereClause = {}; // whereClause를 정의
+
+        if (after) {
+            // "post_id" 컬럼을 기준으로 이어서 가져올 글을 필터링합니다.
+            whereClause.post_id = { [Op.gt]: after };
+        }
+
+        const posts = await Post.findAndCountAll({
+            where: whereClause,
+            offset,
+            limit: pageSize,
+            include: [
+                { model: Category, as: 'categories', attributes: ['category'] },
+            ],
+        });
+
+        const totalCount = posts.count;
+        
+         // 각 포스트마다 사용자 정보 추가
+         for (const post of posts.rows) {
+            const user = await User.findOne({ where: { user_id: post.user_id } });
+            post.dataValues.nickname = user ? user.nickname : user.email;
+        }
+
+        return {
+            posts: posts.rows.map((post) => ({
+                post_id: post.post_id,
+                title: post.title,
+                content: post.content,
+                nickname: post.dataValues.nickname,
+                created_at: post.created_at, // 생성일 컬럼명 수정
+                categories: post.categories.map((category) => category.category),
+                view: post.view,
+                like: post.like,
+            })),
+            hasMore: totalCount > page * pageSize, // boolean으로 다음 페이지 여부 판단
+        };
+    } catch (error) {
+        console.log(error);
+        throw new Error('Error get post in repository');
+    }
+};

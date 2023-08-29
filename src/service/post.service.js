@@ -1,4 +1,4 @@
-import { createPost, updatePost, deletePost, getByPostDetail } from '@/repository/index';
+import { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage } from '@/repository/index';
 
 export const postService = {
     createPost: async (postData) => {
@@ -40,5 +40,15 @@ export const postService = {
             throw new Error('Error get detail post');
         }
     },
+
+    getPostsByPage: async (page, pageSize, after) => {
+        try {
+            const post = await getPostsByPage(page, pageSize, after);
+            return post;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error get detail post');
+        }
+    }
 
 }
