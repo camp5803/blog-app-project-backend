@@ -15,6 +15,9 @@ export default async (user_id) => {
     } catch (error) {
         return { error };
     }
+    if (typeof(user_id) !== "string") {
+        user_id = user_id.toString();
+    }
     const result = await redisClient.set(user_id.toString(), token.refreshToken, "EX", 1209600); // 14d
     if (result.error) {
         return {
