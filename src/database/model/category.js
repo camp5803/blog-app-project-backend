@@ -8,10 +8,10 @@ export const category = (sequelize, DataTypes) => {
             allowNull: false,
             autoIncrement: true,
         },
-        // post_id: {
-        //     type: DataTypes.INTEGER,
-        //     allowNull: false
-        // },
+        post_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
         category: {
             type: DataTypes.STRING(45),
             allowNull: false,
