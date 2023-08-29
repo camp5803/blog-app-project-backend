@@ -14,7 +14,9 @@ export const createLocalUser = asyncWrapper(async (req, res) => {
 
 export const deleteUser = asyncWrapper(async (req, res) => {
     if (req.user.user_id !== req.body.user_id) { 
-        return res.status(StatusCodes.FORBIDDEN).end();
+        return res.status(StatusCodes.FORBIDDEN).json({
+            message: "[Withdrawal Error#3] Permission denied."
+        });
     }
     const error = await userService.deleteUser(req.body);
     if (error) {

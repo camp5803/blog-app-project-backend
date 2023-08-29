@@ -108,18 +108,44 @@ export const getByPostDetail = async (postId) => {
 
         const resData = {
             post_id: post.post_id,
-            email: user.email,
+            nickname: user.nickname,
             title: post.title,
             content: post.content,
             view: post.view,
             like: post.like,
-            img: image.image,
             categories: categories.map((category) => category.category),
             createdDt: post.created_at
         };
         console.log(resData)
         return resData;
     } catch (error) {
-        
+        console.log(error);
+        throw new Error('Error delete post in repository');
+    }
+}
+
+export const getByAllList = async (req, res) => {
+    try {
+        const posts = await Post.findAll();
+
+        const resData = await Promise.all(posts.map(async (post) => {
+            const image = await Image.findOne({where: {post_id: post.post_id}})
+            const user = await User.findOne({ where: { user_id: post.user_id } });
+            return {
+                img: image.image,
+                nickname: user.nickname,
+                createdDt: post.created_at,
+                title: post.title,
+                content: post.content,
+                view: post.view,
+                like: post.like,
+            };
+        }))
+
+        return resData;
+      
+    } catch (error) {
+        console.error(error);
+        throw new Error('Error getAllbyList post in repository');
     }
 }
