@@ -1,12 +1,10 @@
-import { createPost, updatePost, deletePost, getByPostDetail, getByAllList } from '@/repository/index';
+import { createPost, updatePost, deletePost, getByPostDetail } from '@/repository/index';
 
 export const postService = {
     createPost: async (postData) => {
         try {
             console.log('service, postData::', postData);
             const post = await createPost(postData);
-            console.log('repository -> service', post);
-            return post;
         } catch (error) {
             throw new Error('Error creating post');
         }
@@ -27,6 +25,7 @@ export const postService = {
         try {
             console.log('service', post_id)
             const post = await deletePost(post_id);
+            return post;
         } catch (error) {
             console.log(error)
             throw new Error('Error delete post');
@@ -42,13 +41,4 @@ export const postService = {
         }
     },
 
-    getByAllList: async () => {
-        try {
-            const post = await getByAllList();
-            return post;
-        } catch (error) {
-            console.log(error);
-            throw new Error('Error get all post list');
-        }
-    }
 }
