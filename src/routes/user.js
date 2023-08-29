@@ -3,7 +3,7 @@ import { createLocalUser, deleteUser } from '@/controller/index';
 
 const router = express.Router();
 
-router.route('/user')
+router.route('/users')
     .post(createLocalUser)
     .delete(deleteUser);
 
