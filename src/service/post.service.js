@@ -1,4 +1,4 @@
-import { createPost, updatePost, deletePost, getByPostDetail } from '@/repository/index';
+import { createPost, updatePost, deletePost, getByPostDetail, getByAllList } from '@/repository/index';
 
 export const postService = {
     createPost: async (postData) => {
@@ -39,6 +39,16 @@ export const postService = {
         } catch (error) {
             console.log(error);
             throw new Error('Error get detail post');
+        }
+    },
+
+    getByAllList: async () => {
+        try {
+            const post = await getByAllList();
+            return post;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error get all post list');
         }
     }
 }
