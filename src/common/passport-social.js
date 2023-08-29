@@ -12,17 +12,17 @@ const socialCode = {
 const githubOptions = {
     clientID: process.env.GITHUB_ID,
     clientSecret: process.env.GITHUB_SECRET,
-    callbackURL: `http://${process.env.SERVER_URL}/api/auth/callback/github`
+    callbackURL: `http://${process.env.SERVER_URL}:${process.env.PORT || 8280}/api/auth/callback/github`
 }
 const googleOptions = {
     clientID: process.env.GOOGLE_ID,
     clientSecret: process.env.GOOGLE_SECRET,
-    callbackURL: `http://${process.env.SERVER_URL}/api/auth/callback/google`
+    callbackURL: `http://${process.env.SERVER_URL}:${process.env.PORT || 8280}/api/auth/callback/google`
 }
 const kakaoOptions = {
     clientID: process.env.KAKAO_ID,
     clientSecret: process.env.KAKAO_SECRET,
-    callbackURL: `http://${process.env.SERVER_URL}/api/auth/callback/kakao`
+    callbackURL: `http://${process.env.SERVER_URL}:${process.env.PORT || 8280}/api/auth/callback/kakao`
 }
 
 const githubStrategyHandler = async (accessToken, refreshToken, profile, done) => {
@@ -34,11 +34,14 @@ const githubStrategyHandler = async (accessToken, refreshToken, profile, done) =
         email: profile._json.kakao_account_email,
         nickname: profile.displayName
     }, {
-        code: socialCode.GITHUB, // createUser에 code type 분리 필요없을듯
-        type: socialCode.GITHUB, 
+        type: socialCode.GITHUB, // createUser에 code type 분리 필요없을듯
         external_id: profile.id,
     });
-
+    if (!newSocialUser) {
+        return done({
+            message: "[Login Error#6] Social login failed."
+        }, false);
+    }
     return done(null, user); // 실패시 error 넘기는 done도 만들어야함
 }
 
