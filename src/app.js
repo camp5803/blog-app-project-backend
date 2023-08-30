@@ -2,16 +2,18 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import { morganMiddleware } from '@/utils/index';
-import { errorMiddleware } from '@/middleware/index';
-import rateLimit from 'express-rate-limit';
+import { errorMiddleware, limiter } from '@/middleware/index';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
+import passport from 'passport';
+import { passportConfig } from '@/common/index'
 import { routes } from '@/routes/index.js';
 import db from '@/database/index.js';
 
 const app = express();
 
 // middlewares
+app.use(passport.initialize());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -25,6 +27,8 @@ app.use(
 );
 app.use(compression());
 app.use(morganMiddleware);
+app.use(limiter);
+passportConfig();
 
 // routes
 routes.forEach((route) => {
