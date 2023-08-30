@@ -1,7 +1,7 @@
 import { asyncWrapper } from '@/common/index';
 import { StatusCodes } from 'http-status-codes';
 import passport from 'passport';
-import { authService } from '@/service/index';
+import { authService, socialLoginService } from '@/service/index';
 
 export const createAuth = asyncWrapper(async (req, res) => {
     passport.authenticate('local', { session: false }, (err, user) => {
@@ -17,7 +17,7 @@ export const createAuth = asyncWrapper(async (req, res) => {
                     message: "[Login Failed #2] Bad request"
                 });
             }
-            const token = await authService.createToken(user);
+            const token = await authService.createToken(user.user_id);
             if (token.error) {
                 return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                     message: token.error
@@ -40,13 +40,44 @@ export const isAuthenticated = (req, res) => {
 } // 여기서 리프레시해서 발급할지, 프론트에서 요청할지 의논하기
 
 export const createSocialAuth = asyncWrapper(async (req, res) => {
+    const type = req.params.type;
+    if (['github', 'kakao', 'google'].includes(type)) {
+        passport.authenticate(type)(req, res);
+        return;
+    }
+    return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "[Login Error#7] Bad request."
+    });
+});
 
-})
+export const socialCallbackHandler = asyncWrapper(async (req, res) => {
+    const type = req.params.type; // 여기서 토큰발급해야함 ㅁㄴㅇㄹ
+
+    if (type === "kakao") {
+        //await socialLoginService.kakaoLoginService(req.query.code);
+    } else if (type === "google") {
+        //await socialLoginService.googleLoginService(req.query.access_token);
+    } else {
+        //await social
+    }
+});
+
+export const redirectOAuth = asyncWrapper(async (req, res) => {
+    const redirectURL = `http://${process.env.SERVER_URL}:${process.env.PORT || 8280}/api/auth/callback/${req.params.type}`;
+    const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.KAKAO_ID}&redirect_uri=${redirectURL}&response_type=code&scope=profile_nickname,account_email`;
+    const githubAuthURL = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_ID}&redirect_uri=${redirectURL}`;
+    const googleAuthURL = `https://accounts.google.com/o/oauth2/auth?client_id=${process.env.GOOGLE_ID}&redirect_uri=${redirectURL}&response_type=token&scope=https://www.googleapis.com/auth/userinfo.profile`;
+
+    const authorizeURL = req.params.type === "kakao" ? kakaoAuthURL : (req.params.type === "github" ? githubAuthURL : googleAuthURL);
+    res.redirect(authorizeURL);
+});
 
 export const reissueAccessToken = asyncWrapper(async (req, res) => { // body: accessToken
     const accessToken = await authService.reissueToken(req.body.token);
     if (accessToken.error) {
-        return res.status(StatusCodes.BAD_REQUEST).end();
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: accessToken.error
+        });
     }
     return res.status(200).json({ accessToken });
 });

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { authRepository } from '@/repository';
-import { createToken, redisCli as redisClient } from '@/utils/index';
+import { createToken } from '@/utils/index';
 
 export const authService = {
     reissueToken: async (token) => { 
@@ -22,22 +22,14 @@ export const authService = {
 
         return accessToken;
     },
-    createToken: async (user) => {
-        try {
-            const token = createToken(user);
-            const result = await redisClient.set(user.user_id.toString(), token.refreshToken, "EX", 1209600); // 14d
-            if (result.error) {
-                return {
-                    error: true,
-                    message: "[Login Failed #4] ".concat(result.error) ,
-                }
-            }
-            return token;
-        } catch (e) {
+    createToken: async (user_id) => {
+        const token = await createToken(user_id);
+        if (token.error) {
             return {
                 error: true,
-                message: "[Login Failed #5] Token creation failed.",
+                message: token.message,
             }
         }
+        return token;
     }
 }
