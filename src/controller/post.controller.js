@@ -83,11 +83,19 @@ export const getByPostDetail = asyncWrapper (async (req, res) => {
 export const getPostsByPage = asyncWrapper( async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1; // 기본 페이지 1
-        // const pageSize = parseInt(req.query.pageSize) // 페이지 당 글 10개
         const pageSize = 10;
+        const { sort } = req.params; 
+        console.log('req.params',sort)
         console.log('page: ', page, ' pageSize: ',pageSize)
+        let order = [];
 
-        const result = await postService.getPostsByPage(page, pageSize);
+            if (sort === 'views') {
+                order = [['view', 'DESC']]; // 조회수 순으로 정렬
+            } else {
+                order = [['created_at', 'DESC']]; // 최신순으로 정렬
+            }
+ 
+        const result = await postService.getPostsByPage(page, pageSize, order);
 
             console.log(result.hasMore)
             res.status(201).json({   
