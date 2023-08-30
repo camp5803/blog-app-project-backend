@@ -2,7 +2,7 @@ import express from 'express';
 import { 
     createAuth, 
     reissueAccessToken,
-    createSocialAuth,
+    redirectOAuth,
     socialCallbackHandler
 } from '@/controller/index';
 
@@ -12,6 +12,6 @@ router.post('/auth/login', createAuth);
 router.post('/auth/refresh', reissueAccessToken);
 
 router.get('/auth/callback/:type', socialCallbackHandler); // OAuth에서 callback 받을 경로
-router.get('/auth/:type', createSocialAuth); // OAuth 인증을 위한 경로
+router.get('/auth/:type', redirectOAuth); // OAuth Redirect를 해주는 경로
 
 export default router;
