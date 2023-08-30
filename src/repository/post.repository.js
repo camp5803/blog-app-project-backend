@@ -147,8 +147,7 @@ export const getPostsByPage = async (page, pageSize, after) => {
         
          // 각 포스트마다 사용자 정보 추가
          for (const post of posts.rows) {
-            const userProfile = await User.findOne({ where: { user_id: post.user_id } });
-            // post.dataValues.nickname = userProfile ? userProfile.nickname : userProfile.email;
+            const userProfile = await Profile.findOne({ where: { user_id: post.user_id } });
             post.dataValues.nickname = userProfile.nickname;
         }
 
