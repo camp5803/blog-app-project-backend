@@ -41,13 +41,14 @@ export const postService = {
         }
     },
 
-    getPostsByPage: async (page, pageSize) => {
+    getPostsByPage: async (page, pageSize, order) => {
         try {
-            const post = await getPostsByPage(page, pageSize);
+            console.log('service, order', order);
+            const post = await getPostsByPage(page, pageSize, order); 
             return post;
         } catch (error) {
             console.log(error);
             throw new Error('Error get listbyPage post');
         }
-    },
+    }, 
 }
