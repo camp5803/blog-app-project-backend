@@ -82,19 +82,18 @@ export const getByPostDetail = asyncWrapper (async (req, res) => {
 
 export const getPostsByPage = asyncWrapper( async (req, res) => {
     try {
-        const page = req.query.page || 1; // 기본 페이지 1
-        const pageSize = 10; // 페이지당 글 수
-        const after = req.query.after || null; // 이전 페이지의 마지막 글 ID (또는 다른 식별자)
-    
-        // 글을 가져오는 서비스 메서드 호출
-        const result = await postService.getPostsByPage(page, pageSize, after);
-    
-        // 클라이언트로 응답을 보냅니다.
-        res.status(201).json({
-            hasMore: result.hasMore, // 다음 페이지 여부
-            posts: result.posts,
-       
-        });
+        const page = parseInt(req.query.page) || 1; // 기본 페이지 1
+        // const pageSize = parseInt(req.query.pageSize) // 페이지 당 글 10개
+        const pageSize = 10;
+        console.log('page: ', page, ' pageSize: ',pageSize)
+
+        const result = await postService.getPostsByPage(page, pageSize);
+
+            console.log(result.hasMore)
+            res.status(201).json({   
+                hasMore: result.hasMore, // 다음 페이지 여부, false면 더이상 데이터 X
+                posts: result.posts,
+            })
     } catch (error) {
         console.log(error)
         res.status(500).json(error);

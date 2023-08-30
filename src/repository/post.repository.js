@@ -124,32 +124,30 @@ export const getByPostDetail = async (postId) => {
     }
 }
 
-export const getPostsByPage = async (page, pageSize, after) => {
+export const getPostsByPage = async (page, pageSize) => {
     try {
         const offset = (page - 1) * pageSize;
         const whereClause = {}; // whereClause를 정의
-
-        if (after) {
-            // "post_id" 컬럼을 기준으로 이어서 가져올 글을 필터링합니다.
-            whereClause.post_id = { [Op.gt]: after };
-        }
+        const limit = pageSize;
 
         const posts = await Post.findAndCountAll({
             where: whereClause,
             offset,
-            limit: pageSize,
+            limit,
             include: [
                 { model: Category, as: 'categories', attributes: ['category'] },
             ],
         });
-
-        const totalCount = posts.count;
-        
+ 
          // 각 포스트마다 사용자 정보 추가
          for (const post of posts.rows) {
             const userProfile = await Profile.findOne({ where: { user_id: post.user_id } });
             post.dataValues.nickname = userProfile.nickname;
         }
+
+        const rowLength = posts.rows.length;
+
+        const hasMore = rowLength === pageSize;
 
         return {
             posts: posts.rows.map((post) => ({
@@ -162,7 +160,7 @@ export const getPostsByPage = async (page, pageSize, after) => {
                 view: post.view,
                 like: post.like,
             })),
-            hasMore: totalCount > page * pageSize, // boolean으로 다음 페이지 여부 판단
+            hasMore: hasMore, // boolean으로 다음 페이지 여부 판단
         };
     } catch (error) {
         console.log(error);
