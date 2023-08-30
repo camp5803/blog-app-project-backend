@@ -1,6 +1,6 @@
 import db from '../database/index.js';
 import { Op } from 'sequelize';
-const { Post, Image, Category, User } = db;
+const { Post, Image, Category, User, Profile } = db;
 
 export const createPost = async (postData) => {
         try {
@@ -95,7 +95,7 @@ export const getByPostDetail = async (postId) => {
     try {
         console.log('repository ::', postId)
         const post = await Post.findOne({where: { post_id: postId }});
-        const user = await User.findOne({where: {user_id: post.user_id}})
+        const userProfile = await Profile.findOne({where: {user_id: post.user_id}})
 
         const categories = await post.getCategories();
 
@@ -107,7 +107,7 @@ export const getByPostDetail = async (postId) => {
 
         const resData = {
             post_id: post.post_id,
-            nickname: user.nickname,
+            nickname: userProfile.nickname,
             title: post.title,
             content: post.content,
             view: post.view,
@@ -147,8 +147,9 @@ export const getPostsByPage = async (page, pageSize, after) => {
         
          // 각 포스트마다 사용자 정보 추가
          for (const post of posts.rows) {
-            const user = await User.findOne({ where: { user_id: post.user_id } });
-            post.dataValues.nickname = user ? user.nickname : user.email;
+            const userProfile = await User.findOne({ where: { user_id: post.user_id } });
+            // post.dataValues.nickname = userProfile ? userProfile.nickname : userProfile.email;
+            post.dataValues.nickname = userProfile.nickname;
         }
 
         return {
