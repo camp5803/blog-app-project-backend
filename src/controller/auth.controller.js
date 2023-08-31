@@ -62,6 +62,8 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
         }
         if (kakaoUser.email == null) {
             return res.status(StatusCodes.CREATED).json({
+                accessToken: kakaoUser.accessToken,
+                refreshToken: kakaoUser.refreshToken,
                 message: "[Alert] Email information needs to be updated"
             });
         }
@@ -75,10 +77,15 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
         }
         if (githubUser.email == null) {
             return res.status(StatusCodes.CREATED).json({
+                accessToken: githubUser.accessToken,
+                refreshToken: githubUser.refreshToken,
                 message: "[Alert] Email information needs to be updated"
             });
         }
-        return res.status(StatusCodes.OK).end();
+        return res.status(StatusCodes.OK).json({
+            accessToken: githubUser.accessToken,
+            refreshToken: githubUser.refreshToken,
+        });
     } else if (type === "google"){
         //await social
     }
