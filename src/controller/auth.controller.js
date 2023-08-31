@@ -82,7 +82,10 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
                 message: "[Alert] Email information needs to be updated"
             });
         }
-        return res.status(StatusCodes.OK).json({});
+        return res.status(StatusCodes.OK).json({
+            accessToken: githubUser.accessToken,
+            refreshToken: githubUser.refreshToken,
+        });
     } else if (type === "google"){
         //await social
     }
