@@ -13,10 +13,6 @@ export const post = (sequelize, DataTypes) => {
         //     type: DataTypes.INTEGER,
         //     allowNull: false
         // },
-        category_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
         title: {
             type: DataTypes.STRING(45),
             allowNull: false,
@@ -26,6 +22,10 @@ export const post = (sequelize, DataTypes) => {
             allowNull: false
         },
         view: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            allowNull: true
+        },
+        like: {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: true
         },
@@ -53,28 +53,28 @@ export const post = (sequelize, DataTypes) => {
         Post.hasMany(models.Comment, { foreignKey: {
             name: "post_id",
             allowNull: false
-        }, sourceKey: "post_id" });
+        }, sourceKey: "post_id", onDelete: 'CASCADE' });
         
         Post.hasMany(models.Category, { foreignKey: {
             name: "post_id",
             allowNull: false
-        }, sourceKey: "post_id" });
+        }, sourceKey: "post_id", onDelete: 'CASCADE' });
         
         Post.hasMany(models.Bookmark, { foreignKey: {
             name: "post_id",
             allowNull: false
-        }, sourceKey: "post_id" });
+        }, sourceKey: "post_id", onDelete: 'CASCADE' });
         
         Post.hasMany(models.Image, { foreignKey: {
             name: "post_id",
             allowNull: false
-        }, sourceKey: "post_id" });
+        }, sourceKey: "post_id", onDelete: 'CASCADE' });
         
         Post.hasMany(models.Like, { foreignKey: {
             name: "post_id",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "post_id" });
+        }, sourceKey: "post_id", onDelete: 'CASCADE' });
     };
     return Post;
 };

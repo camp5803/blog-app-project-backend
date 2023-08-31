@@ -2,11 +2,11 @@
 
 export const neighbor = (sequelize, DataTypes) => {
     const Neighbor = sequelize.define('neighbor', {
-        // user_id: {
-        //     type: DataTypes.INTEGER,
-        //     primaryKey: true,
-        //     allowNull: false,
-        // },
+        user_id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            allowNull: false,
+        },
         // follows_to: {
         //     type: DataTypes.INTEGER,
         //     allowNull: false

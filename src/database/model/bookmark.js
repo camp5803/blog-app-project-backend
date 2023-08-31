@@ -2,11 +2,11 @@
 
 export const bookmark = (sequelize, DataTypes) => {
     const Bookmark = sequelize.define('bookmark', {
-        // user_id: {
-        //     type: DataTypes.INTEGER,
-        //     primaryKey: true,
-        //     allowNull: false,
-        // },
+        user_id: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            allowNull: false,
+        },
         // post_id: {
         //     type: DataTypes.INTEGER,
         //     allowNull: false
