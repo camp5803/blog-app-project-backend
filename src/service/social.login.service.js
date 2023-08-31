@@ -39,7 +39,10 @@ export const socialLoginService = {
                 headers: {
                     'Authorization': `Bearer ${token.data.access_token}`
                 }
-            });          
+            });
+            if (kakaoUser) {
+                return { error: "" }
+            }
             const user = await socialLoginRepository.findBySocialId(kakaoUser.data.id);
             if (user) {
                 return await createToken(user.user_id);
@@ -60,15 +63,20 @@ export const socialLoginService = {
                 params: {
                     code,
                     client_id: githubOptions.clientID,
+                    client_secret: githubOptions.clientSecret,
                     redirect_url: githubOptions.callbackURL,
                 }
             });
+            const tokenData = new URLSearchParams(token.data);
             const githubUser = await axios.get('https://api.github.com/user', {
                 headers: {
-                    'Authorization': `Bearer ${token.data.access_token}`
+                    'Authorization': `Bearer ${tokenData.access_token}`
                 }
             });
-            const user = socialLoginRepository.findBySocialId(githubUser.id);
+            if (!githubUser) {
+                return { error: "" }
+            }
+            const user = await socialLoginRepository.findBySocialId(githubUser.id);
             if (user) {
                 return await createToken(user.user_id);
             }
@@ -89,7 +97,7 @@ export const socialLoginService = {
                     'Authorization': `Bearer ${token}`
                 }
             });            
-            const user = socialLoginRepository.findBySocialId(googleUser.id);
+            const user = await socialLoginRepository.findBySocialId(googleUser.id);
             if (user) {
                 return await createToken(user.user_id);
             }
