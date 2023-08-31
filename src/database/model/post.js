@@ -18,7 +18,7 @@ export const post = (sequelize, DataTypes) => {
             allowNull: false,
         },
         content: {
-            type: DataTypes.TEXT,
+            type: DataTypes.TEXT('long'),
             allowNull: false
         },
         view: {
