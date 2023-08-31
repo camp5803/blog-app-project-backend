@@ -3,7 +3,7 @@ const { User, Preference, Profile, SocialLogin, sequelize } = db;
 
 export const socialLoginRepository = {
     findBySocialId: async (socialId) => {
-        return await SocialLogin.findOne({ where: { social_id : socialId }});
+        return await SocialLogin.findOne({ where: { external_id : socialId }});
     },
     createSocialUser: async (data) => {
         const transaction = await sequelize.transaction();
