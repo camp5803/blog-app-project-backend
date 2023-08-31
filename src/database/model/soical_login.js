@@ -17,7 +17,7 @@ export const socialLogin = (sequelize, DataTypes) => {
             allowNull: false,
         },
         external_id: {
-            type: DataTypes.INTEGER,
+            type: DataTypes.BIGINT,
             allowNull: false,
         }
     }, {
