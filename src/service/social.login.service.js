@@ -2,6 +2,12 @@ import { socialLoginRepository, userRepository } from '@/repository/index';
 import { createToken } from '@/utils/index'
 import axios from 'axios';
 
+const socialCode = {
+    KAKAO: 1,
+    GITHUB: 2,
+    GOOGLE: 3
+}
+
 const githubOptions = {
     clientID: process.env.GITHUB_ID,
     clientSecret: process.env.GITHUB_SECRET,
@@ -38,7 +44,12 @@ export const socialLoginService = {
             if (user) {
                 return await createToken(user.user_id);
             }
-            // 요기에 createUser 해줘야댐
+            return await socialLoginRepository.createSocialUser({
+                email: kakaoUser.kakao_account.email,
+                type: socialCode.KAKAO,
+                id: kakaoUser.id,
+                image_url: kakaoUser.kakao_account.profile.profile_image_url
+            });
         } catch (error) {
             return { error };
         }
