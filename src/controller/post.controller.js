@@ -4,13 +4,12 @@ import { StatusCodes } from 'http-status-codes';
 
 export const createPost = asyncWrapper(async (req, res) => {
         try {
-            const { user_id, title, content, categories, img} = req.body;
+            const { user_id, title, content, categories, img } = req.body;
             const postsInput = {
                 user_id: user_id,
                 title: title,
                 content: content,
                 categories: categories,
-                img: img,
             }
             console.log(postsInput);
 
@@ -91,8 +90,10 @@ export const getPostsByPage = asyncWrapper( async (req, res) => {
 
             if (sort === 'views') {
                 order = [['view', 'DESC']]; // 조회수 순으로 정렬
-            } else {
+            } else if (sort === 'created_at'){
                 order = [['created_at', 'DESC']]; // 최신순으로 정렬
+            } else {
+                order = [['neighbor', 'DESC']] // 이웃의 최신글 순으로 정렬 
             }
  
         const result = await postService.getPostsByPage(page, pageSize, order);
