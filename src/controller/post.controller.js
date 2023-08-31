@@ -10,6 +10,7 @@ export const createPost = asyncWrapper(async (req, res) => {
                 title: title,
                 content: content,
                 categories: categories,
+                img: img
             }
             console.log(postsInput);
 
