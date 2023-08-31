@@ -55,7 +55,7 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
 
     if (type === "kakao") {
         const kakaoUser = await socialLoginService.kakaoLoginService(req.query.code);
-        if (kakaoUser.error) {
+        if (kakaoUser.hasOwnProperty("error")) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 error
             });
