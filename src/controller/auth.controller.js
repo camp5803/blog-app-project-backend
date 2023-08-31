@@ -66,9 +66,20 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
             });
         }
         return res.status(StatusCodes.OK).end();
-    } else if (type === "google") {
-        //await socialLoginService.googleLoginService(req.query.access_token);
-    } else {
+    } else if (type === "github") {
+        const githubUser = await socialLoginService.githubLoginService(req.query.code);
+        if (githubUser.hasOwnProperty("error")) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                error
+            });
+        }
+        if (githubUser.email == null) {
+            return res.status(StatusCodes.CREATED).json({
+                message: "[Alert] Email information needs to be updated"
+            });
+        }
+        return res.status(StatusCodes.OK).end();
+    } else if (type === "google"){
         //await social
     }
 

@@ -72,7 +72,12 @@ export const socialLoginService = {
             if (user) {
                 return await createToken(user.user_id);
             }
-            // 요기에 createUser 해줘야댐
+            return await socialLoginRepository.createSocialUser({
+                email: githubUser.email || null,
+                type: socialCode.GITHUB,
+                id: githubUser.id,
+                image_url: githubUser.avatar_url
+            });
         } catch (error) {
             return { error };
         }
