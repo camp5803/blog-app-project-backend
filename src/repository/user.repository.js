@@ -11,26 +11,18 @@ export const userRepository = {
     findByEmail: async (email) => {
         return await User.findOne({ where: { email }});
     },
-    createUser: async (data, socialData = { type: "local" }) => {
+    createUser: async (data) => { // 유저 데이터 그대로 믿으면 안됨
         try {
             return await sequelize.transaction(async (transaction) => {
                 const user = await User.create({
                     email: data.email,
-                    login_type: socialData.type
+                    login_type: "local"
                 }, { transaction });
 
-                if (socialData.type != "local") {
-                    await socialLogin.create({
-                        user_id: user.user.id,
-                        social_code: socialData.type,
-                        external_id: socialData.id
-                    }, { transaction });
-                } else {
-                    await Password.create({
-                        user_id: user.user_id,
-                        password: createPassword(data.password)
-                    }, { transaction });
-                }
+                await Password.create({
+                    user_id: user.user_id,
+                    password: createPassword(data.password)
+                }, { transaction });
 
                 await Preference.create({
                     user_id: user.user_id
