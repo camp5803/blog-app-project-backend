@@ -39,16 +39,16 @@ export const socialLoginService = {
                 headers: {
                     'Authorization': `Bearer ${token.data.access_token}`
                 }
-            });            
-            const user = socialLoginRepository.findBySocialId(kakaoUser.id);
+            });          
+            const user = await socialLoginRepository.findBySocialId(kakaoUser.data.id);
             if (user) {
                 return await createToken(user.user_id);
             }
             return await socialLoginRepository.createSocialUser({
-                email: kakaoUser.kakao_account.email,
+                email: kakaoUser.data.kakao_account.email || null,
                 type: socialCode.KAKAO,
-                id: kakaoUser.id,
-                image_url: kakaoUser.kakao_account.profile.profile_image_url
+                id: kakaoUser.data.id,
+                image_url: kakaoUser.data.kakao_account.profile.profile_image_url
             });
         } catch (error) {
             return { error };
@@ -72,7 +72,12 @@ export const socialLoginService = {
             if (user) {
                 return await createToken(user.user_id);
             }
-            // 요기에 createUser 해줘야댐
+            return await socialLoginRepository.createSocialUser({
+                email: githubUser.email || null,
+                type: socialCode.GITHUB,
+                id: githubUser.id,
+                image_url: githubUser.avatar_url
+            });
         } catch (error) {
             return { error };
         }
