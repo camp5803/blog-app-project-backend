@@ -40,19 +40,20 @@ export const socialLoginService = {
                     'Authorization': `Bearer ${token.data.access_token}`
                 }
             });
-            if (kakaoUser) {
+            if (!kakaoUser) {
                 return { error: "" }
             }
             const user = await socialLoginRepository.findBySocialId(kakaoUser.data.id);
-            if (user) {
-                return await createToken(user.user_id);
+            if (!user) {
+                const newUser = await socialLoginRepository.createSocialUser({
+                    email: kakaoUser.data.kakao_account.email || null,
+                    type: socialCode.KAKAO,
+                    id: kakaoUser.data.id,
+                    image_url: kakaoUser.data.kakao_account.profile.profile_image_url
+                });
+                return await createToken(newUser.user_id);
             }
-            return await socialLoginRepository.createSocialUser({
-                email: kakaoUser.data.kakao_account.email || null,
-                type: socialCode.KAKAO,
-                id: kakaoUser.data.id,
-                image_url: kakaoUser.data.kakao_account.profile.profile_image_url
-            });
+            return await createToken(user.user_id);
         } catch (error) {
             return { error };
         }
@@ -70,22 +71,23 @@ export const socialLoginService = {
             const tokenData = new URLSearchParams(token.data);
             const githubUser = await axios.get('https://api.github.com/user', {
                 headers: {
-                    'Authorization': `Bearer ${tokenData.access_token}`
+                    'Authorization': `Bearer ${tokenData.get('access_token')}`
                 }
             });
             if (!githubUser) {
                 return { error: "" }
             }
             const user = await socialLoginRepository.findBySocialId(githubUser.id);
-            if (user) {
-                return await createToken(user.user_id);
+            if (!user) {
+                const newUser = await socialLoginRepository.createSocialUser({
+                    email: githubUser.data.email || null,
+                    type: socialCode.GITHUB,
+                    id: githubUser.data.id,
+                    image_url: githubUser.data.avatar_url
+                });
+                return await createToken(newUser.user_id);
             }
-            return await socialLoginRepository.createSocialUser({
-                email: githubUser.email || null,
-                type: socialCode.GITHUB,
-                id: githubUser.id,
-                image_url: githubUser.avatar_url
-            });
+            return await createToken(user.user_id);
         } catch (error) {
             return { error };
         }
