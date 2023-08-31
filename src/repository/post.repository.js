@@ -12,11 +12,8 @@ export const createPost = async (postData) => {
                 title,
                 content,
                 categories,
+                thumbnail: img[0]
             });
-    
-            console.log('img', img);
-            console.log('dbPost _ post_id', post.post_id);
-    
 
             if (categories && categories.length > 0) {
                 for (const categoryName of categories) {
@@ -29,10 +26,16 @@ export const createPost = async (postData) => {
                 }
             }
 
-            const image = await Image.create({
-                post_id: post.post_id,
-                image: img,
-            });
+            if(img && img.length > 0) {
+                for (const imageTag of img) {
+                    const image = await Image.create({
+                        post_id: post.post_id,
+                        image: imageTag,
+                    });
+                    await post.addImage(image);
+                }
+            }
+           
             const dbCategories = await post.getCategories();
             const dbPost = await Post.findOne({ where: {post_id: post.post_id} });
 
@@ -169,3 +172,11 @@ export const getPostsByPage = async (page, pageSize, order) => {
         throw new Error('Error get post in repository');
     }
 }; 
+
+export const utilExtractImages = (content) => {
+    const regex = /data:image\/[a-zA-Z+.-]+;base64,[a-zA-Z0-9+/=]+/g;
+    const matches = content.match(regex) || [];
+    const result = matches.map((match) => `<img src="${match}">`);
+    return result;
+};
+  

@@ -38,6 +38,10 @@ export const post = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
+        },
+        thumbnail: {
+            type: DataTypes.TEXT('long'),
+            allowNull: true
         }
     }, {
         tableName: 'post',
