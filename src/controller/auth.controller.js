@@ -54,19 +54,52 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
     const type = req.params.type; // 여기서 토큰발급해야함 ㅁㄴㅇㄹ
 
     if (type === "kakao") {
-        //await socialLoginService.kakaoLoginService(req.query.code);
-    } else if (type === "google") {
-        //await socialLoginService.googleLoginService(req.query.access_token);
-    } else {
-        //await social
+        const kakaoUser = await socialLoginService.kakaoLoginService(req.query.code);
+        if (kakaoUser.hasOwnProperty("error")) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                error
+            });
+        }
+        if (kakaoUser.email == null) {
+            return res.status(StatusCodes.CREATED).json({
+                accessToken: kakaoUser.accessToken,
+                refreshToken: kakaoUser.refreshToken,
+                message: "[Alert] Email information needs to be updated"
+            });
+        }
+        return res.status(StatusCodes.OK).json(kakaoUser);
+    } else if (type === "github") {
+        const githubUser = await socialLoginService.githubLoginService(req.query.code);
+        if (githubUser.hasOwnProperty("error")) {
+            return res.status(StatusCodes.BAD_REQUEST).json({
+                error
+            });
+        }
+        if (githubUser.email == null) {
+            return res.status(StatusCodes.CREATED).json({
+                accessToken: githubUser.accessToken,
+                refreshToken: githubUser.refreshToken,
+                message: "[Alert] Email information needs to be updated"
+            });
+        }
+        return res.status(StatusCodes.OK).json({
+            accessToken: githubUser.accessToken,
+            refreshToken: githubUser.refreshToken,
+        });
+    } else if (type === "google"){
+        const googleUser = await socialLoginService.googleLoginService(req.query.code);
     }
+
+    return res.status(StatusCodes.BAD_REQUEST).json({
+        message: "Invalid callback url."
+    });
 });
 
 export const redirectOAuth = asyncWrapper(async (req, res) => {
     const redirectURL = `http://${process.env.SERVER_URL}:${process.env.PORT || 8280}/api/auth/callback/${req.params.type}`;
     const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.KAKAO_ID}&redirect_uri=${redirectURL}&response_type=code&scope=profile_nickname,account_email`;
     const githubAuthURL = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_ID}&redirect_uri=${redirectURL}`;
-    const googleAuthURL = `https://accounts.google.com/o/oauth2/auth?client_id=${process.env.GOOGLE_ID}&redirect_uri=${redirectURL}&response_type=token&scope=https://www.googleapis.com/auth/userinfo.profile`;
+    const googleAuthURL = `https://accounts.google.com/o/oauth2/auth?client_id=${process.env.GOOGLE_ID}&redirect_uri=${redirectURL}&response_type=code&scope=https://www.googleapis.com/auth/userinfo.profile`;
 
     const authorizeURL = req.params.type === "kakao" ? kakaoAuthURL : (req.params.type === "github" ? githubAuthURL : googleAuthURL);
     res.redirect(authorizeURL);

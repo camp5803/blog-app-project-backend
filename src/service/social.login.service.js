@@ -2,6 +2,12 @@ import { socialLoginRepository, userRepository } from '@/repository/index';
 import { createToken } from '@/utils/index'
 import axios from 'axios';
 
+const socialCode = {
+    KAKAO: 1,
+    GITHUB: 2,
+    GOOGLE: 3
+}
+
 const githubOptions = {
     clientID: process.env.GITHUB_ID,
     clientSecret: process.env.GITHUB_SECRET,
@@ -33,12 +39,21 @@ export const socialLoginService = {
                 headers: {
                     'Authorization': `Bearer ${token.data.access_token}`
                 }
-            });            
-            const user = socialLoginRepository.findBySocialId(kakaoUser.id);
-            if (user) {
-                return await createToken(user.user_id);
+            });
+            if (!kakaoUser) {
+                return { error: "" }
             }
-            // 요기에 createUser 해줘야댐
+            const user = await socialLoginRepository.findBySocialId(kakaoUser.data.id);
+            if (!user) {
+                const newUser = await socialLoginRepository.createSocialUser({
+                    email: kakaoUser.data.kakao_account.email || null,
+                    type: socialCode.KAKAO,
+                    id: kakaoUser.data.id,
+                    image_url: kakaoUser.data.kakao_account.profile.profile_image_url
+                });
+                return await createToken(newUser.user_id);
+            }
+            return await createToken(user.user_id);
         } catch (error) {
             return { error };
         }
@@ -49,31 +64,51 @@ export const socialLoginService = {
                 params: {
                     code,
                     client_id: githubOptions.clientID,
+                    client_secret: githubOptions.clientSecret,
                     redirect_url: githubOptions.callbackURL,
                 }
             });
+            const tokenData = new URLSearchParams(token.data);
             const githubUser = await axios.get('https://api.github.com/user', {
                 headers: {
-                    'Authorization': `Bearer ${token.data.access_token}`
+                    'Authorization': `Bearer ${tokenData.get('access_token')}`
                 }
             });
-            const user = socialLoginRepository.findBySocialId(githubUser.id);
-            if (user) {
-                return await createToken(user.user_id);
+            if (!githubUser) {
+                return { error: "" }
             }
-            // 요기에 createUser 해줘야댐
+            const user = await socialLoginRepository.findBySocialId(githubUser.data.id);
+            if (!user) {
+                const newUser = await socialLoginRepository.createSocialUser({
+                    email: githubUser.data.email || null,
+                    type: socialCode.GITHUB,
+                    id: githubUser.data.id,
+                    image_url: githubUser.data.avatar_url
+                });
+                return await createToken(newUser.user_id);
+            }
+            return await createToken(user.user_id);
         } catch (error) {
             return { error };
         }
     },
-    googleLoginService: async (token) => {
+    googleLoginService: async (code) => {
         try {
-            const googleUser = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
+            const token = await axios.post('https://oauth2.googleapis.com/token', null, {
+                params: {
+                    code,
+                    client_id: googleOptions.clientID,
+                    client_secret: googleOptions.clientSecret,
+                    redirect_url: googleOptions.callbackURL,
+                    grant_type: 'authorization_code'
+                }
+            });
+            const googleUser = await axios.get('https://www.googleapis.com/userinfo/v2/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
             });            
-            const user = socialLoginRepository.findBySocialId(googleUser.id);
+            const user = await socialLoginRepository.findBySocialId(googleUser.id);
             if (user) {
                 return await createToken(user.user_id);
             }
