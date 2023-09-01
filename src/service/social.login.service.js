@@ -77,7 +77,7 @@ export const socialLoginService = {
             if (!githubUser) {
                 return { error: "" }
             }
-            const user = await socialLoginRepository.findBySocialId(githubUser.id);
+            const user = await socialLoginRepository.findBySocialId(githubUser.data.id);
             if (!user) {
                 const newUser = await socialLoginRepository.createSocialUser({
                     email: githubUser.data.email || null,
@@ -92,9 +92,18 @@ export const socialLoginService = {
             return { error };
         }
     },
-    googleLoginService: async (token) => {
+    googleLoginService: async (code) => {
         try {
-            const googleUser = await axios.get('https://www.googleapis.com/oauth2/v2/userinfo', {
+            const token = await axios.post('https://oauth2.googleapis.com/token', null, {
+                params: {
+                    code,
+                    client_id: googleOptions.clientID,
+                    client_secret: googleOptions.clientSecret,
+                    redirect_url: googleOptions.callbackURL,
+                    grant_type: 'authorization_code'
+                }
+            });
+            const googleUser = await axios.get('https://www.googleapis.com/userinfo/v2/me', {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
