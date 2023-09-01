@@ -99,7 +99,7 @@ export const redirectOAuth = asyncWrapper(async (req, res) => {
     const redirectURL = `http://${process.env.SERVER_URL}:${process.env.PORT || 8280}/api/auth/callback/${req.params.type}`;
     const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.KAKAO_ID}&redirect_uri=${redirectURL}&response_type=code&scope=profile_nickname,account_email`;
     const githubAuthURL = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_ID}&redirect_uri=${redirectURL}`;
-    const googleAuthURL = `https://accounts.google.com/o/oauth2/auth?client_id=${process.env.GOOGLE_ID}&redirect_uri=${redirectURL}&response_type=code&scope=https://www.googleapis.com/auth/userinfo.profile`;
+    const googleAuthURL = `https://accounts.google.com/o/oauth2/auth?client_id=${process.env.GOOGLE_ID}&redirect_uri=${redirectURL}&response_type=code&scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email`;
 
     const authorizeURL = req.params.type === "kakao" ? kakaoAuthURL : (req.params.type === "github" ? githubAuthURL : googleAuthURL);
     res.redirect(authorizeURL);

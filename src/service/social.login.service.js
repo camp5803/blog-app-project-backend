@@ -99,20 +99,26 @@ export const socialLoginService = {
                     code,
                     client_id: googleOptions.clientID,
                     client_secret: googleOptions.clientSecret,
-                    redirect_url: googleOptions.callbackURL,
+                    redirect_uri: googleOptions.callbackURL,
                     grant_type: 'authorization_code'
                 }
             });
             const googleUser = await axios.get('https://www.googleapis.com/userinfo/v2/me', {
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token.data.access_token}`
                 }
             });            
             const user = await socialLoginRepository.findBySocialId(googleUser.id);
-            if (user) {
-                return await createToken(user.user_id);
+            if (!user) {
+                const newUser = await socialLoginRepository.createSocialUser({
+                    email: googleUser.data.email || null,
+                    type: socialCode.GOOGLE,
+                    id: googleUser.data.id,
+                    image_url: googleUser.data.picture
+                });
+                return await createToken(newUser.user_id);
             }
-            // 요기에 createUser 해줘야댐
+            return await createToken(user.user_id);
         } catch (error) {
             return { error };
         }
