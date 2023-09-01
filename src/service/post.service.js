@@ -1,4 +1,4 @@
-import { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage } from '@/repository/index';
+import { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage, addBookmark } from '@/repository/index';
 
 export const postService = {
     createPost: async (postData) => {
@@ -52,4 +52,15 @@ export const postService = {
             throw new Error('Error get listbyPage post');
         }
     }, 
+
+    addBookmark: async (user_id, post_id) => {
+        try {
+            console.log(user_id, post_id)
+            const post = await addBookmark(user_id, post_id);
+            return post;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error get listbyPage post');
+        }
+    },
 }

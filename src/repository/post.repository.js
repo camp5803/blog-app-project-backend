@@ -1,6 +1,6 @@
 import db from '../database/index.js';
 import { sequelize } from 'sequelize';
-const { Post, Image, Category, User, Profile, Neighbor } = db;
+const { Post, Image, Category, Profile, Neighbor, Bookmark } = db;
 
 export const createPost = async (postData) => {
         try {
@@ -212,4 +212,15 @@ export const getPostsByPage = async (page, pageSize, order, id, sort) => {
         throw new Error('Error get post in repository');
     }
 }; 
+
+export const addBookmark = async (user_id, post_id) => {
+    try {
+        const bookamark = await Bookmark.create({user_id: user_id, post_id: post_id});
+        console.log(bookamark);
+        return bookamark;
+    } catch (error) {
+        console.log(error); 
+        throw new Error('Error get post in repository');
+    }
+}
   

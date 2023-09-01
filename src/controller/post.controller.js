@@ -107,3 +107,17 @@ export const getPostsByPage = asyncWrapper( async (req, res) => {
         res.status(500).json(error);
     }
 })
+
+export const addBookmark = asyncWrapper ( async (req, res) => {
+    try {
+        const {user_id, post_id} = req.body;
+        console.log(user_id, post_id)
+
+        const post = await postService.addBookmark(user_id, post_id);
+
+        res.status(201).json({ message: 'bookmark add success' });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error);
+    }
+})
