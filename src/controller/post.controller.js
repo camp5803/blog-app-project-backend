@@ -121,3 +121,18 @@ export const addBookmark = asyncWrapper ( async (req, res) => {
         res.status(500).json(error);
     }
 })
+
+export const removeBookmark = asyncWrapper (async (req, res) => {
+    try {
+        const post_id = req.params.id;
+        console.log(post_id);
+        const post = await postService.removeBookmark(post_id);
+        if(post === 0) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        res.status(201).json({ message: 'bookmark remove success' });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error);
+    }
+})

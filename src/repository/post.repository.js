@@ -215,9 +215,24 @@ export const getPostsByPage = async (page, pageSize, order, id, sort) => {
 
 export const addBookmark = async (user_id, post_id) => {
     try {
-        const bookamark = await Bookmark.create({user_id: user_id, post_id: post_id});
-        console.log(bookamark);
-        return bookamark;
+        const bookmark = await Bookmark.create({user_id: user_id, post_id: post_id});
+        console.log(bookmark);
+        return bookmark;
+    } catch (error) {
+        console.log(error); 
+        throw new Error('Error get post in repository');
+    }
+}
+
+export const removeBookmark = async (post_id) => {
+    try {
+        const bookmark = await Bookmark.destroy({where: {post_id: post_id}})
+        console.log(bookmark)
+          // 게시물이 없는 경우
+          if (bookmark === 0) {
+            return 0;
+        }
+        return bookmark;
     } catch (error) {
         console.log(error); 
         throw new Error('Error get post in repository');
