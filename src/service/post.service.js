@@ -42,10 +42,10 @@ export const postService = {
         }
     },
 
-    getPostsByPage: async (page, pageSize, order) => {
+    getPostsByPage: async (page, pageSize, order, id, sort) => {
         try {
             console.log('service, order', order);
-            const post = await getPostsByPage(page, pageSize, order); 
+            const post = await getPostsByPage(page, pageSize, order, id, sort); 
             return post;
         } catch (error) {
             console.log(error);

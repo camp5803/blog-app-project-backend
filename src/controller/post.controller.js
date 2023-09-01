@@ -40,7 +40,7 @@ export const updatePost = asyncWrapper(async (req, res) => {
             return res.status(404).json({ message: 'Post not found' });
         }
 
-        res.status(201).json({ message: 'update success' });
+        res.status(201).json({ id: post.post_id, message: 'update success' });
     } catch (error) {  
         res.status(500).json(error);
     }
@@ -84,7 +84,7 @@ export const getPostsByPage = asyncWrapper( async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1; // 기본 페이지 1
         const pageSize = 10;
-        const { sort } = req.params; 
+        const { sort, id } = req.params; 
         console.log('req.params',sort)
         console.log('page: ', page, ' pageSize: ',pageSize)
         let order = [];
@@ -93,11 +93,9 @@ export const getPostsByPage = asyncWrapper( async (req, res) => {
                 order = [['view', 'DESC']]; // 조회수 순으로 정렬
             } else if (sort === 'created_at'){
                 order = [['created_at', 'DESC']]; // 최신순으로 정렬
-            } else {
-                order = [['neighbor', 'DESC']] // 이웃의 최신글 순으로 정렬 
-            }
+            } 
  
-        const result = await postService.getPostsByPage(page, pageSize, order);
+        const result = await postService.getPostsByPage(page, pageSize, order, id, sort);
 
             console.log(result.hasMore)
             res.status(201).json({   

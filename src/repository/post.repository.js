@@ -1,6 +1,6 @@
 import db from '../database/index.js';
-import { Op } from 'sequelize';
-const { Post, Image, Category, User, Profile } = db;
+import { sequelize } from 'sequelize';
+const { Post, Image, Category, User, Profile, Neighbor } = db;
 
 export const createPost = async (postData) => {
         try {
@@ -66,8 +66,20 @@ export const updatePost = async (postData) => {
         if (post === 0) {
             return 0;
         }
-
-        const image = await Image.update({image: img}, { where: {post_id: post_id } });
+        if (img && img.length > 0) {
+            for (let i = 0; i < img.length; i++) {
+                // 이미지 업데이트
+                await Image.update({ image: img[i] }, { where: { post_id: post_id } });
+        
+                // 이미지가 있을 때만 연결
+                if (post && post.addImage) {
+                    const image = await Image.findOne({ where: { post_id: post_id } });
+                    if (image) {
+                        await post.addImage(image);
+                    }
+                }
+            }
+        }
 
         const updatedPost = await Post.findOne({ where: { post_id } });
         const updatedImage = await Image.findOne({ where: { post_id } });
@@ -104,12 +116,7 @@ export const getByPostDetail = async (postId) => {
         const userProfile = await Profile.findOne({where: {user_id: post.user_id}})
 
         const categories = await post.getCategories();
-
-        let image = null;
-        const imageResult = await Image.findOne({ where: { post_id: postId } });
-        if (imageResult) {
-            image = imageResult.image;
-        }
+        const images = await post.getImages();
 
         const resData = {
             post_id: post.post_id,
@@ -120,7 +127,7 @@ export const getByPostDetail = async (postId) => {
             like: post.like,
             categories: categories.map((category) => category.category),
             createdDt: post.created_at,
-            image: image
+            image: images.map((image) => image.image)
         };
         console.log(resData)
         return resData;
@@ -130,22 +137,50 @@ export const getByPostDetail = async (postId) => {
     }
 }
 
-export const getPostsByPage = async (page, pageSize, order) => {
+export const getPostsByPage = async (page, pageSize, order, id, sort) => {
     try {
         console.log('order', order);
         const offset = (page - 1) * pageSize;
         const whereClause = {}; // whereClause를 정의
         const limit = pageSize;
 
-        const posts = await Post.findAndCountAll({ 
+        const neighbor = await Neighbor.findOne({where: {user_id: id}});
+        console.log(neighbor);
+        let posts;
+
+        if (sort === 'neighbor') {
+          // 이웃 글 목록을 가져옴
+          const neighbor = await Neighbor.findOne({ where: { user_id: id } });
+          posts = await Post.findAndCountAll({
+            where: { user_id: neighbor.follows_to },
+            offset,
+            limit,
+            include: [
+              {
+                model: Category,
+                as: 'categories',
+                attributes: ['category'],
+              },
+            ],
+            order: [['created_at', 'DESC']],
+          });
+        } else {
+          // 그 외의 경우 전체 글 목록을 가져옴
+          posts = await Post.findAndCountAll({
             where: whereClause,
             offset,
             limit,
             include: [
-                { model: Category, as: 'categories', attributes: ['category'] },
+              {
+                model: Category,
+                as: 'categories',
+                attributes: ['category'],
+              },
             ],
-            order: order
-        });
+            order: order,
+          });
+        }
+      
          // 각 포스트마다 사용자 정보 추가
          for (const post of posts.rows) {
             const userProfile = await Profile.findOne({ where: { user_id: post.user_id } });
@@ -156,9 +191,11 @@ export const getPostsByPage = async (page, pageSize, order) => {
         const rowLength = posts.rows.length;
 
         const hasMore = rowLength === pageSize;
+
         return {
             posts: posts.rows.map((post) => ({
                 post_id: post.post_id,
+                thumbnail: post.thumbnail,
                 title: post.title,
                 content: post.content,
                 nickname: post.dataValues.nickname,
@@ -175,11 +212,4 @@ export const getPostsByPage = async (page, pageSize, order) => {
         throw new Error('Error get post in repository');
     }
 }; 
-
-export const utilExtractImages = (content) => {
-    const regex = /data:image\/[a-zA-Z+.-]+;base64,[a-zA-Z0-9+/=]+/g;
-    const matches = content.match(regex) || [];
-    const result = matches.map((match) => `<img src="${match}">`);
-    return result;
-};
   
