@@ -6,6 +6,8 @@ export const createPost = async (postData) => {
         try {
             const { user_id, title, content, categories, img } = postData;
             console.log('repository', postData);
+
+            console.log(img)
     
             const post = await Post.create({
                 user_id,
@@ -27,10 +29,10 @@ export const createPost = async (postData) => {
             }
 
             if(img && img.length > 0) {
-                for (const imageTag of img) {
+                for (let i = 0; i < img.length; i++) {
                     const image = await Image.create({
                         post_id: post.post_id,
-                        image: imageTag,
+                        image: img[i], // 이미지 배열의 순서대로 저장
                     });
                     await post.addImage(image);
                 }

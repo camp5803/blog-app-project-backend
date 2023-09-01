@@ -20,11 +20,6 @@ export const image = (sequelize, DataTypes) => {
             type: DataTypes.STRING(45),
             allowNull: true,
         },
-        thumbnail: {
-            type: DataTypes.TEXT('long'),
-            allowNull: true
-        }
-
     }, {
         tableName: 'image',
         // sequelize,
