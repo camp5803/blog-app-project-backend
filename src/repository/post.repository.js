@@ -1,5 +1,7 @@
 import db from '../database/index.js';
 import { sequelize } from 'sequelize';
+import { bookmark } from '@/database/model/bookmark.js';
+import { post } from '@/database/model/post.js';
 const { Post, Image, Category, Profile, Neighbor, Bookmark } = db;
 
 export const createPost = async (postData) => {
@@ -127,7 +129,7 @@ export const getByPostDetail = async (postId) => {
             like: post.like,
             categories: categories.map((category) => category.category),
             createdDt: post.created_at,
-            image: images.map((image) => image.image)
+            img: images.map((image) => image.image)
         };
         console.log(resData)
         return resData;
@@ -184,12 +186,12 @@ export const getPostsByPage = async (page, pageSize, order, id, sort) => {
          // 각 포스트마다 사용자 정보 추가
          for (const post of posts.rows) {
             const userProfile = await Profile.findOne({ where: { user_id: post.user_id } });
-           
             post.dataValues.nickname = userProfile.nickname;
-        } 
- 
-        const rowLength = posts.rows.length;
 
+            const bookmark = await Bookmark.findOne({ where: { post_id: post.post_id } });
+            post.dataValues.bookmarked = !!bookmark;
+        } 
+        const rowLength = posts.rows.length;
         const hasMore = rowLength === pageSize;
 
         return {
@@ -201,6 +203,7 @@ export const getPostsByPage = async (page, pageSize, order, id, sort) => {
                 nickname: post.dataValues.nickname,
                 created_at: post.created_at, // 생성일 컬럼명 수정
                 categories: post.categories.map((category) => category.category),
+                bookmarked: post.dataValues.bookmarked, 
                 view: post.view,
                 like: post.like,
             })),
