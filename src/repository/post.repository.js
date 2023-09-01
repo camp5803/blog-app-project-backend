@@ -43,6 +43,7 @@ export const createPost = async (postData) => {
 
             console.log('dbCategories::', dbCategories);
             console.log('dbPost::', dbPost);
+            return post.post_id;
         } catch (error) {
             console.log(error)
             throw new Error('Error creating post in repository');

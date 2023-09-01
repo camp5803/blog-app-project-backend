@@ -16,7 +16,7 @@ export const createPost = asyncWrapper(async (req, res) => {
 
             const post = await postService.createPost(postsInput);
 
-            res.status(201).json({ message: 'create success' });
+            res.status(201).json({ id: post, message: 'create success' });
         } catch (error) {
             res.status(500).json(error);
         }

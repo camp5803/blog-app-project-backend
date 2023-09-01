@@ -5,6 +5,7 @@ export const postService = {
         try {
             console.log('service, postData::', postData);
             const post = await createPost(postData);
+            return post;
         } catch (error) {
             throw new Error('Error creating post');
         }
