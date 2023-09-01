@@ -7,10 +7,10 @@ export const neighbor = (sequelize, DataTypes) => {
             primaryKey: true,
             allowNull: false,
         },
-        // follows_to: {
-        //     type: DataTypes.INTEGER,
-        //     allowNull: false
-        // },
+        follows_to: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
     }, {
         tableName: 'neighbor',
         // sequelize,

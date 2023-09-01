@@ -16,7 +16,7 @@ export const createPost = asyncWrapper(async (req, res) => {
 
             const post = await postService.createPost(postsInput);
 
-            res.status(201).json({ message: 'create success' });
+            res.status(201).json({ id: post, message: 'create success' });
         } catch (error) {
             res.status(500).json(error);
         }
@@ -40,7 +40,7 @@ export const updatePost = asyncWrapper(async (req, res) => {
             return res.status(404).json({ message: 'Post not found' });
         }
 
-        res.status(201).json({ message: 'update success' });
+        res.status(201).json({ id: post.post_id, message: 'update success' });
     } catch (error) {  
         res.status(500).json(error);
     }
@@ -84,7 +84,7 @@ export const getPostsByPage = asyncWrapper( async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1; // 기본 페이지 1
         const pageSize = 10;
-        const { sort } = req.params; 
+        const { sort, id } = req.params; 
         console.log('req.params',sort)
         console.log('page: ', page, ' pageSize: ',pageSize)
         let order = [];
@@ -93,17 +93,44 @@ export const getPostsByPage = asyncWrapper( async (req, res) => {
                 order = [['view', 'DESC']]; // 조회수 순으로 정렬
             } else if (sort === 'created_at'){
                 order = [['created_at', 'DESC']]; // 최신순으로 정렬
-            } else {
-                order = [['neighbor', 'DESC']] // 이웃의 최신글 순으로 정렬 
-            }
+            } 
  
-        const result = await postService.getPostsByPage(page, pageSize, order);
+        const result = await postService.getPostsByPage(page, pageSize, order, id, sort);
 
             console.log(result.hasMore)
             res.status(201).json({   
                 hasMore: result.hasMore, // 다음 페이지 여부, false면 더이상 데이터 X
                 posts: result.posts,
             })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error);
+    }
+})
+
+export const addBookmark = asyncWrapper ( async (req, res) => {
+    try {
+        const {user_id, post_id} = req.body;
+        console.log(user_id, post_id)
+
+        const post = await postService.addBookmark(user_id, post_id);
+
+        res.status(201).json({ message: 'bookmark add success' });
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error);
+    }
+})
+
+export const removeBookmark = asyncWrapper (async (req, res) => {
+    try {
+        const post_id = req.params.id;
+        console.log(post_id);
+        const post = await postService.removeBookmark(post_id);
+        if(post === 0) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+        res.status(201).json({ message: 'bookmark remove success' });
     } catch (error) {
         console.log(error)
         res.status(500).json(error);

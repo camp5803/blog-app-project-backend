@@ -7,10 +7,10 @@ export const bookmark = (sequelize, DataTypes) => {
             primaryKey: true,
             allowNull: false,
         },
-        // post_id: {
-        //     type: DataTypes.INTEGER,
-        //     allowNull: false
-        // },
+        post_id: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
     }, {
         tableName: 'bookmark',
         // sequelize,

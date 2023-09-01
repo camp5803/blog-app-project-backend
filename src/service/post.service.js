@@ -1,10 +1,11 @@
-import { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage } from '@/repository/index';
+import { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage, addBookmark, removeBookmark } from '@/repository/index';
 
 export const postService = {
     createPost: async (postData) => {
         try {
             console.log('service, postData::', postData);
             const post = await createPost(postData);
+            return post;
         } catch (error) {
             throw new Error('Error creating post');
         }
@@ -41,14 +42,36 @@ export const postService = {
         }
     },
 
-    getPostsByPage: async (page, pageSize, order) => {
+    getPostsByPage: async (page, pageSize, order, id, sort) => {
         try {
             console.log('service, order', order);
-            const post = await getPostsByPage(page, pageSize, order); 
+            const post = await getPostsByPage(page, pageSize, order, id, sort); 
             return post;
         } catch (error) {
             console.log(error);
             throw new Error('Error get listbyPage post');
         }
     }, 
+
+    addBookmark: async (user_id, post_id) => {
+        try {
+            console.log(user_id, post_id)
+            const post = await addBookmark(user_id, post_id);
+            return post;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error add bookmark post');
+        }
+    },
+
+    removeBookmark: async (post_id) => {
+        try {
+            console.log(post_id)
+            const post = await removeBookmark(post_id);
+            return post;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error remove bookmark post');
+        }
+    }
 }
