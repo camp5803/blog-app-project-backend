@@ -88,6 +88,10 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
         });
     } else if (type === "google"){
         const googleUser = await socialLoginService.googleLoginService(req.query.code);
+        return res.status(StatusCodes.CREATED).json({
+            accessToken: googleUser.accessToken,
+            refreshToken: googleUser.refreshToken
+        });
     }
 
     return res.status(StatusCodes.BAD_REQUEST).json({
