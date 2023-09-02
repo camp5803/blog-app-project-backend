@@ -1,4 +1,4 @@
-import { socialLoginRepository, userRepository } from '@/repository/index';
+import { socialLoginRepository } from '@/repository';
 import { createToken } from '@/utils/index'
 import axios from 'axios';
 
@@ -11,17 +11,17 @@ const socialCode = {
 const githubOptions = {
     clientID: process.env.GITHUB_ID,
     clientSecret: process.env.GITHUB_SECRET,
-    callbackURL: `http://${process.env.SERVER_URL}:${process.env.PORT || 8280}/api/auth/callback/github`
+    callbackURL: `${process.env.CALLBACK_URL}/github`
 }
 const googleOptions = {
     clientID: process.env.GOOGLE_ID,
     clientSecret: process.env.GOOGLE_SECRET,
-    callbackURL: `http://${process.env.SERVER_URL}:${process.env.PORT || 8280}/api/auth/callback/google`
+    callbackURL: `${process.env.CALLBACK_URL}/google`
 }
 const kakaoOptions = {
     clientID: process.env.KAKAO_ID,
     clientSecret: process.env.KAKAO_SECRET,
-    callbackURL: `http://${process.env.SERVER_URL}:${process.env.PORT || 8280}/api/auth/callback/kakao`
+    callbackURL: `${process.env.CALLBACK_URL}/kakao`
 }
 
 export const socialLoginService = {
@@ -31,6 +31,7 @@ export const socialLoginService = {
                 params: {
                     code,
                     client_id: kakaoOptions.clientID,
+                    client_secret: kakaoOptions.clientSecret,
                     redirect_url: kakaoOptions.callbackURL,
                     grant_type: 'authorization_code'
                 }
@@ -48,6 +49,7 @@ export const socialLoginService = {
                 const newUser = await socialLoginRepository.createSocialUser({
                     email: kakaoUser.data.kakao_account.email || null,
                     code: socialCode.KAKAO,
+                    name: kakaoUser.data.kakao_account.nickname,
                     type: "kakao",
                     id: kakaoUser.data.id,
                     image_url: kakaoUser.data.kakao_account.profile.profile_image_url
@@ -84,6 +86,7 @@ export const socialLoginService = {
                     email: githubUser.data.email || null,
                     code: socialCode.GITHUB,
                     type: "github",
+                    name: githubUser.data.name,
                     id: githubUser.data.id,
                     image_url: githubUser.data.avatar_url
                 });
@@ -96,7 +99,7 @@ export const socialLoginService = {
     },
     googleLoginService: async (code) => {
         try {
-            const token = await axios.post('https://oauth2.googleapis.com/token', null, {
+            const token = await axios.post('https://oauth2.googleapis.com/token', {
                 params: {
                     code,
                     client_id: googleOptions.clientID,
@@ -116,6 +119,7 @@ export const socialLoginService = {
                     email: googleUser.data.email || null,
                     code: socialCode.GOOGLE,
                     type: "google",
+                    name: googleUser.data.name,
                     id: googleUser.data.id,
                     image_url: googleUser.data.picture
                 });
