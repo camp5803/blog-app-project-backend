@@ -1,6 +1,7 @@
 import express from 'express';
-import { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage, toggleBookmark, toggleLike } from '@/controller/index.js';
+import { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage, toggleBookmark, toggleLike } from '@/controller';
 const router = express.Router();
+import { isAuthenticated, isAuthorized } from "@/middleware";
 
 router.route('/post').post(createPost);
 router.route('/post/:id').patch(updatePost);

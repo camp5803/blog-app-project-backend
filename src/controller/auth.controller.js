@@ -1,7 +1,7 @@
 import { asyncWrapper } from '@/common/index';
 import { StatusCodes } from 'http-status-codes';
 import passport from 'passport';
-import { authService, socialLoginService } from '@/service/index';
+import { authService, socialLoginService } from '@/service';
 
 export const createAuth = asyncWrapper(async (req, res) => {
     passport.authenticate('local', { session: false }, (err, user) => {
@@ -28,17 +28,6 @@ export const createAuth = asyncWrapper(async (req, res) => {
     })(req, res);
 });
 
-export const isAuthenticated = (req, res) => {
-    passport.authenticate('jwt', { session: false }, (err, user) => {
-        if (user) {
-            return res.status(StatusCodes.OK).json({ status: "success" });
-        }
-        return res.status(StatusCodes.UNAUTHORIZED).json({
-            message: "[Unauthorized Error] Please log in again"
-        });
-    })(req, res);
-} // 여기서 리프레시해서 발급할지, 프론트에서 요청할지 의논하기
-
 export const createSocialAuth = asyncWrapper(async (req, res) => {
     const type = req.params.type;
     if (['github', 'kakao', 'google'].includes(type)) {
@@ -51,7 +40,7 @@ export const createSocialAuth = asyncWrapper(async (req, res) => {
 });
 
 export const socialCallbackHandler = asyncWrapper(async (req, res) => {
-    const type = req.params.type; // 여기서 토큰발급해야함 ㅁㄴㅇㄹ
+    const type = req.params.type;
 
     if (type === "kakao") {
         const kakaoUser = await socialLoginService.kakaoLoginService(req.query.code);
@@ -88,6 +77,10 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
         });
     } else if (type === "google"){
         const googleUser = await socialLoginService.googleLoginService(req.query.code);
+        return res.status(StatusCodes.CREATED).json({
+            accessToken: googleUser.accessToken,
+            refreshToken: googleUser.refreshToken
+        });
     }
 
     return res.status(StatusCodes.BAD_REQUEST).json({
