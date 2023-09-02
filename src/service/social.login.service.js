@@ -109,7 +109,7 @@ export const socialLoginService = {
                 headers: {
                     'Authorization': `Bearer ${token.data.access_token}`
                 }
-            });            
+            });        
             const user = await socialLoginRepository.findBySocialId(googleUser.data.id);
             if (!user) {
                 const newUser = await socialLoginRepository.createSocialUser({
