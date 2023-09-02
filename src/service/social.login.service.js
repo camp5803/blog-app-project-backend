@@ -47,8 +47,9 @@ export const socialLoginService = {
             if (!user) {
                 const newUser = await socialLoginRepository.createSocialUser({
                     email: kakaoUser.data.kakao_account.email || null,
-                    type: socialCode.KAKAO,
-                    id: typeof(kakaoUser.data.id) === "number" ? kakaoUser.data.id.toString() : kakaoUser.data.id,
+                    code: socialCode.KAKAO,
+                    type: "kakao",
+                    id: kakaoUser.data.id,
                     image_url: kakaoUser.data.kakao_account.profile.profile_image_url
                 });
                 return await createToken(newUser.user_id);
@@ -81,8 +82,9 @@ export const socialLoginService = {
             if (!user) {
                 const newUser = await socialLoginRepository.createSocialUser({
                     email: githubUser.data.email || null,
-                    type: socialCode.GITHUB,
-                    id: typeof(githubUser.data.id) === "number" ? githubUser.data.id.toString() : githubUser.data.id,
+                    code: socialCode.GITHUB,
+                    type: "github",
+                    id: githubUser.data.id,
                     image_url: githubUser.data.avatar_url
                 });
                 return await createToken(newUser.user_id);
@@ -112,8 +114,9 @@ export const socialLoginService = {
             if (!user) {
                 const newUser = await socialLoginRepository.createSocialUser({
                     email: googleUser.data.email || null,
-                    type: socialCode.GOOGLE,
-                    id: typeof(googleUser.data.id) === "number" ? googleUser.data.id.toString() : googleUser.data.id,
+                    code: socialCode.GOOGLE,
+                    type: "google",
+                    id: googleUser.data.id,
                     image_url: googleUser.data.picture
                 });
                 return await createToken(newUser.user_id);
