@@ -128,3 +128,22 @@ export const toggleBookmark = asyncWrapper ( async (req, res) => {
         res.status(500).json(error);
     }
 })
+
+export const toggleLike = asyncWrapper (async (req, res) => {
+    try {
+        const {user_id, post_id} = req.body;
+        console.log(user_id, post_id)
+
+        const like = await postService.toggleLike(user_id, post_id);
+        if (like === 'like') {
+            res.status(200).json({ liked: true, message: "like success" });
+        } else if (like === 'cancel') {
+            res.status(200).json({ liekd: false, message: "like cancel success" });
+        } else {
+            res.status(500).json({ message: "Unknown like action" });
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error);
+    }
+})

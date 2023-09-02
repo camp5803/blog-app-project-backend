@@ -2,7 +2,7 @@ import db from '../database/index.js';
 import { sequelize } from 'sequelize';
 import { bookmark } from '@/database/model/bookmark.js';
 import { post } from '@/database/model/post.js';
-const { Post, Image, Category, Profile, Neighbor, Bookmark } = db;
+const { Post, Image, Category, Profile, Neighbor, Bookmark, Like } = db;
 
 export const createPost = async (postData) => {
         try {
@@ -16,7 +16,9 @@ export const createPost = async (postData) => {
                 title,
                 content,
                 categories,
-                thumbnail: img[0]
+                thumbnail: img[0],
+                view: 0,
+                like: 0
             });
 
             if (categories && categories.length > 0) {
@@ -113,6 +115,9 @@ export const getByPostDetail = async (postId) => {
     try {
         console.log('repository ::', postId)
         const post = await Post.findOne({where: { post_id: postId }});
+        post.view += 1;
+        await post.save();
+
         const userProfile = await Profile.findOne({where: {user_id: post.user_id}})
 
         const categories = await post.getCategories();
@@ -229,6 +234,29 @@ export const toggleBookmark = async (user_id, post_id) => {
         return 'add'; 
     }
      
+    } catch (error) {
+        console.log(error); 
+        throw new Error('Error get post in repository');
+    }
+}
+
+export const toggleLike = async (user_id, post_id) => {
+    try {
+        const existLike = await Like.findOne({where: { user_id, post_id }});
+        const post = await Post.findOne({where: { post_id }})
+
+        if (existLike) {
+            await Like.destroy({ where: { user_id, post_id } });
+            post.like -= 1;
+            await post.save();
+            return 'cancel';
+        } else {
+            // Like 테이블에 좋아요를 누른 유저와 post_id를 추가
+            await Like.create({ user_id, post_id }); // 수정된 부분
+            post.like += 1;
+            await post.save();
+            return 'like';
+        }
     } catch (error) {
         console.log(error); 
         throw new Error('Error get post in repository');
