@@ -69,7 +69,7 @@ export const getByPostDetail = asyncWrapper (async (req, res) => {
             return res.status(400).json({ message: 'Post ID is missing' });
         }
         const post = await postService.getByPostDetail(post_id);
-        console.log(post);
+        console.log('detail:',post);
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });
         }
@@ -108,29 +108,21 @@ export const getPostsByPage = asyncWrapper( async (req, res) => {
     }
 })
 
-export const addBookmark = asyncWrapper ( async (req, res) => {
+export const toggleBookmark = asyncWrapper ( async (req, res) => {
     try {
         const {user_id, post_id} = req.body;
         console.log(user_id, post_id)
 
-        const post = await postService.addBookmark(user_id, post_id);
-
-        res.status(201).json({ message: 'bookmark add success' });
-    } catch (error) {
-        console.log(error)
-        res.status(500).json(error);
-    }
-})
-
-export const removeBookmark = asyncWrapper (async (req, res) => {
-    try {
-        const post_id = req.params.id;
-        console.log(post_id);
-        const post = await postService.removeBookmark(post_id);
-        if(post === 0) {
-            return res.status(404).json({ message: 'Post not found' });
+        const bookmark = await postService.toggleBookmark(user_id, post_id);
+        
+        if (bookmark === 'add') {
+            res.status(200).json({ message: "bookmark add success" });
+        } else if (bookmark === 'remove') {
+            res.status(200).json({ message: "bookmark remove success" });
+        } else {
+            // 예상치 못한 경우에 대한 처리
+            res.status(500).json({ message: "Unknown bookmark action" });
         }
-        res.status(201).json({ message: 'bookmark remove success' });
     } catch (error) {
         console.log(error)
         res.status(500).json(error);

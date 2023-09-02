@@ -83,8 +83,6 @@ export const updatePost = async (postData) => {
             }
         }
 
-        const updatedPost = await Post.findOne({ where: { post_id } });
-        const updatedImage = await Image.findOne({ where: { post_id } });
         return post;
     } catch (error) {
         console.log(error);
@@ -216,26 +214,21 @@ export const getPostsByPage = async (page, pageSize, order, id, sort) => {
     }
 }; 
 
-export const addBookmark = async (user_id, post_id) => {
+export const toggleBookmark = async (user_id, post_id) => {
     try {
-        const bookmark = await Bookmark.create({user_id: user_id, post_id: post_id});
-        console.log(bookmark);
-        return bookmark;
-    } catch (error) {
-        console.log(error); 
-        throw new Error('Error get post in repository');
-    }
-}
+   
+    const existBookmark = await Bookmark.findOne({ where: { user_id, post_id } });
 
-export const removeBookmark = async (post_id) => {
-    try {
-        const bookmark = await Bookmark.destroy({where: {post_id: post_id}})
-        console.log(bookmark)
-          // 게시물이 없는 경우
-          if (bookmark === 0) {
-            return 0;
-        }
-        return bookmark;
+    if (existBookmark) {
+        await Bookmark.destroy({ where: { user_id, post_id } });
+        console.log(`Bookmark removed: user_id ${user_id}, post_id ${post_id}`);
+        return 'remove'; 
+    } else {
+        const newBookmark = await Bookmark.create({ user_id, post_id });
+        console.log(`Bookmark added: user_id ${user_id}, post_id ${post_id}`);
+        return 'add'; 
+    }
+     
     } catch (error) {
         console.log(error); 
         throw new Error('Error get post in repository');

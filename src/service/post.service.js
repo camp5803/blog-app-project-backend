@@ -1,4 +1,4 @@
-import { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage, addBookmark, removeBookmark } from '@/repository/index';
+import { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage, toggleBookmark } from '@/repository/index';
 
 export const postService = {
     createPost: async (postData) => {
@@ -53,25 +53,15 @@ export const postService = {
         }
     }, 
 
-    addBookmark: async (user_id, post_id) => {
+    toggleBookmark: async (user_id, post_id) => {
         try {
             console.log(user_id, post_id)
-            const post = await addBookmark(user_id, post_id);
+            const post = await toggleBookmark(user_id, post_id);
             return post;
         } catch (error) {
             console.log(error);
-            throw new Error('Error add bookmark post');
+            throw new Error('Error toggle bookmark post');
         }
     },
 
-    removeBookmark: async (post_id) => {
-        try {
-            console.log(post_id)
-            const post = await removeBookmark(post_id);
-            return post;
-        } catch (error) {
-            console.log(error);
-            throw new Error('Error remove bookmark post');
-        }
-    }
 }
