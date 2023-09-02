@@ -3,6 +3,11 @@ import { StatusCodes } from 'http-status-codes';
 import passport from 'passport';
 import { authService, socialLoginService } from '@/service';
 
+const cookieOptions = {
+    httpOnly: true,
+    secure: true
+}
+
 export const createAuth = asyncWrapper(async (req, res) => {
     passport.authenticate('local', { session: false }, (err, user) => {
         if (err || !user) {
@@ -23,7 +28,10 @@ export const createAuth = asyncWrapper(async (req, res) => {
                     message: token.error
                 });
             }
-            return res.status(StatusCodes.OK).json(token);
+            res.cookie('access_token', token.accessToken, cookieOptions);
+            res.cookie('refresh_token', token.refreshToken, cookieOptions);
+
+            return res.status(StatusCodes.OK).end();
         });
     })(req, res);
 });
@@ -49,14 +57,14 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
                 message: kakaoUser.error
             });
         }
+        res.cookie('access_token', kakaoUser.accessToken, cookieOptions);
+        res.cookie('refresh_token', kakaoUser.refreshToken, cookieOptions);
         if (kakaoUser.email == null) {
             return res.status(StatusCodes.CREATED).json({
-                accessToken: kakaoUser.accessToken,
-                refreshToken: kakaoUser.refreshToken,
                 message: "[Alert] Email information needs to be updated"
             });
         }
-        return res.status(StatusCodes.OK).json(kakaoUser);
+        return res.status(StatusCodes.CREATED).end();
     } else if (type === "github") {
         const githubUser = await socialLoginService.githubLoginService(req.body.code);
         if (githubUser.hasOwnProperty("error")) {
@@ -64,17 +72,14 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
                 message: githubUser.error
             });
         }
+        res.cookie('access_token', githubUser.accessToken, cookieOptions);
+        res.cookie('refresh_token', githubUser.refreshToken, cookieOptions);
         if (githubUser.email == null) {
             return res.status(StatusCodes.CREATED).json({
-                accessToken: githubUser.accessToken,
-                refreshToken: githubUser.refreshToken,
                 message: "[Alert] Email information needs to be updated"
             });
         }
-        return res.status(StatusCodes.OK).json({
-            accessToken: githubUser.accessToken,
-            refreshToken: githubUser.refreshToken,
-        });
+        return res.status(StatusCodes.CREATED).end();
     } else if (type === "google"){
         const googleUser = await socialLoginService.googleLoginService(req.body.code);
         if (googleUser.hasOwnProperty("error")) {
@@ -82,33 +87,20 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
                 message: googleUser.error
             });
         }
+        res.cookie('access_token', googleUser.accessToken, cookieOptions);
+        res.cookie('refresh_token', googleUser.refreshToken, cookieOptions);
         if (googleUser.email == null) {
             return res.status(StatusCodes.CREATED).json({
-                accessToken: googleUser.accessToken,
-                refreshToken: googleUser.refreshToken,
                 message: "[Alert] Email information needs to be updated"
             });
         }
-        return res.status(StatusCodes.CREATED).json({
-            accessToken: googleUser.accessToken,
-            refreshToken: googleUser.refreshToken
-        });
+        return res.status(StatusCodes.CREATED).end();
     }
 
     return res.status(StatusCodes.BAD_REQUEST).json({
         message: "Bad request."
     });
 });
-
-// export const redirectOAuth = asyncWrapper(async (req, res) => { // /api/auth/type
-//     const redirectURL = `http://${process.env.SERVER_URL}:${process.env.PORT || 8280}/api/auth/callback/${req.params.type}`;
-//     const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?client_id=${process.env.KAKAO_ID}&redirect_uri=${redirectURL}&response_type=code&scope=profile_nickname,account_email`;
-//     const githubAuthURL = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_ID}&redirect_uri=${redirectURL}`;
-//     const googleAuthURL = `https://accounts.google.com/o/oauth2/auth?client_id=${process.env.GOOGLE_ID}&redirect_uri=${redirectURL}&response_type=code&scope=https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email`;
-//
-//     const authorizeURL = req.params.type === "kakao" ? kakaoAuthURL : (req.params.type === "github" ? githubAuthURL : googleAuthURL);
-//     res.redirect(authorizeURL);
-// });
 
 export const reissueAccessToken = asyncWrapper(async (req, res) => { // body: accessToken
     const accessToken = await authService.reissueToken(req.body.token);
