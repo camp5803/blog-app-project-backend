@@ -1,4 +1,4 @@
-import { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage, toggleBookmark } from '@/repository/index';
+import { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage, toggleBookmark, toggleLike } from '@/repository/index';
 
 export const postService = {
     createPost: async (postData) => {
@@ -56,12 +56,22 @@ export const postService = {
     toggleBookmark: async (user_id, post_id) => {
         try {
             console.log(user_id, post_id)
-            const post = await toggleBookmark(user_id, post_id);
-            return post;
+            const bookmark = await toggleBookmark(user_id, post_id);
+            return bookmark;
         } catch (error) {
             console.log(error);
             throw new Error('Error toggle bookmark post');
         }
     },
+
+    toggleLike: async (user_id, post_id) => {
+        try {
+            const like = await toggleLike(user_id, post_id);
+            return like;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error toggle like post');
+        }
+    }
 
 }
