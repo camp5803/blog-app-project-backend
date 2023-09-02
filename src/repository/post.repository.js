@@ -16,7 +16,9 @@ export const createPost = async (postData) => {
                 title,
                 content,
                 categories,
-                thumbnail: img[0]
+                thumbnail: img[0],
+                view: 0,
+                like: 0
             });
 
             if (categories && categories.length > 0) {
@@ -113,6 +115,9 @@ export const getByPostDetail = async (postId) => {
     try {
         console.log('repository ::', postId)
         const post = await Post.findOne({where: { post_id: postId }});
+        post.view += 1; // 조회수를 1 증가시킴
+        await post.save();      
+
         const userProfile = await Profile.findOne({where: {user_id: post.user_id}})
 
         const categories = await post.getCategories();
