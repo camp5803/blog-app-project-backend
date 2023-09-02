@@ -3,7 +3,7 @@ require('dotenv').config();
 module.exports = {
     apps: [
         {
-            name: 'blog-app-project-backend',
+            name: 'blog-app-project-backend-test',
             script: './server-register.js',
             merge_logs: true,
             autorestart: true,
