@@ -32,9 +32,9 @@ export const postService = {
             throw new Error('Error delete post');
         }
     },
-    getByPostDetail: async (postId) => {
+    getByPostDetail: async (postId, user_id) => {
         try {
-            const post = await getByPostDetail(postId);
+            const post = await getByPostDetail(postId, user_id);
             return post;
         } catch (error) {
             console.log(error);

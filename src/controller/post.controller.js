@@ -64,11 +64,12 @@ export const deletePost = asyncWrapper(async (req, res) => {
 export const getByPostDetail = asyncWrapper (async (req, res) => {
     try {
         const post_id = req.params.id;
+        const user_id = req.params.user_id;
         console.log(post_id)
         if (!post_id) {
             return res.status(400).json({ message: 'Post ID is missing' });
         }
-        const post = await postService.getByPostDetail(post_id);
+        const post = await postService.getByPostDetail(post_id, user_id);
         console.log('detail:',post);
         if (!post) {
             return res.status(404).json({ message: 'Post not found' });

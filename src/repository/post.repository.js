@@ -111,7 +111,7 @@ export const deletePost = async (postId) => {
     }
 }
 
-export const getByPostDetail = async (postId) => {
+export const getByPostDetail = async (postId, user_id) => {
     try {
         console.log('repository ::', postId)
         const post = await Post.findOne({where: { post_id: postId }});
@@ -119,6 +119,9 @@ export const getByPostDetail = async (postId) => {
         await post.save();
 
         const userProfile = await Profile.findOne({where: {user_id: post.user_id}})
+        const like = await Like.findOne({ where: { user_id: user_id, post_id: postId } });
+
+        const liked = !!like; // 좋아요 여부를 불리언으로 설정
 
         const categories = await post.getCategories();
         const images = await post.getImages();
@@ -130,6 +133,7 @@ export const getByPostDetail = async (postId) => {
             content: post.content,
             view: post.view,
             like: post.like,
+            liked: liked,
             categories: categories.map((category) => category.category),
             createdDt: post.created_at,
             img: images.map((image) => image.image)
@@ -185,6 +189,8 @@ export const getPostsByPage = async (page, pageSize, order, id, sort) => {
             order: order,
           });
         }
+
+        const resultPosts = [];
       
          // 각 포스트마다 사용자 정보 추가
          for (const post of posts.rows) {
@@ -193,24 +199,30 @@ export const getPostsByPage = async (page, pageSize, order, id, sort) => {
 
             const bookmark = await Bookmark.findOne({ where: { post_id: post.post_id } });
             post.dataValues.bookmarked = !!bookmark;
-        } 
-        const rowLength = posts.rows.length;
-        const hasMore = rowLength === pageSize;
 
-        return {
-            posts: posts.rows.map((post) => ({
+            const like = await Like.findOne({ where: { user_id: id, post_id: post.post_id } });
+            const liked = !!like; // 좋아요 여부를 불리언으로 설정
+
+            resultPosts.push({
                 post_id: post.post_id,
                 thumbnail: post.thumbnail,
                 title: post.title,
                 content: post.content,
                 nickname: post.dataValues.nickname,
-                created_at: post.created_at, // 생성일 컬럼명 수정
+                created_at: post.created_at,
                 categories: post.categories.map((category) => category.category),
-                bookmarked: post.dataValues.bookmarked, 
+                bookmarked: post.dataValues.bookmarked,
                 view: post.view,
                 like: post.like,
-            })),
-            hasMore: hasMore, // boolean으로 다음 페이지 여부 판단
+                liked: liked, // 좋아요 여부 추가
+            });
+        } 
+        const rowLength = posts.rows.length;
+        const hasMore = rowLength === pageSize;
+
+        return {
+            posts: resultPosts,
+            hasMore: hasMore,
         };
     } catch (error) {
         console.log(error); 
@@ -243,7 +255,7 @@ export const toggleBookmark = async (user_id, post_id) => {
 export const toggleLike = async (user_id, post_id) => {
     try {
         const existLike = await Like.findOne({where: { user_id, post_id }});
-        const post = await Post.findOne({where: { post_id }})
+        const post = await Post.findOne({where: { user_id, post_id }})
 
         if (existLike) {
             await Like.destroy({ where: { user_id, post_id } });
