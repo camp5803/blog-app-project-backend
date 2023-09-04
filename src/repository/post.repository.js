@@ -255,7 +255,7 @@ export const toggleBookmark = async (user_id, post_id) => {
 export const toggleLike = async (user_id, post_id) => {
     try {
         const existLike = await Like.findOne({where: { user_id, post_id }});
-        const post = await Post.findOne({where: { user_id, post_id }})
+        const post = await Post.findOne({where: { post_id }})
 
         if (existLike) {
             await Like.destroy({ where: { user_id, post_id } });
