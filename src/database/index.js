@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 import configFromJson from "../../config.json" assert{ "type": "json" };
-import { models } from "./model/index"
+import { models } from "@/database/model"
 
 const env = process.env.NODE_ENV || 'development';
 const config = configFromJson[env];
