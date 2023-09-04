@@ -1,10 +1,10 @@
 import { asyncWrapper } from '@/common';
 import { StatusCodes } from 'http-status-codes';
 import { userService } from '@/service';
-import {profileRepository} from "@/repository";
+import { profileRepository } from "@/repository";
 
 export const getProfileById = asyncWrapper(async (req, res) => {
-    const user = await profileRepository.findByUserId(req.params.id);
+    const user = await profileRepository.findByUserId(req.user.user_id);
     if (user.error) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: user.message
@@ -37,7 +37,7 @@ export const createLocalUser = asyncWrapper(async (req, res) => {
 });
 
 export const updateUser = asyncWrapper(async (req, res) => {
-    const result = await userService.updateUser(req.params.id, req.body);
+    const result = await userService.updateUser(req.user.user_id, req.body);
     if (result.message) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: result.message
@@ -48,7 +48,7 @@ export const updateUser = asyncWrapper(async (req, res) => {
 
 export const updateProfileImage = asyncWrapper(async (req, res) => {
     if (req.file) {
-        const result = await userService.updateUser(req.params.id, { image_url: req.file.location });
+        const result = await userService.updateUser(req.user.user_id, { image_url: req.file.location });
         if (result.error) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: result.message
@@ -61,21 +61,21 @@ export const updateProfileImage = asyncWrapper(async (req, res) => {
     });
 })
 
-export const deleteUser = asyncWrapper(async (req, res) => {
-    if (req.user.user_id !== req.body.user_id) { 
+export const deleteUser = asyncWrapper(async (req, res) => { // 쿠키로 수정하자!!! 하고지워ㅇ야함
+    if (!req.user) {
         return res.status(StatusCodes.FORBIDDEN).json({
             message: "[Withdrawal Error#3] Permission denied."
         });
     }
-    const error = await userService.deleteUser(req.cookies["access_token"]);
-    if (error) {
-        if (error.error === 404) {
+    const result = await userService.deleteUser(req.user.user_id);
+    if (result) {
+        if (result.error === 404) {
             return res.status(StatusCodes.NOT_FOUND).json({
-                message: error.message
+                message: result.message
             });
         }
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-            message: error.message
+            message: result.message
         });
     }
     return res.status(StatusCodes.OK).end();
