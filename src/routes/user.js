@@ -9,9 +9,9 @@ router.route('/users')
     .delete(deleteUser);
 
 
-router.patch('/users/name/:id', updateUser);
-router.patch('/users/image/:id', upload.single('image'), updateProfileImage);
+router.patch('/users/name', updateUser);
+router.patch('/users/image', upload.single('image'), updateProfileImage);
 router.get('/users/email', validateEmail)
-router.get('/users/:id', getProfileById)
+router.get('/users', getProfileById)
 
 export default router;
