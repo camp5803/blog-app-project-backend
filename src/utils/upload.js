@@ -1,6 +1,6 @@
 import multer from 'multer';
 import multerS3 from 'multer-s3';
-import { S3 } from 'aws-sdk';
+import { S3 } from '@aws-sdk/client-s3';
 
 const fileValidator = (req, file, cb) => {
     const allowedFormats = ['image/jpeg', 'image/png', 'image/jpg'];
