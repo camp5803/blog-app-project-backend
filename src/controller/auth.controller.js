@@ -1,11 +1,14 @@
-import { asyncWrapper } from '@/common/index';
+import { asyncWrapper } from '@/common';
 import { StatusCodes } from 'http-status-codes';
 import passport from 'passport';
 import { authService, socialLoginService } from '@/service';
 
 const cookieOptions = {
     httpOnly: true,
-    secure: true
+}
+
+if (process.env.SECURE_ENABLED) {
+    cookieOptions.secure = true;
 }
 
 export const createAuth = asyncWrapper(async (req, res) => {
