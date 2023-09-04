@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "aws-sdk": "^2.1450.0",
+        "axios": "^1.5.0",
         "bcrypt": "^5.1.1",
         "cli-color": "^2.0.3",
         "compression": "^1.7.4",
