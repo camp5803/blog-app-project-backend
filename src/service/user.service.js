@@ -1,5 +1,4 @@
 import { userRepository, profileRepository } from '@/repository';
-import { verifyToken } from '@/utils';
 
 export const userService = {
     isEmailExists: async (email) => {
@@ -42,10 +41,9 @@ export const userService = {
             return { message: error }
         }
     },
-    deleteUser: async (token) => {
-        const payload = verifyToken(token);
+    deleteUser: async (userId) => {
         try {
-            const count = await userRepository.deleteUser(payload.user_id);
+            const count = await userRepository.deleteUser(userId);
             if (count === 0) {
                 return {
                     error: 404,
