@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { redisCli as redisClient } from '@/utils/index';
 
-export default async (user_id) => {
+export const createToken = async (user_id) => {
     const privateKey = process.env.PRIVATE_KEY;
     try {
         const accessToken = jwt.sign({ user_id }, privateKey, {
@@ -23,6 +23,15 @@ export default async (user_id) => {
             }
         }
         return { accessToken, refreshToken };
+    } catch (error) {
+        return { error };
+    }
+}
+
+export const verifyToken = (token) => {
+    const publicKey = process.env.PUBLIC_KEY;
+    try {
+        return jwt.verify(token, publicKey);
     } catch (error) {
         return { error };
     }

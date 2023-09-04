@@ -6,9 +6,13 @@ import { passwordRepository } from '@/repository';
 import { githubPassport } from '@/common/passport-social';
 import bcrypt from 'bcrypt';
 
+const cookieExtractor = (req) => {
+    const { access_token } = req.cookies;
+    return access_token;
+}
 export default () => {
     const jwtOptions = {
-        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        jwtFromRequest: cookieExtractor,
         secretOrKey: process.env.PUBLIC_KEY
     };
     const localOptions = {
