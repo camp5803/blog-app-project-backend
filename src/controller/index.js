@@ -1,3 +1,3 @@
-export { createLocalUser, deleteUser } from './user.controller';
-export { createAuth, reissueAccessToken, socialCallbackHandler, createSocialAuth, redirectOAuth } from './auth.controller';
-export { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage, toggleBookmark, toggleLike } from './post.controller';
+export { createLocalUser, deleteUser, updateUser, getProfileById, validateEmail, updateProfileImage } from '@/controller/user.controller';
+export { createAuth, reissueAccessToken, socialCallbackHandler, createSocialAuth } from '@/controller/auth.controller';
+export { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage, toggleBookmark, toggleLike } from '@/controller/post.controller';

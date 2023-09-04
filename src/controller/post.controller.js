@@ -1,5 +1,5 @@
-import { asyncWrapper } from '@/common/index';
-import { postService } from '@/service/index';
+import { asyncWrapper } from '@/common';
+import { postService } from '@/service';
 import { StatusCodes } from 'http-status-codes';
 
 export const createPost = asyncWrapper(async (req, res) => {
@@ -49,7 +49,7 @@ export const updatePost = asyncWrapper(async (req, res) => {
 
 export const deletePost = asyncWrapper(async (req, res) => {
     try {
-       const post_id = req.params.id;
+        const post_id = req.params.id;
         const post = await postService.deletePost(post_id);
         if(post === 0) {
             return res.status(404).json({ message: 'Post not found' });

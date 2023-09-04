@@ -1,14 +1,14 @@
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
-import { morganMiddleware } from '@/utils/index';
-import { errorMiddleware, limiter } from '@/middleware/index';
+import { morganMiddleware } from '@/utils';
+import { errorMiddleware, limiter } from '@/middleware';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
-import { passportConfig } from '@/common/index'
-import { routes } from '@/routes/index.js';
-import db from '@/database/index.js';
+import { passportConfig } from '@/common'
+import { routes } from '@/routes';
+import db from '@/database';
 
 const app = express();
 
