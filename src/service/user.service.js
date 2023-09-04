@@ -7,12 +7,12 @@ export const userService = {
             const user = await userRepository.findByEmail(email);
             if (user) {
                 return {
-                    error: "Email Already exists."
+                    message: "Email Already exists."
                 }
             }
-            return true;
+            return { OK: true };
         } catch (error) {
-            return { error }
+            return { message: error }
         }
     },
     createUser: async (data) => { // data의 key는 email, login_type, nickname, password
@@ -37,7 +37,7 @@ export const userService = {
                 }
             });
 
-            return await profileRepository.updateProfile(userData);
+            return await profileRepository.updateProfile(user_id, userData);
         } catch (error) {
             return { message: error }
         }

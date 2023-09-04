@@ -18,7 +18,7 @@ export const getProfileById = asyncWrapper(async (req, res) => {
 
 export const validateEmail = asyncWrapper(async (req, res) => {
     const result = await userService.isEmailExists(req.query.email);
-    if (result.error) {
+    if (!result.OK) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: result.message
         });
@@ -38,7 +38,7 @@ export const createLocalUser = asyncWrapper(async (req, res) => {
 
 export const updateUser = asyncWrapper(async (req, res) => {
     const result = await userService.updateUser(req.params.id, req.body);
-    if (result.error) {
+    if (result.message) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: result.message
         });
