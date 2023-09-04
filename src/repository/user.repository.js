@@ -1,7 +1,7 @@
-import db from '@/database/index';
-import { createPassword } from '../utils/security';
+import db from '@/database';
+import { createPassword } from '@/utils';
 const { 
-    User, Password, Profile, Preference, SoicalLogin, sequelize 
+    User, Password, Profile, Preference, sequelize
 } = db;
 
 export const userRepository = {
