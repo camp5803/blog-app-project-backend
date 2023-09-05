@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { redisCli as redisClient } from '@/utils/index';
+import { redisCli as redisClient } from '@/utils';
 
 export const createToken = async (user_id) => {
     const privateKey = process.env.PRIVATE_KEY;
