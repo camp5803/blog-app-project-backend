@@ -5,6 +5,7 @@ import { authService, socialLoginService } from '@/service';
 
 const cookieOptions = {
     httpOnly: true,
+    sameSite: process.env.NODE_ENV === 'production' ? 'Strict' : 'None',
 }
 
 if (process.env.SECURE_ENABLED) {
@@ -39,22 +40,11 @@ export const createAuth = asyncWrapper(async (req, res) => {
     })(req, res);
 });
 
-export const createSocialAuth = asyncWrapper(async (req, res) => {
-    const type = req.params.type;
-    if (['github', 'kakao', 'google'].includes(type)) {
-        passport.authenticate(type)(req, res);
-        return;
-    }
-    return res.status(StatusCodes.BAD_REQUEST).json({
-        message: "[Login Error#7] Bad request."
-    });
-});
-
 export const socialCallbackHandler = asyncWrapper(async (req, res) => {
     const type = req.params.type;
 
     if (type === "kakao") {
-        const kakaoUser = await socialLoginService.kakaoLoginService(req.body.code);
+        const kakaoUser = await socialLoginService.kakaoLoginService(req.body.code, req.body.uri);
         if (kakaoUser.hasOwnProperty("error")) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 message: kakaoUser.error
@@ -69,7 +59,7 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
         }
         return res.status(StatusCodes.CREATED).end();
     } else if (type === "github") {
-        const githubUser = await socialLoginService.githubLoginService(req.body.code);
+        const githubUser = await socialLoginService.githubLoginService(req.body.code, req.body.uri);
         if (githubUser.hasOwnProperty("error")) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 message: githubUser.error
@@ -84,7 +74,7 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
         }
         return res.status(StatusCodes.CREATED).end();
     } else if (type === "google"){
-        const googleUser = await socialLoginService.googleLoginService(req.body.code);
+        const googleUser = await socialLoginService.googleLoginService(req.body.code, req.body.uri);
         if (googleUser.hasOwnProperty("error")) {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 message: googleUser.error
