@@ -6,7 +6,7 @@ const { Post, Image, Category, Profile, Neighbor, Bookmark, Like } = db;
 
 export const createPost = async (postData) => {
         try {
-            const { user_id, title, content, categories, img } = postData;
+            const { user_id, title, content, categories, img, thumbnail } = postData;
             console.log('repository', postData);
 
             console.log(img)
@@ -16,7 +16,7 @@ export const createPost = async (postData) => {
                 title,
                 content,
                 categories,
-                thumbnail: img[0],
+                thumbnail: thumbnail,
                 view: 0,
                 like: 0
             });
@@ -60,10 +60,10 @@ export const updatePost = async (postData) => {
     try {
         console.log('repository', postData);
     
-        const { post_id, title, content, img } = postData;
+        const { post_id, title, content, img, thumbnail } = postData;
         
         console.log(postData)
-        const [post] = await Post.update({title, content, updated_at: new Date()}, 
+        const [post] = await Post.update({title, content, thumbnail, updated_at: new Date()}, 
         { where: { post_id: post_id } }) 
 
         // 게시물이 없는 경우

@@ -4,12 +4,13 @@ import { StatusCodes } from 'http-status-codes';
 
 export const createPost = asyncWrapper(async (req, res) => {
         try {
-            const { user_id, title, content, categories, img } = req.body;
+            const { user_id, title, content, categories, img, thumbnail } = req.body;
             const postsInput = {
                 user_id: user_id,
                 title: title,
                 content: content,
                 categories: categories,
+                thumbnail: thumbnail,
                 img: img
             }
             console.log(postsInput);
@@ -25,13 +26,14 @@ export const createPost = asyncWrapper(async (req, res) => {
 export const updatePost = asyncWrapper(async (req, res) => {
 
     try {
-        const { title, content, img } = req.body;
+        const { title, content, img, thumbnail } = req.body;
         const post_id = req.params.id;
         const postData = {
             post_id: post_id,
             title: title,
             content: content,
-            img: img
+            img: img,
+            thumbnail: thumbnail
         }
         console.log(postData);
         const post = await postService.updatePost(postData);
