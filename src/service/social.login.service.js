@@ -11,28 +11,25 @@ const socialCode = {
 const githubOptions = {
     clientID: process.env.GITHUB_ID,
     clientSecret: process.env.GITHUB_SECRET,
-    callbackURL: `${process.env.CALLBACK_URL}/github`
 }
 const googleOptions = {
     clientID: process.env.GOOGLE_ID,
     clientSecret: process.env.GOOGLE_SECRET,
-    callbackURL: `${process.env.CALLBACK_URL}/google`
 }
 const kakaoOptions = {
     clientID: process.env.KAKAO_ID,
     clientSecret: process.env.KAKAO_SECRET,
-    callbackURL: `${process.env.CALLBACK_URL}/kakao`
 }
 
 export const socialLoginService = {
-    kakaoLoginService: async (code) => {
+    kakaoLoginService: async (code, uri) => {
         try {
             const token = await axios.post('https://kauth.kakao.com/oauth/token', null, {
                 params: {
                     code,
                     client_id: kakaoOptions.clientID,
                     client_secret: kakaoOptions.clientSecret,
-                    redirect_url: kakaoOptions.callbackURL,
+                    redirect_url: uri,
                     grant_type: 'authorization_code'
                 }
             });
@@ -49,26 +46,36 @@ export const socialLoginService = {
                 const newUser = await socialLoginRepository.createSocialUser({
                     email: kakaoUser.data.kakao_account.email || null,
                     code: socialCode.KAKAO,
-                    name: kakaoUser.data.kakao_account.nickname,
+                    name: kakaoUser.data.kakao_account.profile.nickname,
                     type: "kakao",
                     id: kakaoUser.data.id,
                     image_url: kakaoUser.data.kakao_account.profile.profile_image_url
                 });
-                return await createToken(newUser.user_id);
+                const createdToken = await createToken(newUser.user_id);
+                return {
+                    accessToken: createdToken.accessToken,
+                    refreshToken: createdToken.refreshToken,
+                    email: !(newUser.dataValues.email),
+                }
             }
-            return await createToken(user.user_id);
+            const createdToken = await createToken(user.user_id);
+            return {
+                accessToken: createdToken.accessToken,
+                refreshToken: createdToken.refreshToken,
+                email: !(user.dataValues.email),
+            }
         } catch (error) {
             return { error };
         }
     },
-    githubLoginService: async (code) => {
+    githubLoginService: async (code, uri) => {
         try {
             const token = await axios.post('https://github.com/login/oauth/access_token', null, {
                 params: {
                     code,
                     client_id: githubOptions.clientID,
                     client_secret: githubOptions.clientSecret,
-                    redirect_url: githubOptions.callbackURL,
+                    redirect_url: uri,
                 }
             });
             const tokenData = new URLSearchParams(token.data);
@@ -90,21 +97,31 @@ export const socialLoginService = {
                     id: githubUser.data.id,
                     image_url: githubUser.data.avatar_url
                 });
-                return await createToken(newUser.user_id);
+                const createdToken = await createToken(newUser.user_id);
+                return {
+                    accessToken: createdToken.accessToken,
+                    refreshToken: createdToken.refreshToken,
+                    email: !(newUser.dataValues.email),
+                }
             }
-            return await createToken(user.user_id);
+            const createdToken = await createToken(user.user_id);
+            return {
+                accessToken: createdToken.accessToken,
+                refreshToken: createdToken.refreshToken,
+                email: !(user.dataValues.email),
+            }
         } catch (error) {
             return { error };
         }
     },
-    googleLoginService: async (code) => {
+    googleLoginService: async (code, uri) => {
         try {
-            const token = await axios.post('https://oauth2.googleapis.com/token', {
+            const token = await axios.post('https://oauth2.googleapis.com/token', {}, {
                 params: {
                     code,
                     client_id: googleOptions.clientID,
                     client_secret: googleOptions.clientSecret,
-                    redirect_uri: googleOptions.callbackURL,
+                    redirect_uri: uri,
                     grant_type: 'authorization_code'
                 }
             });
@@ -113,7 +130,7 @@ export const socialLoginService = {
                     'Authorization': `Bearer ${token.data.access_token}`
                 }
             });        
-            const user = await socialLoginRepository.findBySocialId(googleUser.data.id);
+            const user = await socialLoginRepository.findBySocialId(googleUser.data.id); // 여기서 User레포에 요청
             if (!user) {
                 const newUser = await socialLoginRepository.createSocialUser({
                     email: googleUser.data.email || null,
@@ -123,9 +140,19 @@ export const socialLoginService = {
                     id: googleUser.data.id,
                     image_url: googleUser.data.picture
                 });
-                return await createToken(newUser.user_id);
+                const createdToken = await createToken(newUser.user_id);
+                return {
+                    accessToken: createdToken.accessToken,
+                    refreshToken: createdToken.refreshToken,
+                    email: !(newUser.dataValues.email),
+                }
             }
-            return await createToken(user.user_id);
+            const createdToken = await createToken(user.user_id);
+            return {
+                accessToken: createdToken.accessToken,
+                refreshToken: createdToken.refreshToken,
+                email: !(user.dataValues.email),
+            }
         } catch (error) {
             return { error };
         }

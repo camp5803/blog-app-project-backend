@@ -4,21 +4,18 @@ import { userService } from '@/service';
 import { profileRepository } from "@/repository";
 
 export const getProfileById = asyncWrapper(async (req, res) => {
-    const userId = profileRepository.findUserIdByToken(req.headers["access-token"]);
-    const user = await profileRepository.findByUserId(userId);
+    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
+    const user = await profileRepository.findUserInformationById(userId);
     if (user.error) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: user.message
         });
     }
-    return res.status(StatusCodes.OK).json({
-        nickname: user.dataValues.nickname,
-        image_url: user.dataValues.image_url,
-    });
+    return res.status(StatusCodes.OK).json(user.dataValues);
 });
 
 export const validateEmail = asyncWrapper(async (req, res) => {
-    const result = await userService.isEmailExists(req.query.email);
+    const result = await userService.isEmailExists(req.query.value);
     if (!result.OK) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: result.message
@@ -34,11 +31,12 @@ export const createLocalUser = asyncWrapper(async (req, res) => {
             message: user.message
         });
     }
-    return res.status(StatusCodes.CREATED).end();
+    const userData = await profileRepository.findUserInformationById(user.dataValues.id);
+    return res.status(StatusCodes.CREATED).json(userData.dataValues);
 });
 
 export const updateUser = asyncWrapper(async (req, res) => {
-    const userId = profileRepository.findUserIdByToken(req.headers["access-token"]);
+    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
     const result = await userService.updateUser(userId, req.body);
     if (result.message) {
         return res.status(StatusCodes.BAD_REQUEST).json({
@@ -49,7 +47,7 @@ export const updateUser = asyncWrapper(async (req, res) => {
 });
 
 export const updateProfileImage = asyncWrapper(async (req, res) => {
-    const userId = profileRepository.findUserIdByToken(req.headers["access-token"]);
+    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
     if (req.file) {
         const result = await userService.updateUser(userId, { image_url: req.file.location });
         if (result.error) {
@@ -65,7 +63,7 @@ export const updateProfileImage = asyncWrapper(async (req, res) => {
 })
 
 export const deleteUser = asyncWrapper(async (req, res) => {
-    const userId = profileRepository.findUserIdByToken(req.headers["access-token"]);
+    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
     if (userId === undefined) {
         return res.status(StatusCodes.FORBIDDEN).json({
             message: "[Withdrawal Error#3] Permission denied."

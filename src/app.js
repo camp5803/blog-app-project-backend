@@ -2,7 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import { morganMiddleware } from '@/utils';
-import { errorMiddleware, limiter } from '@/middleware';
+import { errorMiddleware } from '@/middleware';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
@@ -11,6 +11,7 @@ import { routes } from '@/routes';
 import db from '@/database';
 
 const app = express();
+app.set('trust proxy', true);
 
 // middlewares
 app.use(passport.initialize());
@@ -27,7 +28,6 @@ app.use(
 );
 app.use(compression());
 app.use(morganMiddleware);
-app.use(limiter);
 passportConfig();
 
 // routes
