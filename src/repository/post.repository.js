@@ -135,7 +135,7 @@ export const getByPostDetail = async (postId, user_id) => {
             like: post.like,
             liked: liked,
             categories: categories.map((category) => category.category),
-            createdDt: post.created_at,
+            created_at: post.created_at,
             img: images.map((image) => image.image)
         };
         console.log(resData)
