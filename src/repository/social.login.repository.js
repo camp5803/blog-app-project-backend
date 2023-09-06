@@ -80,35 +80,4 @@ export const socialLoginRepository = {
             throw error;
         }
     },
-    // createSocialUser: async (data) => {
-    //     const transaction = await sequelize.transaction();
-    //     try {
-    //         const user = await User.create({
-    //             email: data.email || null,
-    //             login_type: data.code
-    //         }, { transaction });
-    //         await SocialLogin.create({
-    //             user_id : user.user_id,
-    //             social_code: data.code,
-    //             external_id: typeof(data.id) === "number" ? data.id.toString() : data.id
-    //         }, { transaction });
-    //         await Preference.create({
-    //             user_id: user.user_id
-    //         }, { transaction });
-    //         await Profile.create({
-    //             user_id: user.user_id,
-    //             nickname: `${data.type}${data.name}`,
-    //             image_url: data.image_url || null
-    //         }, { transaction });
-    //
-    //         await transaction.commit();
-    //         return user;
-    //     } catch (error) {
-    //         await transaction.rollback();
-    //         return { error };
-    //     }
-    // },
-    // createSocialUserByCode: async (data) => {
-    //     const transaction = await sequelize.transaction();
-    // }
 }
