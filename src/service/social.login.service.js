@@ -8,27 +8,14 @@ const socialCode = {
     GOOGLE: 3
 }
 
-const githubOptions = {
-    clientID: process.env.GITHUB_ID,
-    clientSecret: process.env.GITHUB_SECRET,
-}
-const googleOptions = {
-    clientID: process.env.GOOGLE_ID,
-    clientSecret: process.env.GOOGLE_SECRET,
-}
-const kakaoOptions = {
+const Options = [null, { // 1번 index : KAKAO
     clientID: process.env.KAKAO_ID,
     clientSecret: process.env.KAKAO_SECRET,
-}
-
-const Options = [null, { // 1번 index : KAKAO
-    clientID: kakaoOptions.clientID,
-    clientSecret: kakaoOptions.clientSecret,
     requestToken: 'https://kauth.kakao.com/oauth/token',
     profile: 'https://kapi.kakao.com/v2/user/me',
 }, { // 2번 index : GITHUB
-    clientID: githubOptions.clientID,
-    clientSecret: githubOptions.clientSecret,
+    clientID: process.env.GITHUB_ID,
+    clientSecret: process.env.GITHUB_SECRET,
     requestToken: 'https://github.com/login/oauth/access_token',
     profile: 'https://api.github.com/user',
 }, { // 3번 index : GOOGLE
