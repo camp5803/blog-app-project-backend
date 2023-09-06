@@ -7,7 +7,7 @@ export const getProfileById = asyncWrapper(async (req, res) => {
     try {
         const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
         const userData = await profileRepository.findUserInformationById(userId);
-        return res.status(StatusCodes.OK).json(userData.dataValues);
+        return res.status(StatusCodes.OK).json(userData);
     } catch (error) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: error.message
@@ -27,13 +27,13 @@ export const validateEmail = asyncWrapper(async (req, res) => {
 
 export const createLocalUser = asyncWrapper(async (req, res) => {
     const user = await userService.createUser(req.body);
-    if (user.error) {
+    if (user.message) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: user.message
         });
     }
-    const userData = await profileRepository.findUserInformationById(user.dataValues.id);
-    return res.status(StatusCodes.CREATED).json(userData.dataValues);
+    const userData = await profileRepository.findUserInformationById(user.dataValues.user_id);
+    return res.status(StatusCodes.CREATED).json(userData);
 });
 
 export const updateUser = asyncWrapper(async (req, res) => {
