@@ -4,7 +4,7 @@ import { redisCli as redisClient } from '@/utils';
 const storeToken = async (userId, accessToken, refreshToken) => {
     try {
         const tokens = JSON.stringify({ accessToken, refreshToken })
-        await redisClient.hsetAsync('tokens', userId, tokens);
+        await redisClient.hSet('tokens', userId, tokens);
         return true;
     } catch (error) {
         throw error;
@@ -35,11 +35,11 @@ export const createToken = async (userId) => {
 
 export const getTokens = async (userId) => {
     try {
-        const tokens = await redisClient.hgetAsync('tokens', userId);
+        const tokens = await redisClient.hGetAll('tokens', userId);
         if (!tokens) {
             return false;
         }
-        return JSON.parse(tokens);
+        return JSON.parse(tokens[userId]);
     } catch (error) {
         throw error;
     }

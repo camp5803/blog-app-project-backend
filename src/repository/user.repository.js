@@ -47,6 +47,12 @@ export const userRepository = {
             attributes: ['email']
         });
     },
+    findByNickname: async (nickname) => {
+        return await Profile.findOne({
+            where: { nickname },
+            attributes: ['nickname']
+        });
+    },
     createUser: async (data) => { // 어케수정하지 고민됨
         const transaction = await sequelize.transaction();
         try {

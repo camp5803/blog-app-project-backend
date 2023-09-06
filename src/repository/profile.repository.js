@@ -9,11 +9,11 @@ export const profileRepository = {
     },
     findUserInformationById: async (userId) => {
         const profile = await Profile.findOne({
-            where: { userId },
+            where: { user_id: userId },
             attributes: ['nickname', 'image_url'],
         });
         const preference = await Preference.findOne({
-            where: { userId },
+            where: { user_id: userId },
             attributes: ['darkmode_status']
         });
         return {
@@ -23,9 +23,9 @@ export const profileRepository = {
         }
     },
     findByUserId: async (userId) => {
-        return await Profile.findOne({ where: { userId } });
+        return await Profile.findOne({ where: { user_id: userId } });
     },
     updateProfile: async (userId, userData) => {
-        return await Profile.update(userData, { where: { userId } });
+        return await Profile.update(userData, { where: { user_id: userId } });
     }
 }

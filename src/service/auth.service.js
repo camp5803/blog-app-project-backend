@@ -7,7 +7,10 @@ export const authService = {
     login: async (email, password) => {
         try {
             const user = await passwordRepository.findByEmail(email);
-            if (bcrypt.compareSync(password, user.Password.dataValues.password)) {
+            if (!user) {
+                return { message: "[Login Failed #2] Please check your email and password." }
+            }
+            if (bcrypt.compareSync(password, user.password.dataValues.password)) {
                 return await createToken(user.dataValues.user_id);
             }
             return { message: "[Login Failed #1] Please check your email and password." }
