@@ -36,12 +36,12 @@ export const socialLoginService = {
                     client_id: Options[type].clientID,
                     client_secret: Options[type].clientSecret,
                     redirect_uri: uri,
-                    ...(type === "GITHUB" ? {} : { grant_type: 'authorization_code' })
+                    ...(type === socialCode.GITHUB ? {} : { grant_type: 'authorization_code' })
                 }
             });
             const socialProfile = await axios.get(Options[type].profile, {
                 headers: {
-                    'Authorization': `Bearer ${type === "GITHUB" ?
+                    'Authorization': `Bearer ${type === socialCode.GITHUB ?
                         new URLSearchParams(socialToken.data).get('access_token') : socialToken.data.access_token}`
                 }
             });
@@ -59,6 +59,7 @@ export const socialLoginService = {
                 profile : {
                     nickname: profile.nickname,
                     image_url: profile.image_url,
+                    darkmode: profile.darkmode,
                     email
                 }
             }
