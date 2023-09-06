@@ -5,8 +5,6 @@ import { morganMiddleware } from '@/utils';
 import { errorMiddleware } from '@/middleware';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
-import passport from 'passport';
-import { passportConfig } from '@/common'
 import { routes } from '@/routes';
 import db from '@/database';
 
@@ -14,7 +12,6 @@ const app = express();
 app.set('trust proxy', true);
 
 // middlewares
-app.use(passport.initialize());
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ limit: '100mb', extended: false }));
 app.use(cookieParser());
@@ -28,7 +25,6 @@ app.use(
 );
 app.use(compression());
 app.use(morganMiddleware);
-passportConfig();
 
 // routes
 routes.forEach((route) => {
