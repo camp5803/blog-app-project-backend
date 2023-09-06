@@ -4,14 +4,15 @@ import { userService } from '@/service';
 import { profileRepository } from "@/repository";
 
 export const getProfileById = asyncWrapper(async (req, res) => {
-    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
-    const user = await profileRepository.findUserInformationById(userId);
-    if (user.error) {
+    try {
+        const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
+        const userData = await profileRepository.findUserInformationById(userId);
+        return res.status(StatusCodes.OK).json(userData.dataValues);
+    } catch (error) {
         return res.status(StatusCodes.BAD_REQUEST).json({
-            message: user.message
+            message: error.message
         });
     }
-    return res.status(StatusCodes.OK).json(user.dataValues);
 });
 
 export const validateEmail = asyncWrapper(async (req, res) => {
@@ -65,8 +66,8 @@ export const updateProfileImage = asyncWrapper(async (req, res) => {
 export const deleteUser = asyncWrapper(async (req, res) => {
     const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
     if (userId === undefined) {
-        return res.status(StatusCodes.FORBIDDEN).json({
-            message: "[Withdrawal Error#3] Permission denied."
+        return res.status(StatusCodes.UNAUTHORIZED).json({
+            message: "[Withdrawal Error#3] Unauthorized user. Please login to continue."
         });
     }
     const result = await userService.deleteUser(userId);

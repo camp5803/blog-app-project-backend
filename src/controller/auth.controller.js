@@ -1,7 +1,7 @@
 import { asyncWrapper } from '@/common';
 import { StatusCodes } from 'http-status-codes';
 import passport from 'passport';
-import { authService, socialLoginService } from '@/service';
+import { authService, socialLoginService, userService } from '@/service';
 
 const cookieOptions = {
     httpOnly: true,
@@ -12,32 +12,73 @@ if (process.env.SECURE_ENABLED) {
     cookieOptions.secure = true;
 }
 
+// export const createAuth = asyncWrapper(async (req, res) => {
+//     passport.authenticate('local', { session: false }, (err, user) => {
+//         if (err || !user) {
+//             return res.status(StatusCodes.UNAUTHORIZED).json({
+//                 message: "[Login Failed #1] Please check your email and password"
+//             })
+//         }
+//
+//         req.login(user, { session: false }, async (err) => {
+//             if (err) {
+//                 return res.status(StatusCodes.BAD_REQUEST).json({
+//                     message: "[Login Failed #2] Bad request"
+//                 });
+//             }
+//
+//             if (token.error) {
+//                 return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+//                     message: token.error
+//                 });
+//             }
+//
+//
+//             return res.status(StatusCodes.OK).end();
+//         });
+//     })(req, res);
+// });
+
 export const createAuth = asyncWrapper(async (req, res) => {
-    passport.authenticate('local', { session: false }, (err, user) => {
-        if (err || !user) {
-            return res.status(StatusCodes.UNAUTHORIZED).json({
-                message: "[Login Failed #1] Please check your email and password"
-            })
-        }
-
-        req.login(user, { session: false }, async (err) => {
-            if (err) {
-                return res.status(StatusCodes.BAD_REQUEST).json({
-                    message: "[Login Failed #2] Bad request"
-                });
-            }
-            const token = await authService.createToken(user.user_id);
-            if (token.error) {
-                return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-                    message: token.error
-                });
-            }
-            res.cookie('access_token', token.accessToken, cookieOptions);
-            res.cookie('refresh_token', token.refreshToken, cookieOptions);
-
-            return res.status(StatusCodes.OK).end();
+    const token = await authService.login(req.body.email, req.body.password);
+    if (token.message) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: token.message
         });
-    })(req, res);
+    }
+    const userData = await userService.getUserInformation(token.accessToken);
+    if (userData.message) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: userData.message
+        });
+    }
+    res.cookie('access_token', token.accessToken, cookieOptions);
+    res.cookie('refresh_token', token.refreshToken, cookieOptions);
+
+    return res.status(StatusCodes.OK).json(userData);
+});
+
+export const socialCallbackHandler_tmp = asyncWrapper(async (req, res) => {
+    const type = req.params.type;
+    const result = await socialLoginService.login(type, req.body.code, req.body.uri);
+    if (result.message) {
+        return res.status(StatusCodes.BAD_REQUEST).json({
+            message: result.message
+        });
+    }
+    res.cookie('access_token', result.token.accessToken, cookieOptions);
+    res.cookie('refresh_token', result.token.refreshToken, cookieOptions);
+    if (result.profile.email == null) {
+        return res.status(StatusCodes.CREATED).json({
+            message: "[Alert] Email information needs to be updated",
+            nickname: result.profile.nickname,
+            image_url: result.profile.image_url,
+        });
+    }
+    return res.status(StatusCodes.CREATED).json({
+        nickname: result.profile.nickname,
+        image_url: result.profile.image_url,
+    });
 });
 
 export const socialCallbackHandler = asyncWrapper(async (req, res) => {
@@ -95,12 +136,15 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
     });
 });
 
-export const reissueAccessToken = asyncWrapper(async (req, res) => { // body: accessToken
-    const accessToken = await authService.reissueToken(req.body.token);
-    if (accessToken.error) {
+export const reissueAccessToken = asyncWrapper(async (req, res) => {
+    const tokens = await authService.reissueToken(
+        req.cookies['access_token'], req.cookies['refresh_token']);
+    if (tokens.message) {
         return res.status(StatusCodes.BAD_REQUEST).json({
-            message: accessToken.error
+            message: tokens.message
         });
     }
-    return res.status(200).json({ accessToken });
+    res.cookie('access_token', tokens.accessToken, cookieOptions);
+    res.cookie('refresh_token', tokens.refreshToken, cookieOptions);
+    return res.status(StatusCodes.OK).end();
 });

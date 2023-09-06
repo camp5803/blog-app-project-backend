@@ -4,44 +4,67 @@ const {
     User, Password, Profile, Preference, sequelize
 } = db;
 
+const createUserRecord = async (data, transaction) => {
+    return await User.create({
+        email: data.email,
+        login_type: 0
+    }, { transaction });
+};
+
+const createPasswordRecord = async (userId, password, transaction) => {
+    return await Password.create({
+        user_id: userId,
+        password: createPassword(password)
+    }, { transaction });
+};
+
+const createPreferenceRecord = async (userId, transaction) => {
+    return await Preference.create({
+        user_id: userId
+    }, { transaction });
+};
+
+const createProfileRecord = async (userId, nickname, transaction) => {
+    return await Profile.create({
+        user_id: userId,
+        nickname
+    }, { transaction });
+};
+
 export const userRepository = {
-    findByUserId: async (data) => {
-        return await User.findOne({ where: { user_id: data }});
+    findByUserId: async (userId) => {
+        return await User.findOne({ where: { user_id: userId }});
+    },
+    findEmailByUserId: async (userId) => {
+        return await User.findOne({
+            where: { user_id: userId },
+            attributes: ['email']
+        });
     },
     findByEmail: async (email) => {
-        return await User.findOne({ where: { email }});
+        return await User.findOne({
+            where: { email },
+            attributes: ['email']
+        });
     },
-    createUser: async (data) => { // 유저 데이터 그대로 믿으면 안됨
+    createUser: async (data) => { // 어케수정하지 고민됨
+        const transaction = await sequelize.transaction();
         try {
-            return await sequelize.transaction(async (transaction) => {
-                const user = await User.create({
-                    email: data.email,
-                    login_type: "local"
-                }, { transaction });
+            const user = await createUserRecord(data, transaction);
+            await Promise.all([
+                createPasswordRecord(user.dataValues.user_id, data.password, transaction),
+                createPreferenceRecord(user.dataValues.user_id, transaction),
+                createProfileRecord(user.dataValues.user_id, data.nickname, transaction)
+            ])
 
-                await Password.create({
-                    user_id: user.user_id,
-                    password: createPassword(data.password)
-                }, { transaction });
-
-                await Preference.create({
-                    user_id: user.user_id
-                }, { transaction });
-
-                return await Profile.create({
-                    user_id: user.user_id,
-                    nickname: data.nickname
-                }, { transaction });
-            });
-        } catch (e) {
-            return {
-                error: true,
-                message: '[Signup Error#2] Transaction failed.'
-            }
+            await transaction.commit();
+            return user;
+        } catch (error) {
+            await transaction.rollback();
+            return error;
         }
-        
     },
-    deleteUser: async (user_id) => {
-        return await User.destroy({ where : { user_id: user_id }});
+    deleteUser: async (userId) => {
+        return await User.destroy({ where : { user_id: userId }});
     }
 }

@@ -7,17 +7,25 @@ export const profileRepository = {
         const result = verifyToken(token);
         return result.user_id;
     },
-    findUserInformationById: async (user_id) => {
-        return await Profile.findOne({
-            where: { user_id },
+    findUserInformationById: async (userId) => {
+        const profile = await Profile.findOne({
+            where: { userId },
             attributes: ['nickname', 'image_url'],
-            include: [ { model: Preference, attributes: ['darkmode_status'] }]
         });
+        const preference = await Preference.findOne({
+            where: { userId },
+            attributes: ['darkmode_status']
+        });
+        return {
+            nickname: profile.dataValues.nickname,
+            image_url: profile.dataValues.image_url || '',
+            darkmode: preference.dataValues.darkmode_status
+        }
     },
-    findByUserId: async (user_id) => {
-        return await Profile.findOne({ where: { user_id } });
+    findByUserId: async (userId) => {
+        return await Profile.findOne({ where: { userId } });
     },
-    updateProfile: async (user_id, userData) => {
-        return await Profile.update(userData, { where: { user_id } });
+    updateProfile: async (userId, userData) => {
+        return await Profile.update(userData, { where: { userId } });
     }
 }

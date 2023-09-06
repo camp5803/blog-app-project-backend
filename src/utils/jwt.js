@@ -1,30 +1,47 @@
 import jwt from 'jsonwebtoken';
 import { redisCli as redisClient } from '@/utils';
 
-export const createToken = async (user_id) => {
-    const privateKey = process.env.PRIVATE_KEY;
+const storeToken = async (userId, accessToken, refreshToken) => {
     try {
-        const accessToken = jwt.sign({ user_id }, privateKey, {
+        const tokens = JSON.stringify({ accessToken, refreshToken })
+        await redisClient.hsetAsync('tokens', userId, tokens);
+        return true;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const createToken = async (userId) => {
+    const privateKey = process.env.PRIVATE_KEY;
+    if (typeof(userId) === "number") {
+        userId = userId.toString();
+    }
+    try {
+        const accessToken = jwt.sign({ user_id: userId }, privateKey, {
             algorithm: "RS512",
             expiresIn: '30m' 
         });
-        const refreshToken = jwt.sign({}, privateKey, {
+        const refreshToken = jwt.sign({ user_id: userId }, privateKey, {
             algorithm: "RS512",
             expiresIn: "14d"
         });
-        if (typeof(user_id) === "number") {
-            user_id = user_id.toString();
-        }
-        const result = await redisClient.set(user_id, refreshToken, "EX", 1209600); // 14d
-        if (result.error) {
-            return {
-                error: true,
-                message: "[Login Failed #4] ".concat(result.error) ,
-            }
-        }
+        await storeToken(userId, accessToken, refreshToken);
+
         return { accessToken, refreshToken };
     } catch (error) {
-        return { error };
+        throw error;
+    }
+}
+
+export const getTokens = async (userId) => {
+    try {
+        const tokens = await redisClient.hgetAsync('tokens', userId);
+        if (!tokens) {
+            return false;
+        }
+        return JSON.parse(tokens);
+    } catch (error) {
+        throw error;
     }
 }
 
@@ -33,6 +50,9 @@ export const verifyToken = (token) => {
     try {
         return jwt.verify(token, publicKey);
     } catch (error) {
-        return { error };
+        if (error.name === 'TokenExpiredError') {
+            return { error: error.name };
+        }
+        throw { error };
     }
 }
