@@ -12,20 +12,33 @@ export const userService = {
             return { message: error }
         }
     },
+    isNickNameExists: async (nickname) => {
+        try {
+            const user = await userRepository.findByEmail(nickname);
+            if (user) {
+                return { message: "Nickname Already exists." }
+            }
+            return { OK: true };
+        } catch (error) {
+            return { message: error }
+        }
+},
     getUserInformation: async (accessToken) => {
         try {
             const userId = profileRepository.findUserIdByToken(accessToken);
             const userData = await profileRepository.findUserInformationById(userId);
-            return userData.dataValues;
+            return userData;
         } catch (error) {
             return { message: error.message };
         }
     },
     createUser: async (data) => {
         try {
-            const user = await userRepository.findByEmail(data.email);
-            if (user) {
-                return { message: "[Signup Error#1] Email Already exists." }
+            const email = await userRepository.findByEmail(data.email);
+            const nickname = await userRepository.findByNickname(data.nickname);
+            if (email || nickname) {
+                return { message: email ? `[Signup Error#1] Email Already exists.`
+                        : `[Signup Error#2] Nickname Already exists.` };
             }
             return await userRepository.createUser(data);
         } catch (error) {
