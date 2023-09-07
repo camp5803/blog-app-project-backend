@@ -12,7 +12,7 @@ export const postService = {
 
     verifyUser: async (post_id, user_id) => {
         const post = await postRepository.findByPostId(post_id);
-        return post.user_id === user_id ? true : false;
+        return post.user_id === Number(user_id) ? true : false;
     },
 
     updatePost: async (postData) => {
@@ -36,10 +36,39 @@ export const postService = {
             throw new Error('Error delete post');
         }
     },
+
     getByPostDetail: async (postId) => {
         try {
-            const post = await postRepository.getByPostDetail(postId);
-            return post;
+            // post detail 조회
+            const post = await postRepository.findByPostId(postId);
+
+            // 조회수 1 증가
+            await postRepository.updatePostViewCount(post);
+
+            // 작성자 닉네임 조회
+            const nickname = await postRepository.getUserNickname(post.user_id);
+
+            // 좋아요 여부를 불리언으로 설정
+            const liked = await postRepository.isLiked(post.user_id, post.post_id);
+
+            const categories = await post.getCategories();
+            const images = await post.getImages();
+
+            const postDetail = {
+                post_id: post.post_id,
+                user_id: post.user_id,
+                nickname,
+                title: post.title,
+                content: post.content,
+                view: post.view,
+                like: post.like,
+                liked,
+                categories: categories.map((category) => category.category),
+                created_at: post.created_at,
+                img: images.map((image) => image.image)
+            };
+
+            return postDetail;
         } catch (error) {
             console.log(error);
             throw new Error('Error get detail post');

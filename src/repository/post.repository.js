@@ -112,39 +112,19 @@ module.exports = {
         }
     },
 
-    getByPostDetail: async (postId, user_id) => {
-        try {
-            const post = await Post.findOne({where: {post_id: postId}});
-            post.view += 1; // 조회수는 service 단에서 다시 나눠지는게 맞을듯
-            await post.save();
+    updatePostViewCount: async (post) => {
+        post.view += 1;
+        await post.save();
+    },
 
-            const userProfile = await Profile.findOne({where: {user_id: post.user_id}})
-            const like = await Like.findOne({where: {user_id: user_id, post_id: postId}});
+    getUserNickname: async (user_id) => {
+        const userProfile = await Profile.findOne({where: {user_id}});
+        return userProfile.nickname;
+    },
 
-            const liked = !!like; // 좋아요 여부를 불리언으로 설정
-
-            const categories = await post.getCategories();
-            const images = await post.getImages();
-
-            const resData = {
-                post_id: post.post_id,
-                user_id: post.user_id,
-                nickname: userProfile.nickname,
-                title: post.title,
-                content: post.content,
-                view: post.view,
-                like: post.like,
-                liked: liked,
-                categories: categories.map((category) => category.category),
-                created_at: post.created_at,
-                img: images.map((image) => image.image)
-            };
-            console.log(resData)
-            return resData;
-        } catch (error) {
-            console.log(error);
-            throw new Error('Error delete post in repository');
-        }
+    isLiked: async (user_id, post_id) => {
+        const like = await Like.findOne({where: {user_id, post_id}});
+        return !!like;
     },
 
     getPostsByPage: async (page, pageSize, order, id, sort) => {
@@ -275,4 +255,4 @@ module.exports = {
             throw new Error('Error get post in repository');
         }
     }
-}
+};
