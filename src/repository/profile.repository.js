@@ -19,7 +19,7 @@ export const profileRepository = {
         return {
             nickname: profile.dataValues.nickname,
             image_url: profile.dataValues.image_url || '',
-            darkmode: preference.dataValues.darkmode_status
+            darkmode: preference.dataValues.darkmode_status ? 1 : 0
         }
     },
     findByUserId: async (userId) => {
