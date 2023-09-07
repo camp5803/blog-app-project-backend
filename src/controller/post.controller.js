@@ -20,6 +20,19 @@ module.exports = {
         res.status(StatusCodes.CREATED).json({id: post, message: 'create success'});
     }),
 
+    verifyUser: asyncWrapper(async (req, res) => {
+        const post_id = req.params.id;
+        const {user_id} = req.user;
+
+        const verification = await postService.verifyUser(post_id, user_id);
+
+        if (verification) {
+            res.status(StatusCodes.OK).json({message: 'ok'});
+        } else {
+            res.status(StatusCodes.FORBIDDEN).json({message: 'Permission Denied'});
+        }
+    }),
+
     updatePost: asyncWrapper(async (req, res) => {
         const {title, content, img, thumbnail} = req.body;
         const post_id = req.params.id;

@@ -10,6 +10,11 @@ export const postService = {
         }
     },
 
+    verifyUser: async (post_id, user_id) => {
+        const post = await postRepository.findByPostId(post_id);
+        return post.user_id === user_id ? true : false;
+    },
+
     updatePost: async (postData) => {
         try {
             console.log('service', postData);
