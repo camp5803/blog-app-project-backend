@@ -65,7 +65,8 @@ export const postService = {
                 liked,
                 categories: categories.map((category) => category.category),
                 created_at: post.created_at,
-                img: images.map((image) => image.image)
+                img: images.map((image) => image.image),
+                thumbnail: post.thumbnail
             };
 
             return postDetail;
