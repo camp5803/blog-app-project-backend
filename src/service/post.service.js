@@ -1,4 +1,5 @@
 import * as postRepository from '@/repository/post.repository';
+import {verifyToken} from "@/utils";
 
 export const postService = {
     createPost: async (postData) => {
@@ -10,9 +11,22 @@ export const postService = {
         }
     },
 
-    verifyUser: async (post_id, user_id) => {
+    verifyUser: async (req) => {
+        const token = req.cookies["access_token"];
+        if (!token) {
+            return false;
+        }
+
+        const verifyResult = verifyToken(token);
+        if (verifyResult.error) {
+            return false
+        }
+
+        const user_id = verifyResult.user_id;
+        const post_id = req.params.id;
+
         const post = await postRepository.findByPostId(post_id);
-        return post.user_id === Number(user_id) ? true : false;
+        return post.user_id === Number(user_id);
     },
 
     updatePost: async (postData) => {
@@ -37,12 +51,13 @@ export const postService = {
         }
     },
 
-    getByPostDetail: async (postId) => {
+    getByPostDetail: async (postId, isAuthor) => {
         try {
             // post detail 조회
             const post = await postRepository.findByPostId(postId);
 
             // 조회수 1 증가
+            // todo 따로 함수로 빼야할 듯
             await postRepository.updatePostViewCount(post);
 
             // 작성자 닉네임 조회
@@ -56,7 +71,7 @@ export const postService = {
 
             const postDetail = {
                 post_id: post.post_id,
-                user_id: post.user_id,
+                isAuthor,
                 nickname,
                 title: post.title,
                 content: post.content,

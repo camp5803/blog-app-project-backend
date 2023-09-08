@@ -21,10 +21,7 @@ module.exports = {
     }),
 
     verifyUser: asyncWrapper(async (req, res) => {
-        const post_id = req.params.id;
-        const {user_id} = req.user;
-
-        const verification = await postService.verifyUser(post_id, user_id);
+        const verification = await postService.verifyUser(req);
 
         if (verification) {
             res.status(StatusCodes.OK).json({message: 'ok'});
@@ -73,7 +70,9 @@ module.exports = {
             if (!post_id) {
                 return res.status(400).json({message: 'Post ID is missing'});
             }
-            const post = await postService.getByPostDetail(post_id);
+
+            const isAuthor = await postService.verifyUser(req);
+            const post = await postService.getByPostDetail(post_id, isAuthor);
             if (!post) {
                 return res.status(404).json({message: 'Post not found'});
             }
