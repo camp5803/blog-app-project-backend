@@ -64,22 +64,20 @@ module.exports = {
     }),
 
     getByPostDetail: asyncWrapper(async (req, res) => {
-        try {
-            const post_id = req.params.id;
-            if (!post_id) {
-                return res.status(400).json({message: 'Post ID is missing'});
-            }
-
-            const isAuthor = await postService.verifyUser(req);
-            const post = await postService.getByPostDetail(post_id, isAuthor);
-            if (!post) {
-                return res.status(404).json({message: 'Post not found'});
-            }
-            res.status(201).json(post);
-        } catch (error) {
-            console.error(error.message);
-            res.status(500).json(error);
+        const post_id = req.params.id;
+        if (!post_id) {
+            return res.status(400).json({message: 'Post ID is missing'});
         }
+
+        const isAuthor = await postService.verifyUser(req);
+        const {postDetail, post} = await postService.getByPostDetail(post_id, isAuthor);
+        if (!postDetail) {
+            return res.status(404).json({message: 'Post not found'});
+        }
+
+        postDetail.view = await postService.increaseViewCount(req.ip, post);
+
+        res.status(201).json(postDetail);
     }),
 
     getPostsByPage: asyncWrapper(async (req, res) => {

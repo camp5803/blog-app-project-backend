@@ -1,5 +1,5 @@
 import * as postRepository from '@/repository/post.repository';
-import {verifyToken} from "@/utils";
+import {verifyToken, redisCli as redisClient} from "@/utils";
 
 export const postService = {
     createPost: async (postData) => {
@@ -55,14 +55,25 @@ export const postService = {
         }
     },
 
+    increaseViewCount: async (ip, post) => {
+        const viewerKey = `viewer:${post.post_id}:${ip}`;
+
+        const isViewed = await redisClient.get(viewerKey);
+        if (isViewed) {
+            return post.view;
+        }
+
+        const EXPIRATION_TIME = 1800;   // 1800초(30분) 이내 조회 여부
+        await redisClient.set(`viewer:${post.post_id}:${ip}`, new Date().getTime(), {EX: EXPIRATION_TIME});
+
+        const updatedViewCount = await postRepository.increaseViewCount(post);
+        return updatedViewCount
+    },
+
     getByPostDetail: async (postId, isAuthor) => {
         try {
             // post detail 조회
             const post = await postRepository.findByPostId(postId);
-
-            // 조회수 1 증가
-            // todo 따로 함수로 빼야할 듯
-            await postRepository.updatePostViewCount(post);
 
             // 작성자 닉네임 조회
             const nickname = await postRepository.getUserNickname(post.user_id);
@@ -88,7 +99,7 @@ export const postService = {
                 thumbnail: post.thumbnail
             };
 
-            return postDetail;
+            return {postDetail, post};
         } catch (error) {
             console.log(error);
             throw new Error('Error get detail post');
