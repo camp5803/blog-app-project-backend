@@ -12,14 +12,14 @@ module.exports = {
             env: {
                 // 개발 환경설정
                 NODE_ENV: 'development',
-                PORT: 8080,
+                PORT: 8000,
                 SERVER_URL: "jiyong.world",
                 PRIVATE_KEY: process.env.PRIVATE_KEY,
                 PUBLIC_KEY: process.env.PUBLIC_KEY,
                 REDIS_HOST: process.env.REDIS_HOST,
                 REDIS_PORT: process.env.REDIS_PORT,
                 REDIS_USERNAME: process.env.REDIS_USERNAME,
-                REDIS_PASSWORD: process.env.REIDS_PASSWORD,
+                REDIS_PASSWORD: process.env.REDIS_PASSWORD,
                 REDIS_DATABASE: process.env.REDIS_DATABASE,
                 GITHUB_ID: process.env.GITHUB_ID,
                 GITHUB_SECRET: process.env.GITHUB_SECRET,
