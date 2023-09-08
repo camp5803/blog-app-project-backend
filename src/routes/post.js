@@ -14,7 +14,7 @@ const router = express.Router();
 import { isAuthenticated, isAuthorized } from "@/middleware";
 
 // 토큰 검증 필요 x
-router.get('/post/all/:sort/:id', getPostsByPage);
+router.get('/post/all/:sort', getPostsByPage);
 router.get('/post/detail/:id', getByPostDetail);
 router.get('/post/:id/verification', verifyUser);
 
