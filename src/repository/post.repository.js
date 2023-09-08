@@ -1,7 +1,4 @@
 import db from '../database/index.js';
-import {sequelize} from 'sequelize';
-import {bookmark} from '@/database/model/bookmark.js';
-import {post} from '@/database/model/post.js';
 
 const {Post, Image, Category, Profile, Neighbor, Bookmark, Like} = db;
 
