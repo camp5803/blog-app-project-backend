@@ -17,6 +17,7 @@ export const isAuthenticated = (req, res, next) => {
         }
         return next();
     }
+    req.user = verifyResult;
     return next();
 }
 
@@ -38,5 +39,6 @@ export const isAuthorized = (req, res, next) => { // 유저 인증이 필요한 
             message: "[Token Error#2] Invalid access token."
         });
     }
+    req.user = verifyResult;
     return next();
 }

@@ -1,14 +1,29 @@
 import express from 'express';
-import { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage, toggleBookmark, toggleLike } from '@/controller';
+import {
+    createPost,
+    updatePost,
+    deletePost,
+    getByPostDetail,
+    getPostsByPage,
+    toggleBookmark,
+    toggleLike,
+    verifyUser
+} from '@/controller/post.controller';
+
 const router = express.Router();
 import { isAuthenticated, isAuthorized } from "@/middleware";
 
-router.route('/post').post(createPost);
-router.route('/post/:id').patch(updatePost);
-router.route('/post/:id').delete(deletePost);
-router.route('/post/detail/:id/:user_id').get(getByPostDetail);
-router.route('/post/all/:sort/:id').get(getPostsByPage); 
-router.route('/post/bookmark').post(toggleBookmark);
-router.route('/post/like').post(toggleLike);
+// 토큰 검증 필요 x
+router.get('/post/all/:sort/:id', getPostsByPage);
+router.get('/post/detail/:id', getByPostDetail);
+
+// 토큰 검증 필요 o
+router.use(isAuthenticated);
+router.post('/post', createPost);
+router.get('/post/:id/verification', verifyUser);
+router.post('/post/bookmark', toggleBookmark);
+router.post('/post/like', toggleLike);
+router.patch('/post/:id', updatePost);
+router.delete('/post/:id', deletePost);
 
 export default router;
