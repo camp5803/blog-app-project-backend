@@ -87,9 +87,10 @@ module.exports = {
         }
     },
 
-    updatePostViewCount: async (post) => {
+    increaseViewCount: async (post) => {
         post.view += 1;
         await post.save();
+        return post.view;
     },
 
     getUserNickname: async (user_id) => {
