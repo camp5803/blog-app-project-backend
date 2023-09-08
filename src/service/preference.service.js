@@ -1,4 +1,4 @@
-import { preferenceRepository } from "@/repository/preference.repository";
+import { preferenceRepository } from "@/repository";
 
 export const preferenceService = {
     getPreferences: async (userId) => {

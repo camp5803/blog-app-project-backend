@@ -1,4 +1,4 @@
-import db from '@/database/index';
+import db from '@/database';
 
 const { User, Password } = db;
 
