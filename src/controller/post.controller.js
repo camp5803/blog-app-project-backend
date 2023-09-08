@@ -40,7 +40,6 @@ module.exports = {
             img: img,
             thumbnail: thumbnail
         }
-        console.log(postData);
         const post = await postService.updatePost(postData);
 
         if (post === 0) {

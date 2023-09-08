@@ -54,39 +54,17 @@ module.exports = {
 
 
     updatePost: async (postData) => {
+        const {post_id, title, content, img, thumbnail} = postData;
+        const [post] = await Post.update({title, content, thumbnail, updated_at: new Date()},
+            {where: {post_id: post_id}})
+        return post;
+    },
 
-        try {
-            console.log('repository', postData);
-
-            const {post_id, title, content, img, thumbnail} = postData;
-
-            console.log(postData)
-            const [post] = await Post.update({title, content, thumbnail, updated_at: new Date()},
-                {where: {post_id: post_id}})
-
-            // 게시물이 없는 경우
-            if (post === 0) {
-                return 0;
-            }
-            if (img && img.length > 0) {
-                for (let i = 0; i < img.length; i++) {
-                    // 이미지 업데이트
-                    await Image.update({image: img[i]}, {where: {post_id: post_id}});
-
-                    // 이미지가 있을 때만 연결
-                    if (post && post.addImage) {
-                        const image = await Image.findOne({where: {post_id: post_id}});
-                        if (image) {
-                            await post.addImage(image);
-                        }
-                    }
-                }
-            }
-
-            return post;
-        } catch (error) {
-            console.log(error);
-            throw new Error('Error updating post in repository');
+    // todo 이미지 삭제 후 새로 insert -> 고도화 때 업데이트로 수정 예정
+    updatePostImage: async (post_id, img) => {
+        await Image.destroy({where: {post_id}});
+        for (const image of img) {
+            await Image.create({post_id, image});
         }
     },
 

@@ -30,14 +30,18 @@ export const postService = {
     },
 
     updatePost: async (postData) => {
-        try {
-            console.log('service', postData);
-            const post = await postRepository.updatePost(postData);
-            return post;
-        } catch (error) {
-            console.log(error)
-            throw new Error('Error updating post');
+        const post = await postRepository.updatePost(postData);
+
+        // 게시물이 없는 경우
+        if (post === 0) {
+            return 0;
         }
+
+        if (postData.img && postData.img.length > 0) {
+            await postRepository.updatePostImage(postData.post_id, postData.img);
+        }
+
+        return post;
     },
 
     deletePost: async (post_id) => {
