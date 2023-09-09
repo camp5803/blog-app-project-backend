@@ -11,7 +11,7 @@ if (process.env.SECURE_ENABLED) {
     cookieOptions.secure = true;
 }
 
-export const createAuth = asyncWrapper(async (req, res) => {
+const createAuth = asyncWrapper(async (req, res) => {
     const token = await authService.login(req.body.email, req.body.password);
     if (token.message) {
         return res.status(StatusCodes.BAD_REQUEST).json({
@@ -30,7 +30,7 @@ export const createAuth = asyncWrapper(async (req, res) => {
     return res.status(StatusCodes.OK).json(userData);
 });
 
-export const socialCallbackHandler = asyncWrapper(async (req, res) => {
+const socialCallbackHandler = asyncWrapper(async (req, res) => {
     const type = req.params.type;
     const result = await socialLoginService.login(type.toUpperCase(), req.body.code, req.body.uri);
     if (result.message) {
@@ -55,7 +55,7 @@ export const socialCallbackHandler = asyncWrapper(async (req, res) => {
     });
 });
 
-export const reissueAccessToken = asyncWrapper(async (req, res) => {
+const reissueAccessToken = asyncWrapper(async (req, res) => {
     const tokens = await authService.reissueToken(
         req.cookies['access_token'], req.cookies['refresh_token']);
     if (tokens.message) {
@@ -67,3 +67,9 @@ export const reissueAccessToken = asyncWrapper(async (req, res) => {
     res.cookie('refresh_token', tokens.refreshToken, cookieOptions);
     return res.status(StatusCodes.OK).end();
 });
+
+export const authController = {
+    createAuth,
+    reissueAccessToken,
+    socialCallbackHandler
+}

@@ -1,4 +1,4 @@
-import { userRepository, profileRepository } from '@/repository';
+import { profileRepository, userRepository } from '@/repository';
 
 export const userService = {
     isEmailExists: async (email) => {
@@ -12,7 +12,7 @@ export const userService = {
             return { message: error }
         }
     },
-    isNickNameExists: async (nickname) => {
+    isNicknameExists: async (nickname) => {
         try {
             const user = await userRepository.findByEmail(nickname);
             if (user) {
@@ -26,8 +26,7 @@ export const userService = {
     getUserInformation: async (accessToken) => {
         try {
             const userId = profileRepository.findUserIdByToken(accessToken);
-            const userData = await profileRepository.findUserInformationById(userId);
-            return userData;
+            return await profileRepository.findUserInformationById(userId);
         } catch (error) {
             return { message: error.message };
         }
