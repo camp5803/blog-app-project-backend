@@ -14,6 +14,7 @@ module.exports = {
                 NODE_ENV: 'development',
                 PORT: 8000,
                 SERVER_URL: "jiyong.world",
+                SECURE_ENABLED: true,
                 PRIVATE_KEY: process.env.PRIVATE_KEY,
                 PUBLIC_KEY: process.env.PUBLIC_KEY,
                 REDIS_HOST: process.env.REDIS_HOST,
