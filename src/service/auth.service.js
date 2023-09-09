@@ -1,41 +1,36 @@
 import jwt from 'jsonwebtoken';
-import { authRepository } from '@/repository';
-import { createToken, redisCli as redisClient } from '@/utils/index';
+import { authRepository, passwordRepository } from '@/repository';
+import {createToken, getTokens, verifyToken} from '@/utils';
+import bcrypt from "bcrypt";
 
 export const authService = {
-    reissueToken: async (token) => { 
-        const privateKey = process.env.PRIVATE_KEY;
-        const payload = jwt.decode(token);
-
-        const refreshToken = await authRepository.getRefreshToken(payload.user_id);
-        if (refreshToken === null) {
-            return {
-                error: true,
-                message: "[Refresh Error#1] Refresh token expired."
-            }
-        }
-        
-        const accessToken = jwt.sign({ user_id: payload.user_id }, privateKey, {
-            algorithm: "RS512",
-            expiresIn: '30m'
-        });
-
-        return accessToken;
-    },
-    createToken: async (user) => {
+    login: async (email, password) => {
         try {
-            const token = createToken(user);
-            const result = await redisClient.set(user.user_id.toString(), token.refreshToken, "EX", 1209600); // 14d
-            if (result.error) {
-                return {
-                    error: "[Login Failed #4] ".concat(result.error) ,
-                }
+            const user = await passwordRepository.findByEmail(email);
+            if (!user) {
+                return { message: "[Login Failed #2] Please check your email and password." }
             }
-            return token;
-        } catch (e) {
-            return {
-                error: "[Login Failed #5] Token creation failed.",
+            if (bcrypt.compareSync(password, user.password.dataValues.password)) {
+                return await createToken(user.dataValues.user_id);
             }
+            return { message: "[Login Failed #1] Please check your email and password." }
+        } catch (error) {
+            return { message: error.message }
+        }
+    },
+    reissueToken: async (accessToken, refreshToken) => {
+        try {
+            const payload = await verifyToken(refreshToken);
+            if (payload.error === "TokenExpiredError") {
+                return { message: "[Refresh Error#1] Refresh token expired." }
+            }
+            const tokens = await getTokens(payload.user_id);
+            if (!(tokens.accessToken === accessToken)) {
+                return { message: "[Refresh Error#2] Refresh token is invalid." }
+            }
+            return await createToken(payload.user_id);
+        } catch (error) {
+            return { message: error.message }
         }
     }
 }

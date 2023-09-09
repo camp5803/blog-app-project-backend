@@ -13,19 +13,19 @@ export const post = (sequelize, DataTypes) => {
         //     type: DataTypes.INTEGER,
         //     allowNull: false
         // },
-        category_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
         title: {
             type: DataTypes.STRING(45),
             allowNull: false,
         },
         content: {
-            type: DataTypes.TEXT,
+            type: DataTypes.TEXT('long'),
             allowNull: false
         },
         view: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            allowNull: true
+        },
+        like: {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: true
         },
@@ -37,6 +37,10 @@ export const post = (sequelize, DataTypes) => {
         updated_at: {
             type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+            allowNull: true
+        },
+        thumbnail: {
+            type: DataTypes.TEXT('long'),
             allowNull: true
         }
     }, {

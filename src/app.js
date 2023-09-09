@@ -1,21 +1,19 @@
 import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
-import { morganMiddleware } from '@/utils/index';
-import { errorMiddleware, limiter } from '@/middleware/index';
+import { morganMiddleware } from '@/utils';
+import { errorMiddleware } from '@/middleware';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
-import passport from 'passport';
-import { passportConfig } from '@/common/index'
-import { routes } from '@/routes/index.js';
-import db from '@/database/index.js';
+import { routes } from '@/routes';
+import db from '@/database';
 
 const app = express();
+app.set('trust proxy', true);
 
 // middlewares
-app.use(passport.initialize());
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: false }));
 app.use(cookieParser());
 app.use(helmet());
 app.use(
@@ -27,8 +25,6 @@ app.use(
 );
 app.use(compression());
 app.use(morganMiddleware);
-app.use(limiter);
-passportConfig();
 
 // routes
 routes.forEach((route) => {
