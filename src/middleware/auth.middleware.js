@@ -10,13 +10,16 @@ export const isAuthenticated = (req, res, next) => {
     }
     const verifyResult = verifyToken(token);
     if (verifyResult.error) {
-        if (verifyResult.error.message === "TokenExpiredError") {
+        if (verifyResult.error === "TokenExpiredError") {
             return res.status(StatusCodes.BAD_REQUEST).json({
                 message: "[Token Error#3] Access token has expired."
             });
         }
-        return next();
+        return res.status(StatusCodes.UNAUTHORIZED).json({
+            message: "[Token Error#2] Invalid access token."
+        });
     }
+    req.user = verifyResult;
     return next();
 }
 
@@ -38,5 +41,6 @@ export const isAuthorized = (req, res, next) => { // 유저 인증이 필요한 
             message: "[Token Error#2] Invalid access token."
         });
     }
+    req.user = verifyResult;
     return next();
 }
