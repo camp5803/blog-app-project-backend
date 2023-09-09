@@ -20,6 +20,11 @@ router.route('/users/preferences')
 router.patch('/users/image', isAuthenticated,
     upload.single('image'), userController.updateProfileImage);
 
+router.route('/users/keyword')
+    .get(userController.getMyKeywords)
+    .post(isAuthorized, userController.createMyKeyword)
+    .delete(isAuthorized, userController.dissociateMyKeyword);
+
 router.get('/users/email', userController.validateEmail);
 router.get('/users/me', isAuthenticated, userController.getProfileById);
 

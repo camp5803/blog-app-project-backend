@@ -1,6 +1,6 @@
 import { asyncWrapper } from '@/common';
 import { StatusCodes } from 'http-status-codes';
-import { preferenceService, userService } from '@/service';
+import { preferenceService, userService, keywordService } from '@/service';
 import { profileRepository } from "@/repository";
 
 const getProfileById = asyncWrapper(async (req, res) => {
@@ -75,11 +75,6 @@ const updateProfileImage = asyncWrapper(async (req, res) => {
 
 const deleteUser = asyncWrapper(async (req, res) => {
     const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
-    if (userId === undefined) {
-        return res.status(StatusCodes.UNAUTHORIZED).json({
-            message: "[Withdrawal Error#3] Unauthorized user. Please login to continue."
-        });
-    }
     const result = await userService.deleteUser(userId);
     if (result) {
         if (result.error === 404) {
@@ -116,6 +111,39 @@ const updateUserPreferences = asyncWrapper(async (req, res) => {
     return res.status(StatusCodes.OK).end();
 });
 
+const getMyKeywords = asyncWrapper(async (req, res) => {
+    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
+    const keywords = await keywordService.getUserKeywords(userId);
+    if (keywords.message) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: keywords.message
+        });
+    }
+    return res.status(StatusCodes.OK).json(keywords);
+});
+
+const createMyKeyword = asyncWrapper(async (req, res) => {
+    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
+    const result = await keywordService.createUserKeyword(userId, req.body.keyword);
+    if (result.message) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: result.message
+        });
+    }
+    return res.status(StatusCodes.CREATED).end();
+});
+
+const dissociateMyKeyword = asyncWrapper(async (req, res) => {
+    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
+    const result = keywordService.dissociateKeywordFromUser(userId, req.body.keyword);
+    if (result.message || result === 0) {
+        return res.status(result === 0 ? StatusCodes.BAD_REQUEST : StatusCodes.INTERNAL_SERVER_ERROR).json({
+            message: result === 0 ? "Keyword not associated." : result.message
+        });
+    }
+    return res.status(StatusCodes.OK).end();
+})
+
 export const userController = {
     getProfileById,
     validateEmail,
@@ -126,4 +154,7 @@ export const userController = {
     deleteUser,
     getUserPreferences,
     updateUserPreferences,
+    getMyKeywords,
+    createMyKeyword,
+    dissociateMyKeyword
 }
