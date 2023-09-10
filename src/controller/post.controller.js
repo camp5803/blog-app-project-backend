@@ -134,16 +134,14 @@ export const postController = {
     toggleLike: asyncWrapper(async (req, res) => {
         try {
             const {userId} = req.user;
-            const {postId} = req.body;
-            console.log(userId, postId)
+            const postId = req.params.id;
 
             const like = await postService.toggleLike(userId, postId);
-            if (like === 'like') {
-                res.status(200).json({liked: true, message: "like success"});
-            } else if (like === 'cancel') {
-                res.status(200).json({liekd: false, message: "like cancel success"});
-            } else {
-                res.status(500).json({message: "Unknown like action"});
+
+            if (!like.isLiked) {
+                res.status(200).json({liked: true, like: like.likeCount, message: "like success"});
+            } else{
+                res.status(200).json({liekd: false, like: like.likeCount, message: "like cancel success"});
             }
         } catch (error) {
             console.log(error)
