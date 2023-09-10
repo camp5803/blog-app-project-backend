@@ -2,7 +2,7 @@
 
 export const keyword = (sequelize, DataTypes) => {
     const Keyword = sequelize.define('keyword', {
-        keyword_id: {
+        keywordId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
@@ -24,10 +24,10 @@ export const keyword = (sequelize, DataTypes) => {
 
     Keyword.associate = (models) => {
         Keyword.hasMany(models.UserKeyword, { foreignKey: {
-            name: "keyword_id",
+            name: "keywordId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "keyword_id", onDelete: 'CASCADE' });
+        }, sourceKey: "keywordId", onDelete: 'CASCADE' });
     };
     return Keyword;
 };

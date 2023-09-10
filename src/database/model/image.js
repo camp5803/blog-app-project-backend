@@ -2,7 +2,7 @@
 
 export const image = (sequelize, DataTypes) => {
     const Image = sequelize.define('image', {
-        image_id: {
+        imageId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
@@ -30,7 +30,7 @@ export const image = (sequelize, DataTypes) => {
     });
 
     Image.associate = (models) => {
-        Image.belongsTo(models.Post, { foreignKey: "post_id", sourceKey: "post_id" });
+        Image.belongsTo(models.Post, { foreignKey: "postId", sourceKey: "postId" });
     };
     return Image;
 };

@@ -2,12 +2,12 @@
 
 export const like = (sequelize, DataTypes) => {
     const Like = sequelize.define('like', {
-        post_id: {
+        postId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
         },
-        // user_id: {
+        // userId: {
         //     type: DataTypes.INTEGER,
         //     primaryKey: true,
         //     allowNull: false,
@@ -23,16 +23,16 @@ export const like = (sequelize, DataTypes) => {
 
     Like.associate = (models) => {
         Like.belongsTo(models.User, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "user_id" });
+        }, sourceKey: "userId" });
 
         Like.belongsTo(models.Post, { foreignKey: {
-            name: "post_id",
+            name: "postId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "post_id" });
+        }, sourceKey: "postId" });
     };
     return Like;
 };

@@ -38,10 +38,10 @@ export const preference = (sequelize, DataTypes) => {
 
     Preference.associate = (models) => {
         Preference.belongsTo(models.User, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "user_id" });
+        }, sourceKey: "userId" });
     };
     return Preference;
 };

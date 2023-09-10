@@ -2,12 +2,12 @@
 
 export const userKeyword = (sequelize, DataTypes) => {
     const UserKeyword = sequelize.define('user_keyword', {
-        user_id: {
+        userId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
         },
-        keyword_id: {
+        keywordId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false
@@ -23,15 +23,15 @@ export const userKeyword = (sequelize, DataTypes) => {
 
     UserKeyword.associate = (models) => {
         UserKeyword.belongsTo(models.User, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "user_id" });
+        }, sourceKey: "userId" });
         UserKeyword.belongsTo(models.Keyword, { foreignKey: {
-            name: "keyword_id",
+            name: "keywordId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "keyword_id" });
+        }, sourceKey: "keywordId" });
     };
     return UserKeyword;
 };

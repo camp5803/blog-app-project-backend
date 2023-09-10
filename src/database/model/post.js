@@ -3,13 +3,13 @@ import { Sequelize } from "sequelize";
 
 export const post = (sequelize, DataTypes) => {
     const Post = sequelize.define('post', {
-        post_id: {
+        postId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
             autoIncrement: true,
         },
-        // user_id: {
+        // userId: {
         //     type: DataTypes.INTEGER,
         //     allowNull: false
         // },
@@ -29,12 +29,12 @@ export const post = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: true
         },
-        created_at: {
+        createdAt: {
             type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
         },
-        updated_at: {
+        updatedAt: {
             type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
@@ -53,33 +53,33 @@ export const post = (sequelize, DataTypes) => {
     });
 
     Post.associate = (models) => {
-        Post.belongsTo(models.User, { foreignKey: "user_id", sourceKey: "user_id" });
+        Post.belongsTo(models.User, { foreignKey: "userId", sourceKey: "userId" });
         
         Post.hasMany(models.Comment, { foreignKey: {
-            name: "post_id",
+            name: "postId",
             allowNull: false
-        }, sourceKey: "post_id", onDelete: 'CASCADE' });
+        }, sourceKey: "postId", onDelete: 'CASCADE' });
         
         Post.hasMany(models.Category, { foreignKey: {
-            name: "post_id",
+            name: "postId",
             allowNull: false
-        }, sourceKey: "post_id", onDelete: 'CASCADE' });
+        }, sourceKey: "postId", onDelete: 'CASCADE' });
         
         Post.hasMany(models.Bookmark, { foreignKey: {
-            name: "post_id",
+            name: "postId",
             allowNull: false
-        }, sourceKey: "post_id", onDelete: 'CASCADE' });
+        }, sourceKey: "postId", onDelete: 'CASCADE' });
         
         Post.hasMany(models.Image, { foreignKey: {
-            name: "post_id",
+            name: "postId",
             allowNull: false
-        }, sourceKey: "post_id", onDelete: 'CASCADE' });
+        }, sourceKey: "postId", onDelete: 'CASCADE' });
         
         Post.hasMany(models.Like, { foreignKey: {
-            name: "post_id",
+            name: "postId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "post_id", onDelete: 'CASCADE' });
+        }, sourceKey: "postId", onDelete: 'CASCADE' });
     };
     return Post;
 };
