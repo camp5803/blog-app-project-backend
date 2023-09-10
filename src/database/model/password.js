@@ -2,7 +2,7 @@
 
 export const password = (sequelize, DataTypes) => {
     const Password = sequelize.define('password', {
-        password_id: {
+        passwordId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,

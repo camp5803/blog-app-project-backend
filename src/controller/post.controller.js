@@ -1,14 +1,14 @@
 import {asyncWrapper} from '@/common';
-import {postService} from '@/service';
+import {postService} from '@/service/post.service';
 import {StatusCodes} from 'http-status-codes';
 
-module.exports = {
+export const postController = {
     createPost: asyncWrapper(async (req, res) => {
         const {title, content, categories, img, thumbnail} = req.body;
-        const {user_id} = req.user;
+        const {userId} = req.user;
 
         const postsInput = {
-            user_id,
+            userId,
             title,
             content,
             categories,
@@ -32,9 +32,9 @@ module.exports = {
 
     updatePost: asyncWrapper(async (req, res) => {
         const {title, content, img, thumbnail} = req.body;
-        const post_id = req.params.id;
+        const postId = req.params.id;
         const postData = {
-            post_id: post_id,
+            postId: postId,
             title: title,
             content: content,
             img: img,
@@ -46,13 +46,13 @@ module.exports = {
             return res.status(StatusCodes.NOT_FOUND).json({message: 'Post not found'});
         }
 
-        res.status(StatusCodes.CREATED).json({id: post.post_id, message: 'update success'});
+        res.status(StatusCodes.CREATED).json({id: post.postId, message: 'update success'});
     }),
 
     deletePost: asyncWrapper(async (req, res) => {
         try {
-            const post_id = req.params.id;
-            const post = await postService.deletePost(post_id);
+            const postId = req.params.id;
+            const post = await postService.deletePost(postId);
             if (post === 0) {
                 return res.status(404).json({message: 'Post not found'});
             }
@@ -64,13 +64,13 @@ module.exports = {
     }),
 
     getByPostDetail: asyncWrapper(async (req, res) => {
-        const post_id = req.params.id;
-        if (!post_id) {
+        const postId = req.params.id;
+        if (!postId) {
             return res.status(400).json({message: 'Post ID is missing'});
         }
 
         const isAuthor = await postService.verifyUser(req);
-        const {postDetail, post} = await postService.getByPostDetail(post_id, isAuthor);
+        const {postDetail, post} = await postService.getByPostDetail(postId, isAuthor);
         if (!postDetail) {
             return res.status(404).json({message: 'Post not found'});
         }
@@ -92,8 +92,8 @@ module.exports = {
 
             if (sort === 'views') {
                 order = [['view', 'DESC']]; // 조회수 순으로 정렬
-            } else if (sort === 'created_at') {
-                order = [['created_at', 'DESC']]; // 최신순으로 정렬
+            } else if (sort === 'createdAt') {
+                order = [['createdAt', 'DESC']]; // 최신순으로 정렬
             }
 
             const result = await postService.getPostsByPage(page, pageSize, order, id, sort);
@@ -111,11 +111,11 @@ module.exports = {
 
     toggleBookmark: asyncWrapper(async (req, res) => {
         try {
-            const {user_id} = req.user;
-            const {post_id} = req.body;
-            console.log(user_id, post_id)
+            const {userId} = req.user;
+            const {postId} = req.body;
+            console.log(userId, postId)
 
-            const bookmark = await postService.toggleBookmark(user_id, post_id);
+            const bookmark = await postService.toggleBookmark(userId, postId);
 
             if (bookmark === 'add') {
                 res.status(200).json({message: "bookmark add success"});
@@ -133,11 +133,11 @@ module.exports = {
 
     toggleLike: asyncWrapper(async (req, res) => {
         try {
-            const {user_id} = req.user;
-            const {post_id} = req.body;
-            console.log(user_id, post_id)
+            const {userId} = req.user;
+            const {postId} = req.body;
+            console.log(userId, postId)
 
-            const like = await postService.toggleLike(user_id, post_id);
+            const like = await postService.toggleLike(userId, postId);
             if (like === 'like') {
                 res.status(200).json({liked: true, message: "like success"});
             } else if (like === 'cancel') {
