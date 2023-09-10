@@ -6,6 +6,7 @@ import { upload } from '@/utils';
 const router = express.Router();
 
 router.route('/users')
+    .get(isAuthenticated, userController.getProfileById)
     .post(userController.createLocalUser)
     .delete(isAuthorized, userController.deleteUser);
 
@@ -26,6 +27,5 @@ router.route('/users/keyword')
     .delete(isAuthorized, userController.dissociateMyKeyword);
 
 router.get('/users/email', userController.validateEmail);
-router.get('/users/me', isAuthenticated, userController.getProfileById);
 
 export default router;

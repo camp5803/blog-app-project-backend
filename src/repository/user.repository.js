@@ -49,7 +49,7 @@ export const userRepository = {
             attributes: ['nickname']
         });
     },
-    createUser: async (data) => { // 어케수정하지 고민됨
+    createUser: async (data) => {
         const transaction = await sequelize.transaction();
         try {
             const user = await createUserRecord(data, transaction);
@@ -60,7 +60,7 @@ export const userRepository = {
             ])
 
             await transaction.commit();
-            return user;
+            return user.dataValues;
         } catch (error) {
             await transaction.rollback();
             return error;

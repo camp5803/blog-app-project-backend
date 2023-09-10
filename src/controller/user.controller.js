@@ -5,8 +5,7 @@ import { profileRepository } from "@/repository";
 
 const getProfileById = asyncWrapper(async (req, res) => {
     try {
-        const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
-        const userData = await profileRepository.findUserInformationById(userId);
+        const userData = await profileRepository.findUserInformationById(req.user.userId);
         return res.status(StatusCodes.OK).json(userData);
     } catch (error) {
         return res.status(StatusCodes.BAD_REQUEST).json({
@@ -42,13 +41,15 @@ const createLocalUser = asyncWrapper(async (req, res) => {
             message: user.message
         });
     }
-    const userData = await profileRepository.findUserInformationById(user.dataValues.userId);
+    const userData = await profileRepository.findUserInformationById(user.data.userId);
+
+    res.cookie('accessToken', user.token.accessToken, cookieOptions);
+    res.cookie('refreshToken', user.token.refreshToken, cookieOptions);
     return res.status(StatusCodes.CREATED).json(userData);
 });
 
 const updateUser = asyncWrapper(async (req, res) => {
-    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
-    const result = await userService.updateUser(userId, req.body.nickname);
+    const result = await userService.updateUser(req.user.userId, req.body.nickname);
     if (result.message) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: result.message
@@ -58,9 +59,8 @@ const updateUser = asyncWrapper(async (req, res) => {
 });
 
 const updateProfileImage = asyncWrapper(async (req, res) => {
-    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
     if (req.file) {
-        const result = await userService.updateUser(userId, { imageUrl: req.file.location });
+        const result = await userService.updateUser(req.user.userId, { imageUrl: req.file.location });
         if (result.error) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: result.message
@@ -74,8 +74,7 @@ const updateProfileImage = asyncWrapper(async (req, res) => {
 })
 
 const deleteUser = asyncWrapper(async (req, res) => {
-    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
-    const result = await userService.deleteUser(userId);
+    const result = await userService.deleteUser(req.user.userId);
     if (result) {
         if (result.error === 404) {
             return res.status(StatusCodes.NOT_FOUND).json({
@@ -90,8 +89,7 @@ const deleteUser = asyncWrapper(async (req, res) => {
 });
 
 const getUserPreferences = asyncWrapper(async (req, res) => {
-    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
-    const preferences = await preferenceService.getPreferences(userId);
+    const preferences = await preferenceService.getPreferences(req.user.userId);
     if (preferences.message) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             message: preferences.message
@@ -101,8 +99,7 @@ const getUserPreferences = asyncWrapper(async (req, res) => {
 });
 
 const updateUserPreferences = asyncWrapper(async (req, res) => {
-    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
-    const result = await preferenceService.updatePreferences(userId, req.body);
+    const result = await preferenceService.updatePreferences(req.user.userId, req.body);
     if (result.message) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: result.message
@@ -112,8 +109,7 @@ const updateUserPreferences = asyncWrapper(async (req, res) => {
 });
 
 const getMyKeywords = asyncWrapper(async (req, res) => {
-    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
-    const keywords = await keywordService.getUserKeywords(userId);
+    const keywords = await keywordService.getUserKeywords(req.user.userId);
     if (keywords.message) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             message: keywords.message
@@ -123,8 +119,7 @@ const getMyKeywords = asyncWrapper(async (req, res) => {
 });
 
 const createMyKeyword = asyncWrapper(async (req, res) => {
-    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
-    const result = await keywordService.createUserKeyword(userId, req.body.keyword);
+    const result = await keywordService.createUserKeyword(req.user.userId, req.body.keyword);
     if (result.message) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
             message: result.message
@@ -134,8 +129,7 @@ const createMyKeyword = asyncWrapper(async (req, res) => {
 });
 
 const dissociateMyKeyword = asyncWrapper(async (req, res) => {
-    const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
-    const result = keywordService.dissociateKeywordFromUser(userId, req.body.keyword);
+    const result = keywordService.dissociateKeywordFromUser(req.user.userId, req.body.keyword);
     if (result.message || result === 0) {
         return res.status(result === 0 ? StatusCodes.BAD_REQUEST : StatusCodes.INTERNAL_SERVER_ERROR).json({
             message: result === 0 ? "Keyword not associated." : result.message

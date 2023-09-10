@@ -41,7 +41,8 @@ export const userService = {
                 return { message: email ? `[Signup Error#1] Email Already exists.`
                         : `[Signup Error#2] Nickname Already exists.` };
             }
-            return await userRepository.createUser(data);
+            const user = await userRepository.createUser(data);
+            return { user, token: await createToken(user.userId) }
         } catch (error) {
             if (error.name === "ValidationError") {
                 const message = [];
