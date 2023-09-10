@@ -1,4 +1,4 @@
-import * as postRepository from '@/repository/post.repository';
+import {postRepository} from '@/repository/post.repository';
 import {verifyToken, redisCli as redisClient} from "@/utils";
 
 export const postService = {

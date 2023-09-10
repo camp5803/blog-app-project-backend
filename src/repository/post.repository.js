@@ -2,7 +2,7 @@ import db from '../database/index.js';
 
 const {Post, Image, Category, Profile, Neighbor, Bookmark, Like} = db;
 
-module.exports = {
+export const postRepository = {
     findByPostId: async (postId) => {
         return await Post.findOne({where: {postId}});
     },

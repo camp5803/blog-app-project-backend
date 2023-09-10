@@ -1,8 +1,8 @@
 import {asyncWrapper} from '@/common';
-import {postService} from '@/service';
+import {postService} from '@/service/post.service';
 import {StatusCodes} from 'http-status-codes';
 
-module.exports = {
+export const postController = {
     createPost: asyncWrapper(async (req, res) => {
         const {title, content, categories, img, thumbnail} = req.body;
         const {userId} = req.user;
