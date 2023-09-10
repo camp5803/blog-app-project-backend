@@ -8,7 +8,7 @@ export const password = (sequelize, DataTypes) => {
             autoIncrement: true,
             allowNull: false,
         },
-        // user_id: {
+        // userId: {
         //     type: DataTypes.INTEGER,
         //     allowNull: false
         // },
@@ -26,7 +26,7 @@ export const password = (sequelize, DataTypes) => {
     });
 
     Password.associate = (models) => {
-        Password.belongsTo(models.User, { foreignKey: "user_id", sourceKey: "user_id" });
+        Password.belongsTo(models.User, { foreignKey: "userId", sourceKey: "userId" });
     };
     return Password;
 };

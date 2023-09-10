@@ -2,12 +2,12 @@
 
 export const neighbor = (sequelize, DataTypes) => {
     const Neighbor = sequelize.define('neighbor', {
-        user_id: {
+        userId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
         },
-        follows_to: {
+        followsTo: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
@@ -21,12 +21,12 @@ export const neighbor = (sequelize, DataTypes) => {
     });
 
     Neighbor.associate = (models) => {
-        Neighbor.belongsTo(models.User, { foreignKey: "follows_to", sourceKey: "user_id" });
+        Neighbor.belongsTo(models.User, { foreignKey: "followsTo", sourceKey: "userId" });
         Neighbor.belongsTo(models.User, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "user_id" });
+        }, sourceKey: "userId" });
     };
     return Neighbor;
 };

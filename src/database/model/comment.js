@@ -3,21 +3,21 @@ import { Sequelize } from "sequelize";
 
 export const comment = (sequelize, DataTypes) => {
     const Comment = sequelize.define('comment', {
-        comment_id: {
+        commentId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
             autoIncrement: true,
         },
-        post_id: {
+        postId: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
-        // user_id: {
+        // userId: {
         //     type: DataTypes.INTEGER,
         //     allowNull: false
         // },
-        // parent_id: {
+        // parentId: {
         //     type: DataTypes.INTEGER,
         //     allowNull: false
         // },
@@ -33,17 +33,17 @@ export const comment = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: true
         },
-        created_at: {
+        createdAt: {
             type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
         },
-        updated_at: {
+        updatedAt: {
             type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
         },
-        deleted_at: {
+        deletedAt: {
             type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
@@ -59,12 +59,12 @@ export const comment = (sequelize, DataTypes) => {
 
     Comment.associate = (models) => {
         Comment.hasMany(models.Comment, { foreignKey: {
-            name: "parent_id",
+            name: "parentId",
             defaultValue: null,
             allowNull: true
-        }, sourceKey: "comment_id" });
-        Comment.belongsTo(models.User, { foreignKey: "user_id", sourceKey: "user_id" });
-        Comment.belongsTo(models.Post, { foreignKey: "post_id", sourceKey: "user_id" });
+        }, sourceKey: "commentId" });
+        Comment.belongsTo(models.User, { foreignKey: "userId", sourceKey: "userId" });
+        Comment.belongsTo(models.Post, { foreignKey: "postId", sourceKey: "postId" });
     };
     return Comment;
 };

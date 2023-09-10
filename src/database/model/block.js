@@ -2,12 +2,12 @@
 
 export const block = (sequelize, DataTypes) => {
     const Block = sequelize.define('block', {
-        user_id: {
+        userId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
         },
-        // block_user_id: {
+        // blockUserId: {
         //     type: DataTypes.INTEGER,
         //     allowNull: false
         // },
@@ -21,12 +21,12 @@ export const block = (sequelize, DataTypes) => {
     });
 
     Block.associate = (models) => {
-        Block.belongsTo(models.User, { foreignKey: "block_user_id", sourceKey: "user_id" });
+        Block.belongsTo(models.User, { foreignKey: "blockUserId", sourceKey: "userId" });
         Block.belongsTo(models.User, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "user_id" });
+        }, sourceKey: "userId" });
     };
     return Block;
 };

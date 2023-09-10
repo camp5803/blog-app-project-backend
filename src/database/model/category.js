@@ -2,13 +2,13 @@
 
 export const category = (sequelize, DataTypes) => {
     const Category = sequelize.define('category', {
-        category_id: {
+        categoryId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
             autoIncrement: true,
         },
-        post_id: {
+        postId: {
             type: DataTypes.INTEGER,
             allowNull: false
         },
@@ -26,7 +26,7 @@ export const category = (sequelize, DataTypes) => {
     });
 
     Category.associate = (models) => {
-        Category.belongsTo(models.Post, { foreignKey: "post_id", sourceKey: "post_id" });
+        Category.belongsTo(models.Post, { foreignKey: "postId", sourceKey: "postId" });
     };
     return Category;
 };
