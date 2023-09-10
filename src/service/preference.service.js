@@ -15,7 +15,7 @@ export const preferenceService = {
             const preferenceData = preference.dataValues;
 
             if (data['darkmode']) {
-                data['darkmode_status'] = data['darkmode'];
+                data['darkmodeStatus'] = data['darkmode'];
             }
 
             Object.keys(preferenceData).forEach(key => {

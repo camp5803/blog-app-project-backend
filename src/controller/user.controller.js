@@ -42,7 +42,7 @@ const createLocalUser = asyncWrapper(async (req, res) => {
             message: user.message
         });
     }
-    const userData = await profileRepository.findUserInformationById(user.dataValues.user_id);
+    const userData = await profileRepository.findUserInformationById(user.dataValues.userId);
     return res.status(StatusCodes.CREATED).json(userData);
 });
 
@@ -60,7 +60,7 @@ const updateUser = asyncWrapper(async (req, res) => {
 const updateProfileImage = asyncWrapper(async (req, res) => {
     const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
     if (req.file) {
-        const result = await userService.updateUser(userId, { image_url: req.file.location });
+        const result = await userService.updateUser(userId, { imageUrl: req.file.location });
         if (result.error) {
             return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
                 message: result.message

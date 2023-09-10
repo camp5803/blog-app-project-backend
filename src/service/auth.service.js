@@ -13,7 +13,7 @@ export const authService = {
                 return { message: "[Login Failed #2] Please check your email and password." }
             }
             if (bcrypt.compareSync(validated.value.password, user.password.dataValues.password)) {
-                return await createToken(user.dataValues.user_id);
+                return await createToken(user.dataValues.userId);
             }
             return { message: "[Login Failed #1] Please check your email and password." }
         } catch (error) {
@@ -26,11 +26,11 @@ export const authService = {
             if (payload.error === "TokenExpiredError") {
                 return { message: "[Refresh Error#1] Refresh token expired." }
             }
-            const tokens = await getTokens(payload.user_id);
+            const tokens = await getTokens(payload.userId);
             if (!(tokens.accessToken === accessToken)) {
                 return { message: "[Refresh Error#2] Refresh token is invalid." }
             }
-            return await createToken(payload.user_id);
+            return await createToken(payload.userId);
         } catch (error) {
             return { message: error.message }
         }
