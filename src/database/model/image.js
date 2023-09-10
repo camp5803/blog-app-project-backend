@@ -16,7 +16,7 @@ export const image = (sequelize, DataTypes) => {
             type: DataTypes.TEXT('long'),
             allowNull: false
         },
-        image_name: {
+        imageName: {
             type: DataTypes.STRING(45),
             allowNull: true,
         },

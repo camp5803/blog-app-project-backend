@@ -2,27 +2,27 @@
 
 export const preference = (sequelize, DataTypes) => {
     const Preference = sequelize.define('preference', {
-        user_id: {
+        userId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
         },
-        darkmode_status: {
+        darkmodeStatus: {
             type: DataTypes.BOOLEAN,
             allowNull: true,
             defaultValue: false
         },
-        neighbor_alert: {
+        neighborAlert: {
             type: DataTypes.BOOLEAN,
             allowNull: true,
             defaultValue: true
         },
-        comment_alert: {
+        commentAlert: {
             type: DataTypes.BOOLEAN,
             allowNull: true,
             defaultValue: true
         },
-        chat_alert: {
+        chatAlert: {
             type: DataTypes.BOOLEAN,
             allowNull: true,
             defaultValue: true

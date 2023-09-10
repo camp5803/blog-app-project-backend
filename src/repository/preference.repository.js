@@ -4,7 +4,7 @@ const { Preference } = db;
 export const preferenceRepository = {
     getPreferences: async (userId) => {
         return await Preference.findOne({
-            where: { user_id: userId },
+            where: { userId },
             attributes: [
                 'darkmodeStatus', 'neighborAlert', 
                 'commentAlert', 'chatAlert'

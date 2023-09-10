@@ -3,7 +3,7 @@ import { Sequelize } from "sequelize";
 
 export const profile = (sequelize, DataTypes) => {
     const Profile = sequelize.define('profile', {
-        user_id: {
+        userId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
@@ -14,16 +14,16 @@ export const profile = (sequelize, DataTypes) => {
             allowNull: false,
             unique: true
         },
-        image_url: {
+        imageUrl: {
             type: DataTypes.TEXT,
             allowNull: true
         },
-        created_at: {
+        createdAt: {
             type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
         },
-        updated_at: {
+        updatedAt: {
             type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
@@ -38,7 +38,7 @@ export const profile = (sequelize, DataTypes) => {
     });
 
     Profile.associate = (models) => {
-        Profile.belongsTo(models.User, { foreignKey: "user_id", sourceKey: "user_id" });
+        Profile.belongsTo(models.User, { foreignKey: "userId", sourceKey: "userId" });
     }
     return Profile;
 };
