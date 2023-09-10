@@ -54,7 +54,7 @@ export const postRepository = {
 
 
     updatePost: async (postData) => {
-        const {postId, title, content, img, thumbnail} = postData;
+        const {postId, title, content, thumbnail} = postData;
         const [post] = await Post.update({title, content, thumbnail, updatedAt: new Date()},
             {where: {postId: postId}})
         return post;
@@ -209,26 +209,21 @@ export const postRepository = {
         }
     },
 
-    toggleLike: async (userId, postId) => {
-        try {
-            const existLike = await Like.findOne({where: {userId, postId}});
-            const post = await Post.findOne({where: {postId}})
+    getLike: async (userId, postId) => {
+        const like = await Like.findOne({where: {userId, postId}});
+        const likeCount = await Like.count({where: {postId}});
+        return {like, likeCount};
+    },
 
-            if (existLike) {
-                await Like.destroy({where: {userId, postId}});
-                post.like -= 1;
-                await post.save();
-                return 'cancel';
-            } else {
-                // Like 테이블에 좋아요를 누른 유저와 postId를 추가
-                await Like.create({userId, postId}); // 수정된 부분
-                post.like += 1;
-                await post.save();
-                return 'like';
-            }
-        } catch (error) {
-            console.log(error);
-            throw new Error('Error get post in repository');
-        }
+    addLike: async (userId, postId) => {
+        await Like.create({userId, postId});
+    },
+
+    deleteLike: async (userId, postId) => {
+        await Like.destroy({where: {userId, postId}});
+    },
+
+    updatePostLike: async (postId, likeCount) => {
+        await Post.update({like: likeCount}, {where: {postId}});
     }
 };

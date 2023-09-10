@@ -130,8 +130,20 @@ export const postService = {
 
     toggleLike: async (userId, postId) => {
         try {
-            const like = await postRepository.toggleLike(userId, postId);
-            return like;
+            let {like, likeCount} = await postRepository.getLike(userId, postId);
+
+            if (like) {
+                await postRepository.deleteLike(userId, postId);
+                likeCount--;
+            } else {
+                await postRepository.addLike(userId, postId);
+                likeCount++;
+            }
+
+            // todo 좋아요 동시성 처리 및 좋아요 수 가져오는 로직 변경 필요성 확인
+            await postRepository.updatePostLike(postId, likeCount);
+
+            return {isLiked: !!like, likeCount};
         } catch (error) {
             console.log(error);
             throw new Error('Error toggle like post');
