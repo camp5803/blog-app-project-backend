@@ -43,6 +43,14 @@ export const userService = {
             }
             return await userRepository.createUser(data);
         } catch (error) {
+            if (error.name === "ValidationError") {
+                const message = [];
+                error.details.forEach(detail => {
+                    message.push(detail.message);
+                });
+
+                return { name: "ValidationError", message }
+            }
             return { message: error.message }
         }
     },
