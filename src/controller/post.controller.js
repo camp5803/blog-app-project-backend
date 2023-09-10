@@ -112,18 +112,14 @@ export const postController = {
     toggleBookmark: asyncWrapper(async (req, res) => {
         try {
             const {userId} = req.user;
-            const {postId} = req.body;
-            console.log(userId, postId)
+            const postId = req.params.id;
 
             const bookmark = await postService.toggleBookmark(userId, postId);
 
-            if (bookmark === 'add') {
-                res.status(200).json({message: "bookmark add success"});
-            } else if (bookmark === 'remove') {
-                res.status(200).json({message: "bookmark remove success"});
+            if (!bookmark) {
+                res.status(200).json({bookmark: true, message: "bookmark add success"});
             } else {
-                // 예상치 못한 경우에 대한 처리
-                res.status(500).json({message: "Unknown bookmark action"});
+                res.status(200).json({bookmark: false, message: "bookmark remove success"});
             }
         } catch (error) {
             console.log(error)
@@ -140,7 +136,7 @@ export const postController = {
 
             if (!like.isLiked) {
                 res.status(200).json({liked: true, like: like.likeCount, message: "like success"});
-            } else{
+            } else {
                 res.status(200).json({liekd: false, like: like.likeCount, message: "like cancel success"});
             }
         } catch (error) {
