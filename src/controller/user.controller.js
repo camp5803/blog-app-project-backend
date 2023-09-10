@@ -48,8 +48,8 @@ const createLocalUser = asyncWrapper(async (req, res) => {
     return res.status(StatusCodes.CREATED).json(userData);
 });
 
-const updateUser = asyncWrapper(async (req, res) => {
-    const result = await userService.updateUser(req.user.userId, req.body.nickname);
+const updateNickname = asyncWrapper(async (req, res) => {
+    const result = await userService.updateUser(req.user.userId, { nickname: req.body.nickname });
     if (result.message) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: result.message
@@ -143,7 +143,7 @@ export const userController = {
     validateEmail,
     validateNickname,
     createLocalUser,
-    updateUser,
+    updateNickname,
     updateProfileImage,
     deleteUser,
     getUserPreferences,

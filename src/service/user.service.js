@@ -55,14 +55,20 @@ export const userService = {
             return { message: error.message }
         }
     },
-    updateNickname: async (userId, nickname) => {
+    updateUser: async (userId, data) => {
         try {
-            await validateSchema.nickname.validateAsync(nickname);
             const user = await profileRepository.findByUserId(userId);
+            if (data.nickname) {
+                await validateSchema.nickname.validateAsync(nickname);
+                return await profileRepository.updateProfile(userId, {
+                    nickname: data.nickname,
+                    imageUrl: user.dataValues.imageUrl
+                });
+            }
             return await profileRepository.updateProfile(userId, {
-                nickname,
-                imageUrl: user.dataValues.imageUrl
-            });
+                nickname: user.dataValues.nickname,
+                imageUrl: data.imageUrl
+            })
         } catch (error) {
             return { message: error }
         }

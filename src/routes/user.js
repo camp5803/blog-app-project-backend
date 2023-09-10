@@ -12,7 +12,7 @@ router.route('/users')
 
 router.route('/users/name')
     .get(userController.validateNickname)
-    .patch(isAuthorized, userController.updateUser);
+    .patch(isAuthorized, userController.updateNickname);
 
 router.route('/users/preferences')
     .get(isAuthorized, userController.getUserPreferences)
