@@ -15,7 +15,7 @@ export const profile = (sequelize, DataTypes) => {
             unique: true
         },
         image_url: {
-            type: DataTypes.TEXT('long'),
+            type: DataTypes.TEXT,
             allowNull: true
         },
         created_at: {
@@ -30,6 +30,7 @@ export const profile = (sequelize, DataTypes) => {
         }
     }, {
         tableName: 'profile',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',

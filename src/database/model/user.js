@@ -19,6 +19,7 @@ export const user = (sequelize, DataTypes) => {
         }
     }, {
         tableName: 'user',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',

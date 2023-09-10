@@ -50,6 +50,7 @@ export const comment = (sequelize, DataTypes) => {
         }
     }, {
         tableName: 'comment',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',

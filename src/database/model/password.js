@@ -18,6 +18,7 @@ export const password = (sequelize, DataTypes) => {
         },
     }, {
         tableName: 'password',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',

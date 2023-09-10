@@ -13,6 +13,7 @@ export const neighbor = (sequelize, DataTypes) => {
         },
     }, {
         tableName: 'neighbor',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',

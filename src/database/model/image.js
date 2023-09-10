@@ -22,6 +22,7 @@ export const image = (sequelize, DataTypes) => {
         },
     }, {
         tableName: 'image',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',

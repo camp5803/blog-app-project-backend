@@ -18,6 +18,7 @@ export const category = (sequelize, DataTypes) => {
         },
     }, {
         tableName: 'category',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',

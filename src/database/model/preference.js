@@ -29,6 +29,7 @@ export const preference = (sequelize, DataTypes) => {
         },
     }, {
         tableName: 'preference',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',
