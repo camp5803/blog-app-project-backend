@@ -18,7 +18,7 @@ export const validateSchema = {
             .max(45)
             .pattern(nicknameValidate)
             .required(),
-        image_url: Joi.string().allow(null, '')
+        imageUrl: Joi.string().allow(null, '')
     }),
     login: Joi.object({
         email: Joi.string()
@@ -30,10 +30,6 @@ export const validateSchema = {
             .pattern(passwordValidate)
             .required()
     }),
-    darkmodeStatus: Joi.boolean(),
-    neighborAlert: Joi.boolean(),
-    commentAlert: Joi.boolean(),
-    chatAlert: Joi.boolean(),
     keyword: Joi.string().max(45).required(),
     email: Joi.string()
         .max(45)
