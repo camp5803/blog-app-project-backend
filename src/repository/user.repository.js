@@ -13,28 +13,27 @@ const createUserRecord = async (data, transaction) => {
 
 const createPasswordRecord = async (userId, password, transaction) => {
     return await Password.create({
-        user_id: userId,
+        userId,
         password: createPassword(password)
     }, { transaction });
 };
 
 const createPreferenceRecord = async (userId, transaction) => {
     return await Preference.create({
-        user_id: userId
+        userId
     }, { transaction });
 };
 
 const createProfileRecord = async (userId, nickname, transaction) => {
     return await Profile.create({
-        user_id: userId,
-        nickname
+        userId, nickname
     }, { transaction });
 };
 
 export const userRepository = {
     findEmailByUserId: async (userId) => {
         return await User.findOne({
-            where: { user_id: userId },
+            where: { userId },
             attributes: ['email']
         });
     },
@@ -55,9 +54,9 @@ export const userRepository = {
         try {
             const user = await createUserRecord(data, transaction);
             await Promise.all([
-                createPasswordRecord(user.dataValues.user_id, data.password, transaction),
-                createPreferenceRecord(user.dataValues.user_id, transaction),
-                createProfileRecord(user.dataValues.user_id, data.nickname, transaction)
+                createPasswordRecord(user.dataValues.userId, data.password, transaction),
+                createPreferenceRecord(user.dataValues.userId, transaction),
+                createProfileRecord(user.dataValues.userId, data.nickname, transaction)
             ])
 
             await transaction.commit();
@@ -68,6 +67,6 @@ export const userRepository = {
         }
     },
     deleteUser: async (userId) => {
-        return await User.destroy({ where : { user_id: userId }});
+        return await User.destroy({ where: { userId }});
     }
 }

@@ -44,13 +44,13 @@ const socialCallbackHandler = asyncWrapper(async (req, res) => {
         return res.status(StatusCodes.CREATED).json({
             message: "[Alert] Email information needs to be updated",
             nickname: result.profile.nickname,
-            image_url: result.profile.image_url,
+            imageUrl: result.profile.imageUrl,
             darkmode: result.profile.darkmode,
         });
     }
     return res.status(StatusCodes.CREATED).json({
         nickname: result.profile.nickname,
-        image_url: result.profile.image_url,
+        imageUrl: result.profile.imageUrl,
         darkmode: result.profile.darkmode,
     });
 });

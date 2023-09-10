@@ -1,4 +1,5 @@
 import { keywordRepository } from "@/repository";
+import { validateSchema } from '@/utils';
 
 export const keywordService = {
     getUserKeywords: async (userId) => {
@@ -10,9 +11,10 @@ export const keywordService = {
     },
     createUserKeyword: async (userId, keywordName) => {
         try {
-            const keyword = await keywordRepository.findKeywordByName(keywordName);
+            const validated = await validateSchema.keyword.validateAsync(keywordName);
+            const keyword = await keywordRepository.findKeywordByName(validated.value);
             if (!keyword) {
-                const newKeyword = await keywordRepository.createKeyword(keywordName);
+                const newKeyword = await keywordRepository.createKeyword(validated.value);
                 return await keywordRepository.associateKeywordToUser(userId, newKeyword.dataValues.keyword_id);
             }
             return await keywordRepository.associateKeywordToUser(userId, keyword.dataValues.keyword_id);
