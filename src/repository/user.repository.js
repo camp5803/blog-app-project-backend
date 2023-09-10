@@ -7,7 +7,7 @@ const {
 const createUserRecord = async (data, transaction) => {
     return await User.create({
         email: data.email,
-        login_type: 0
+        loginType: 0
     }, { transaction });
 };
 

@@ -10,6 +10,6 @@ export const passwordRepository = {
         });
     },
     findByUserId: async (data) => {
-        return await Password.findOne({ where: { userId: data.user_id }});
+        return await Password.findOne({ where: { userId: data.userId }});
     },
 }
