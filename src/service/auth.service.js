@@ -1,16 +1,18 @@
 import jwt from 'jsonwebtoken';
 import { authRepository, passwordRepository } from '@/repository';
-import {createToken, getTokens, verifyToken} from '@/utils';
+import { createToken, getTokens, verifyToken } from '@/utils';
 import bcrypt from "bcrypt";
+import { validateSchema } from '@/utils';
 
 export const authService = {
     login: async (email, password) => {
         try {
-            const user = await passwordRepository.findByEmail(email);
+            const validated = await validateSchema.login.validateAsync(email, password);
+            const user = await passwordRepository.findByEmail(validated.value.email);
             if (!user) {
                 return { message: "[Login Failed #2] Please check your email and password." }
             }
-            if (bcrypt.compareSync(password, user.password.dataValues.password)) {
+            if (bcrypt.compareSync(validated.value.password, user.password.dataValues.password)) {
                 return await createToken(user.dataValues.user_id);
             }
             return { message: "[Login Failed #1] Please check your email and password." }

@@ -46,19 +46,19 @@ export const socialLoginService = {
                 }
             });
             const user = await socialLoginRepository.findBySocialId(socialProfile.data.id);
-            profile = await profileRepository.findUserInformationById(user.user_id);
-            email = userRepository.findEmailByUserId(user.user_id);
+            profile = await profileRepository.findUserInformationById(user.userId);
+            email = userRepository.findEmailByUserId(user.userId);
             if (!user) {
                 const newUser = await socialLoginRepository.createSocialUser(socialProfile.data, type);
-                profile = await profileRepository.findUserInformationById(newUser.user_id);
+                profile = await profileRepository.findUserInformationById(newUser.userId);
                 email = newUser.dataValues.email;
             }
-            const userToken = await createToken(user.user_id);
+            const userToken = await createToken(user.userId);
             return {
                 token: userToken,
                 profile : {
                     nickname: profile.nickname,
-                    image_url: profile.image_url,
+                    imageUrl: profile.imageUrl,
                     darkmode: profile.darkmode,
                     email
                 }

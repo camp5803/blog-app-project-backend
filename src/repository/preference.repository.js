@@ -6,12 +6,12 @@ export const preferenceRepository = {
         return await Preference.findOne({
             where: { user_id: userId },
             attributes: [
-                ['darkmode_status', 'darkmode'],
-                'neighbor_alert', 'comment_alert', 'chat_alert'
+                'darkmodeStatus', 'neighborAlert', 
+                'commentAlert', 'chatAlert'
             ]
         });
     },
     updatePreferences: async (userId, preferences) => {
-        return await Preference.update(preferences, { where: { user_id: userId }});
+        return await Preference.update(preferences, { where: { userId }});
     }
 }

@@ -1,4 +1,5 @@
 import { preferenceRepository } from "@/repository";
+import { validateSchema } from '@/utils';
 
 export const preferenceService = {
     getPreferences: async (userId) => {
