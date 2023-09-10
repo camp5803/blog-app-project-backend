@@ -119,9 +119,15 @@ export const postService = {
 
     toggleBookmark: async (userId, postId) => {
         try {
-            console.log(userId, postId)
-            const bookmark = await postRepository.toggleBookmark(userId, postId);
-            return bookmark;
+            const bookmark = await postRepository.getBookmark(userId, postId);
+
+            if (bookmark) {
+                await postRepository.deleteBookmark(userId, postId);
+            } else {
+                await postRepository.addBookmark(userId, postId);
+            }
+
+            return !!bookmark;
         } catch (error) {
             console.log(error);
             throw new Error('Error toggle bookmark post');

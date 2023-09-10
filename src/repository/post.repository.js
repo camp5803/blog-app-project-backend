@@ -188,25 +188,16 @@ export const postRepository = {
         }
     },
 
-    toggleBookmark: async (userId, postId) => {
-        try {
+    getBookmark: async (userId, postId) => {
+        return await Bookmark.findOne({where: {userId, postId}});
+    },
 
-            const existBookmark = await Bookmark.findOne({where: {userId, postId}});
+    addBookmark: async (userId, postId) => {
+        await Bookmark.create({userId, postId});
+    },
 
-            if (existBookmark) {
-                await Bookmark.destroy({where: {userId, postId}});
-                console.log(`Bookmark removed: userId ${userId}, postId ${postId}`);
-                return 'remove';
-            } else {
-                const newBookmark = await Bookmark.create({userId, postId});
-                console.log(`Bookmark added: userId ${userId}, postId ${postId}`);
-                return 'add';
-            }
-
-        } catch (error) {
-            console.log(error);
-            throw new Error('Error get post in repository');
-        }
+    deleteBookmark: async (userId, postId) => {
+        await Bookmark.destroy({where: {userId, postId}});
     },
 
     getLike: async (userId, postId) => {
