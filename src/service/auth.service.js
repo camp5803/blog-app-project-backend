@@ -7,16 +7,24 @@ import { validateSchema } from '@/utils';
 export const authService = {
     login: async (email, password) => {
         try {
-            const validated = await validateSchema.login.validateAsync(email, password);
-            const user = await passwordRepository.findByEmail(validated.value.email);
+            await validateSchema.login.validateAsync({ email, password });
+            const user = await passwordRepository.findByEmail(email);
             if (!user) {
                 return { message: "[Login Failed #2] Please check your email and password." }
             }
-            if (bcrypt.compareSync(validated.value.password, user.password.dataValues.password)) {
+            if (bcrypt.compareSync(password, user.password.dataValues.password)) {
                 return await createToken(user.dataValues.userId);
             }
             return { message: "[Login Failed #1] Please check your email and password." }
         } catch (error) {
+            if (error.name === "ValidationError") {
+                const message = [];
+                error.details.forEach(detail => {
+                    message.push(detail.message);
+                });
+
+                return { name: "ValidationError", message }
+            }
             return { message: error.message }
         }
     },

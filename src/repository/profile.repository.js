@@ -25,7 +25,7 @@ export const profileRepository = {
     findByUserId: async (userId) => {
         return await Profile.findOne({ where: { userId } });
     },
-    updateProfile: async (userId, userData) => {
-        return await Profile.update(userData, { where: { userId } });
+    updateProfile: async (userId, data) => {
+        return await Profile.update(data, { where: { userId } });
     }
 }

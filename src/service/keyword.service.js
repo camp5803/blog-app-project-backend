@@ -19,6 +19,9 @@ export const keywordService = {
             }
             return await keywordRepository.associateKeywordToUser(userId, keyword.dataValues.keywordId);
         } catch (error) {
+            if (error.name === "ValidationError") {
+                return { name: "ValidationError", message: error.details[0].message }
+            }
             return { message: error.message }
         }
     },

@@ -24,8 +24,8 @@ const createAuth = asyncWrapper(async (req, res) => {
             message: userData.message
         });
     }
-    res.cookie('access_token', token.accessToken, cookieOptions);
-    res.cookie('refresh_token', token.refreshToken, cookieOptions);
+    res.cookie('accessToken', token.accessToken, cookieOptions);
+    res.cookie('refreshToken', token.refreshToken, cookieOptions);
 
     return res.status(StatusCodes.OK).json(userData);
 });
@@ -38,8 +38,8 @@ const socialCallbackHandler = asyncWrapper(async (req, res) => {
             message: result.message
         });
     }
-    res.cookie('access_token', result.token.accessToken, cookieOptions);
-    res.cookie('refresh_token', result.token.refreshToken, cookieOptions);
+    res.cookie('accessToken', result.token.accessToken, cookieOptions);
+    res.cookie('refreshToken', result.token.refreshToken, cookieOptions);
     if (result.profile.email == null) {
         return res.status(StatusCodes.CREATED).json({
             message: "[Alert] Email information needs to be updated",
@@ -57,14 +57,14 @@ const socialCallbackHandler = asyncWrapper(async (req, res) => {
 
 const reissueAccessToken = asyncWrapper(async (req, res) => {
     const tokens = await authService.reissueToken(
-        req.cookies['access_token'], req.cookies['refresh_token']);
+        req.cookies['accessToken'], req.cookies['refreshToken']);
     if (tokens.message) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: tokens.message
         });
     }
-    res.cookie('access_token', tokens.accessToken, cookieOptions);
-    res.cookie('refresh_token', tokens.refreshToken, cookieOptions);
+    res.cookie('accessToken', tokens.accessToken, cookieOptions);
+    res.cookie('refreshToken', tokens.refreshToken, cookieOptions);
     return res.status(StatusCodes.OK).end();
 });
 

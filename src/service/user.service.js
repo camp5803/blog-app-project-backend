@@ -1,4 +1,5 @@
 import { profileRepository, userRepository } from '@/repository';
+import { validateSchema } from '@/utils';
 
 export const userService = {
     isEmailExists: async (email) => {
@@ -22,7 +23,7 @@ export const userService = {
         } catch (error) {
             return { message: error }
         }
-},
+    },
     getUserInformation: async (accessToken) => {
         try {
             const userId = profileRepository.findUserIdByToken(accessToken);
@@ -33,29 +34,35 @@ export const userService = {
     },
     createUser: async (data) => {
         try {
+            await validateSchema.signUp.validateAsync(data);
             const email = await userRepository.findByEmail(data.email);
             const nickname = await userRepository.findByNickname(data.nickname);
             if (email || nickname) {
                 return { message: email ? `[Signup Error#1] Email Already exists.`
                         : `[Signup Error#2] Nickname Already exists.` };
             }
-            return await userRepository.createUser(data);
+            const user = await userRepository.createUser(data);
+            return { user, token: await createToken(user.userId) }
         } catch (error) {
+            if (error.name === "ValidationError") {
+                const message = [];
+                error.details.forEach(detail => {
+                    message.push(detail.message);
+                });
+
+                return { name: "ValidationError", message }
+            }
             return { message: error.message }
         }
     },
-    updateUser: async (userId, data) => {
+    updateNickname: async (userId, nickname) => {
         try {
+            await validateSchema.nickname.validateAsync(nickname);
             const user = await profileRepository.findByUserId(userId);
-            const userData = user.dataValues;
-
-            Object.keys(userData).forEach(key => {
-                if (data[key]) {
-                    userData[key] = data[key];
-                }
+            return await profileRepository.updateProfile(userId, {
+                nickname,
+                imageUrl: user.dataValues.imageUrl
             });
-
-            return await profileRepository.updateProfile(userId, userData);
         } catch (error) {
             return { message: error }
         }

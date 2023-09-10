@@ -14,10 +14,6 @@ export const preferenceService = {
             const preference = await preferenceRepository.getPreferences(userId);
             const preferenceData = preference.dataValues;
 
-            if (data['darkmode']) {
-                data['darkmodeStatus'] = data['darkmode'];
-            }
-
             Object.keys(preferenceData).forEach(key => {
                 if (data[key]) {
                     preferenceData[key] = data[key];
