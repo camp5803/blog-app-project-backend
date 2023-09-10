@@ -13,6 +13,7 @@ export const block = (sequelize, DataTypes) => {
         // },
     }, {
         tableName: 'block',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',

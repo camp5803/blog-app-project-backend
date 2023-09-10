@@ -13,6 +13,7 @@ export const bookmark = (sequelize, DataTypes) => {
         },
     }, {
         tableName: 'bookmark',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',

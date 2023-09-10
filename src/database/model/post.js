@@ -45,6 +45,7 @@ export const post = (sequelize, DataTypes) => {
         }
     }, {
         tableName: 'post',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',

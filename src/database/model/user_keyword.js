@@ -14,6 +14,7 @@ export const userKeyword = (sequelize, DataTypes) => {
         },
     }, {
         tableName: 'user_keyword',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',

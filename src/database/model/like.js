@@ -14,6 +14,7 @@ export const like = (sequelize, DataTypes) => {
         // },
     }, {
         tableName: 'like',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',

@@ -22,6 +22,7 @@ export const socialLogin = (sequelize, DataTypes) => {
         }
     }, {
         tableName: 'social_login',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',
