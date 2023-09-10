@@ -17,7 +17,7 @@ const typeFormatters = {
         default: (data) => data.name,
     },
     id: (data) => data.id,
-    image_url: {
+    imageUrl: {
         KAKAO: (data) => data.kakao_account.profile.image_url,
         GITHUB: (data) => data.avatar_url,
         default: (data) => data.picture,
@@ -56,7 +56,7 @@ const createProfileRecord = async (userId, data, type, transaction) => {
     return await Profile.create({
         userId,
         nickname: `${type}${name}`,
-        imageUrl: formatData('image_url', type, data),
+        imageUrl: formatData('imageUrl', type, data),
     }, { transaction });
 };
 

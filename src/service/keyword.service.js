@@ -15,9 +15,9 @@ export const keywordService = {
             const keyword = await keywordRepository.findKeywordByName(validated.value);
             if (!keyword) {
                 const newKeyword = await keywordRepository.createKeyword(validated.value);
-                return await keywordRepository.associateKeywordToUser(userId, newKeyword.dataValues.keyword_id);
+                return await keywordRepository.associateKeywordToUser(userId, newKeyword.dataValues.keywordId);
             }
-            return await keywordRepository.associateKeywordToUser(userId, keyword.dataValues.keyword_id);
+            return await keywordRepository.associateKeywordToUser(userId, keyword.dataValues.keywordId);
         } catch (error) {
             return { message: error.message }
         }
@@ -25,7 +25,7 @@ export const keywordService = {
     dissociateKeywordFromUser: async (userId, keywordName) => {
         try {
             const keyword = keywordRepository.findKeywordByName(keywordName);
-            return await keywordRepository.dissociateKeywordFromUser(keyword.dataValues.keyword_id, userId);
+            return await keywordRepository.dissociateKeywordFromUser(keyword.dataValues.keywordId, userId);
         } catch (error) {
             return { message: error.message }
         }
