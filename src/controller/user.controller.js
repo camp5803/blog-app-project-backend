@@ -48,7 +48,7 @@ const createLocalUser = asyncWrapper(async (req, res) => {
 
 const updateUser = asyncWrapper(async (req, res) => {
     const userId = profileRepository.findUserIdByToken(req.cookies["access_token"]);
-    const result = await userService.updateUser(userId, req.body);
+    const result = await userService.updateUser(userId, req.body.nickname);
     if (result.message) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: result.message
