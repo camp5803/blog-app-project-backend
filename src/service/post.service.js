@@ -2,6 +2,20 @@ import {postRepository} from '@/repository/post.repository';
 import {verifyToken, redisCli as redisClient} from "@/utils";
 
 export const postService = {
+    getUserIdFromToken: async (req) => {
+        const token = req.cookies["accessToken"];
+        if (!token) {
+            return false;
+        }
+
+        const verifyResult = verifyToken(token);
+        if (verifyResult.error) {
+            return false
+        }
+
+        return  verifyResult.userId;
+    },
+
     createPost: async (postData) => {
         try {
             const post = await postRepository.createPost(postData);
@@ -115,7 +129,7 @@ export const postService = {
             console.log(error);
             throw new Error('Error get listbyPage post');
         }
-    }, 
+    },
 
     toggleBookmark: async (userId, postId) => {
         try {
