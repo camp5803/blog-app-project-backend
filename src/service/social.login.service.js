@@ -26,7 +26,7 @@ const Options = [null, { // 1번 index : KAKAO
 }];
 
 export const socialLoginService = {
-    login: async (type, code, uri) => { // type에 .toUpperCase 사용해서 전달하기
+    login: async (type, code, uri) => { // type과 code 검증하기, 로그인 회원가입 로직 분리하기
         let profile, email;
         type = socialCode[type];
         try {
@@ -64,7 +64,8 @@ export const socialLoginService = {
                 }
             }
         } catch (error) {
-            return { message: error.message }
+            console.error(error.stack);
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
 }
