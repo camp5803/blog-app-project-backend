@@ -27,7 +27,6 @@ const Options = [null, { // 1번 index : KAKAO
 
 export const socialLoginService = {
     login: async (type, code, uri) => { // type과 code 검증하기, 로그인 회원가입 로직 분리하기
-        let profile, email;
         type = socialCode[type];
         try {
             const socialToken = await axios.post(Options[type].requestToken, null, {
@@ -46,14 +45,24 @@ export const socialLoginService = {
                 }
             });
             const user = await socialLoginRepository.findBySocialId(socialProfile.data.id);
-            profile = await profileRepository.findUserInformationById(user.userId);
-            email = userRepository.findEmailByUserId(user.userId);
-            if (!user) {
-                const newUser = await socialLoginRepository.createSocialUser(socialProfile.data, type);
-                profile = await profileRepository.findUserInformationById(newUser.userId);
-                email = newUser.dataValues.email;
+            if (user) {
+                const profile = await profileRepository.findUserInformationById(user.userId);
+                const email = userRepository.findEmailByUserId(user.userId);
+                const userToken = await createToken(user.userId);
+                return {
+                    token: userToken,
+                    profile : {
+                        nickname: profile.nickname,
+                        imageUrl: profile.imageUrl,
+                        darkmode: profile.darkmode,
+                        email
+                    }
+                }
             }
-            const userToken = await createToken(user.userId);
+            const newUser = await socialLoginRepository.createSocialUser(socialProfile.data, type);
+            const profile = await profileRepository.findUserInformationById(newUser.userId);
+            const email = newUser.dataValues.email;
+            const userToken = await createToken(newUser.userId);
             return {
                 token: userToken,
                 profile : {
