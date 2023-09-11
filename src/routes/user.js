@@ -18,7 +18,7 @@ router.route('/users/preferences')
     .get(isAuthorized, userController.getUserPreferences)
     .patch(isAuthorized, userController.updateUserPreferences);
 
-router.route('/users/keyword')
+router.route('/users/keywords')
     .get(userController.getMyKeywords)
     .post(isAuthorized, userController.createMyKeyword)
     .delete(isAuthorized, userController.dissociateMyKeyword);
