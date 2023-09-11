@@ -90,11 +90,12 @@ export const userService = {
                     nickname: data.nickname,
                     imageUrl: user.dataValues.imageUrl
                 });
+            } else {
+                await profileRepository.updateProfile(userId, {
+                    nickname: user.dataValues.nickname,
+                    imageUrl: data.imageUrl
+                });
             }
-            await profileRepository.updateProfile(userId, {
-                nickname: user.dataValues.nickname,
-                imageUrl: data.imageUrl
-            })
         } catch (error) {
             console.error(error.stack);
             if (error.name === "ValidationError") {
