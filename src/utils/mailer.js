@@ -1,5 +1,4 @@
 import nodemailer from 'nodemailer';
-import crypto from 'crypto';
 import { redisCli as redisClient } from '@/utils';
 
 const transporterOptions = {
@@ -13,27 +12,13 @@ const transporterOptions = {
 }
 const transporter = nodemailer.createTransport(transporterOptions);
 
-const generateRandomString = (length) => {
-    let result = '';
-    const charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (let i = 0; i < length; i++) {
-        result += charset.charAt(crypto.randomInt(charset.length));
-    }
-    return result;
-}
-
-export const sendVerificationMail = async (mailAddress) => {
-    const verificationCode = generateRandomString(6);
+export const sendVerificationMail = async (mailAddress, randomStr) => {
     await redisClient.set(mailAddress, verificationCode, "EX", 60 * 5);
     const mailPayload = {
         from: process.env.ZOHO_USER, 
         to: mailAddress,
-        subject: "테스트용 메일이에용",
-        text: `5분뒤에 만료될거임 ${verificationCode}`
+        subject: "[개발로그] 패스워드 변경 안내",
+        text: `다음 6자 키워드를 홈페이지에 입력해주세용 ${randomStr}`
     };
     return await transporter.sendMail(mailPayload);
 }
-
-(async function() {
-    await sendVerificationMail("hickerd@sch.ac.kr");
-})()

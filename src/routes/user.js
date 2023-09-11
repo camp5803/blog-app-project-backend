@@ -18,14 +18,17 @@ router.route('/users/preferences')
     .get(isAuthorized, userController.getUserPreferences)
     .patch(isAuthorized, userController.updateUserPreferences);
 
-router.patch('/users/image', isAuthenticated,
-    upload.single('image'), userController.updateProfileImage);
-
 router.route('/users/keyword')
     .get(userController.getMyKeywords)
     .post(isAuthorized, userController.createMyKeyword)
     .delete(isAuthorized, userController.dissociateMyKeyword);
 
+router.patch('/users/image', isAuthenticated,
+    upload.single('image'), userController.updateProfileImage);
+
+router.post('/users/password-reset/request', userController.sendMail);
+router.patch('/users/password-reset', userController.resetPassword);
+router.patch('users/password', isAuthorized, userController.changePassword);
 router.get('/users/email', userController.validateEmail);
 
 export default router;

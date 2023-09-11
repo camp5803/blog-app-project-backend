@@ -1,12 +1,12 @@
 import { preferenceRepository } from "@/repository";
-import { validateSchema } from '@/utils';
 
 export const preferenceService = {
     getPreferences: async (userId) => {
         try {
             return await preferenceRepository.getPreferences(userId);
         } catch (error) {
-            return { message: error }
+            console.error(error.stack);
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     updatePreferences: async (userId, data) => {
@@ -22,7 +22,8 @@ export const preferenceService = {
 
             return await preferenceRepository.updatePreferences(userId, preferenceData);
         } catch (error) {
-            return { message: error }
+            console.error(error.stack);
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     }
 }
