@@ -85,7 +85,7 @@ export const postController = {
             const page = parseInt(req.query.page) || 1; // 기본 페이지 1
             const pageSize = 10;
             const {sort} = req.params;
-            const id = await postService.verifyUser(req);
+            const id = await postService.getUserIdFromToken(req);
             console.log('req.params', sort)
             console.log('page: ', page, ' pageSize: ', pageSize)
             let order = [];
