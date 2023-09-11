@@ -1,5 +1,29 @@
-import { profileRepository, userRepository } from '@/repository';
-import { validateSchema } from '@/utils';
+import { profileRepository, userRepository, passwordRepository } from '@/repository';
+import { validateSchema, sendVerificationMail } from '@/utils';
+import { redisCli as redisClient } from '@/utils';
+import crypto from 'crypto';
+
+const generateRandomString = (length) => {
+    let result = '';
+    const charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (let i = 0; i < length; i++) {
+        result += charset.charAt(crypto.randomInt(charset.length));
+    }
+    return result;
+}
+
+const generateRandomPassword = () => {
+    let result = '';
+    const charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    const specialCharset = "!@#$%^&*()";
+    for (let i = 0; i < 6; i++) {
+        result += charset.charAt(crypto.randomInt(charset.length));
+    }
+    for (let i = 0; i < 3; i++) {
+        result += specialCharset.charAt(crypto.randomInt(specialCharset.length));
+    }
+    return result;
+}
 
 export const userService = {
     isEmailExists: async (email) => {
@@ -70,6 +94,14 @@ export const userService = {
                 imageUrl: data.imageUrl
             })
         } catch (error) {
+            if (error.name === "ValidationError") {
+                const message = [];
+                error.details.forEach(detail => {
+                    message.push(detail.message);
+                });
+
+                return { name: "ValidationError", message }
+            }
             return { message: error }
         }
     },
@@ -88,5 +120,54 @@ export const userService = {
                 message: "[Withdrawal Error#2] Delete query failed."
             }
         }
-    }
+    },
+    updatePassword: async (userId, password) => {
+        try {
+            await validateSchema.password.validateAsync(password);
+            await passwordRepository.updatePassword(userId, password);
+            return { OK: true }
+        } catch (error) {
+            if (error.name === "ValidationError") {
+                const message = [];
+                error.details.forEach(detail => {
+                    message.push(detail.message);
+                });
+
+                return { name: "ValidationError", message }
+            }
+            return { message: error.message }
+        }
+    },
+    sendPasswordResetMail: async (email) => {
+        try {
+            const user = await userRepository.findByEmail(email);
+            if (!user) {
+                return { message: "No users match this email." }
+            }
+            const info = await sendVerificationMail(email, generateRandomString(6));
+            if (info.error) {
+                return { message: "Failed to send mail." }
+            }
+            return { OK: true }
+        } catch (error) {
+            return { message: error.message }
+        }
+    },
+    verificationMailHandler: async (email, code) => {
+        try {
+            const result = await redisClient.get(email);
+            const password = generateRandomPassword();
+            if (result === code) {
+                const user = await userRepository.findByEmail(email);
+                const result = await passwordRepository.updatePassword(user.userId, password);
+                if (result === 0) {
+                    return { message: "Failed to reset password." }
+                }
+                return { OK: true, password }
+            }
+            return { message: "Authentication code does not match." }
+        } catch (error) {
+            return { message: error.message }
+        }
+    },
 }

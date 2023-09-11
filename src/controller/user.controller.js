@@ -71,7 +71,7 @@ const updateProfileImage = asyncWrapper(async (req, res) => {
     return res.status(StatusCodes.BAD_REQUEST).json({
         message: "[UploadError#1] Invalid mimetype or file upload error."
     });
-})
+});
 
 const deleteUser = asyncWrapper(async (req, res) => {
     const result = await userService.deleteUser(req.user.userId);
@@ -136,7 +136,41 @@ const dissociateMyKeyword = asyncWrapper(async (req, res) => {
         });
     }
     return res.status(StatusCodes.OK).end();
-})
+});
+
+const sendMail = asyncWrapper(async (req, res) => {
+    const result = await userService.sendPasswordResetMail(req.post.email);
+    if (result.OK) {
+        return res.status(StatusCodes.OK).json({
+            message: "Authentication code has been sent."
+        });
+    }
+    return res.status(StatusCodes.BAD_REQUEST).json({
+        message: result.message
+    });
+});
+
+const resetPassword = asyncWrapper(async (req, res) => {
+    const result = await userService.verificationMailHandler(req.body.email, req.body.code);
+    if (result.OK) {
+        return res.status(StatusCodes.OK).json({
+            message: `The changed temporary password is ${result.password}`
+        });
+    }
+    return res.status(StatusCodes.BAD_REQUEST).json({
+        message: result.message
+    });
+});
+
+const changePassword = asyncWrapper(async (req, res) => {
+    const result = await userService.updatePassword(req.user.userId, req.body.password);
+    if (result.OK) {
+        return res.status(StatusCodes.OK).end();
+    }
+    return res.status(StatusCodes.BAD_REQUEST).json({
+        message: result.message
+    });
+});
 
 export const userController = {
     getProfileById,
@@ -150,5 +184,8 @@ export const userController = {
     updateUserPreferences,
     getMyKeywords,
     createMyKeyword,
-    dissociateMyKeyword
+    dissociateMyKeyword,
+    sendMail,
+    resetPassword,
+    changePassword
 }
