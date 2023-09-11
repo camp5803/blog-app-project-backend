@@ -1,1 +1,1 @@
-export { default as asyncWrapper } from '@/common/wrap';
+export { asyncWrapper } from '@/common/wrap';
