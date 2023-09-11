@@ -1,8 +1,7 @@
-import jwt from 'jsonwebtoken';
-import { authRepository, passwordRepository } from '@/repository';
+import { passwordRepository } from '@/repository';
 import { createToken, getTokens, verifyToken } from '@/utils';
-import bcrypt from "bcrypt";
 import { validateSchema } from '@/utils';
+import bcrypt from "bcrypt";
 
 export const authService = {
     login: async (email, password) => {
