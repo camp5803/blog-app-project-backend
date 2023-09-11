@@ -69,7 +69,7 @@ export const userService = {
             }
             const user = await userRepository.createUser(data);
             return {
-                user, 
+                data: user,
                 token: await createToken(user.userId) 
             }
         } catch (error) {
@@ -105,7 +105,7 @@ export const userService = {
     },
     deleteUser: async (userId) => {
         try {
-            await userRepository.deleteUser(userId);
+            const count = await userRepository.deleteUser(userId);
             if (count === 0) {
                 throw customError(StatusCodes.NOT_FOUND, "User not found");
             }
