@@ -1,6 +1,5 @@
 import { profileRepository, userRepository, passwordRepository } from '@/repository';
-import { validateSchema, sendVerificationMail } from '@/utils';
-import { redisCli as redisClient } from '@/utils';
+import { validateSchema, sendVerificationMail, createToken, redisCli as redisClient } from '@/utils';
 import { customError } from '@/common/error';
 import { StatusCodes } from 'http-status-codes';
 import crypto from 'crypto';
@@ -30,7 +29,7 @@ const generateRandomPassword = () => {
 export const userService = {
     isEmailExists: async (email) => {
         try {
-            await userRepository.findByEmail(email);
+            const user = await userRepository.findByEmail(email);
             if (user) {
                 throw customError(StatusCodes.BAD_REQUEST, "Email Already exists.");
             }
