@@ -59,7 +59,7 @@ export const userService = {
         try {
             const user = await profileRepository.findByUserId(userId);
             if (data.nickname) {
-                await validateSchema.nickname.validateAsync(nickname);
+                await validateSchema.nickname.validateAsync(data.nickname);
                 return await profileRepository.updateProfile(userId, {
                     nickname: data.nickname,
                     imageUrl: user.dataValues.imageUrl

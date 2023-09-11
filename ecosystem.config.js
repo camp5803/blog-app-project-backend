@@ -32,6 +32,8 @@ module.exports = {
                 AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
                 AWS_REGION: process.env.AWS_REGION,
                 AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
+                ZOHO_USER: process.env.ZOHO_USER,
+                ZOHO_APP_SECRET: process.env.ZOHO_APP_SECRET
             },
             env_production: {
                 NODE_ENV: 'production',
