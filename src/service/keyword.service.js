@@ -1,12 +1,15 @@
+import { customError } from "@/common/error";
 import { keywordRepository } from "@/repository";
 import { validateSchema } from '@/utils';
+import { StatusCodes } from 'http-status-codes';
 
 export const keywordService = {
     getUserKeywords: async (userId) => {
         try {
             return await keywordRepository.findUserKeywords(userId);
         } catch (error) {
-            return { message: error.message }
+            console.error(error.stack);
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     createUserKeyword: async (userId, keywordName) => {
@@ -20,17 +23,19 @@ export const keywordService = {
             return await keywordRepository.associateKeywordToUser(userId, keyword.dataValues.keywordId);
         } catch (error) {
             if (error.name === "ValidationError") {
-                return { name: "ValidationError", message: error.details[0].message }
+                throw customError(StatusCodes.BAD_REQUEST, error.details[0].message);
             }
-            return { message: error.message }
+            console.error(error.stack);
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     dissociateKeywordFromUser: async (userId, keywordName) => {
         try {
             const keyword = keywordRepository.findKeywordByName(keywordName);
-            return await keywordRepository.dissociateKeywordFromUser(keyword.dataValues.keywordId, userId);
+            await keywordRepository.dissociateKeywordFromUser(keyword.dataValues.keywordId, userId);
         } catch (error) {
-            return { message: error.message }
+            console.error(error.stack);
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     }
 }

@@ -4,7 +4,8 @@ const { User, Password } = db;
 
 export const passwordRepository = {
     findByEmail: async (email) => {
-        return await User.findOne({ where: { email },
+        return await User.findOne({ 
+            where: { email },
             attributes: ['userId', 'email'],
             include: [{ model: Password, attribute: 'password' }]
         });
