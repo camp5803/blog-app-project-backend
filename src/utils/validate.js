@@ -18,7 +18,7 @@ export const validateSchema = {
             .max(45)
             .pattern(nicknameValidate)
             .required(),
-        imageUrl: Joi.string().allow(null, '')
+        loginType: Joi.number()
     }),
     login: Joi.object({
         email: Joi.string()

@@ -1,6 +1,5 @@
 import { profileRepository, userRepository, passwordRepository } from '@/repository';
-import { validateSchema, sendVerificationMail } from '@/utils';
-import { redisCli as redisClient } from '@/utils';
+import { validateSchema, sendVerificationMail, createToken, redisCli as redisClient } from '@/utils';
 import { customError } from '@/common/error';
 import { StatusCodes } from 'http-status-codes';
 import crypto from 'crypto';
@@ -30,7 +29,7 @@ const generateRandomPassword = () => {
 export const userService = {
     isEmailExists: async (email) => {
         try {
-            await userRepository.findByEmail(email);
+            const user = await userRepository.findByEmail(email);
             if (user) {
                 throw customError(StatusCodes.BAD_REQUEST, "Email Already exists.");
             }
@@ -90,11 +89,12 @@ export const userService = {
                     nickname: data.nickname,
                     imageUrl: user.dataValues.imageUrl
                 });
+            } else {
+                await profileRepository.updateProfile(userId, {
+                    nickname: user.dataValues.nickname,
+                    imageUrl: data.imageUrl
+                });
             }
-            await profileRepository.updateProfile(userId, {
-                nickname: user.dataValues.nickname,
-                imageUrl: data.imageUrl
-            })
         } catch (error) {
             console.error(error.stack);
             if (error.name === "ValidationError") {
