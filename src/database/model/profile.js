@@ -15,7 +15,7 @@ export const profile = (sequelize, DataTypes) => {
             unique: true
         },
         imageUrl: {
-            type: DataTypes.TEXT,
+            type: DataTypes.STRING(200),
             allowNull: false,
             defaultValue: "https://julietlog.s3.ap-northeast-2.amazonaws.com/profile_img/default.png"
         },
