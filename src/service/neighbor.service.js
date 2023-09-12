@@ -16,7 +16,6 @@ export const userService = {
             
             return followers;
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
@@ -35,7 +34,6 @@ export const userService = {
             
             return followings;
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     }
