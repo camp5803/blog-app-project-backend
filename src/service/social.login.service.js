@@ -1,5 +1,7 @@
 import { profileRepository, socialLoginRepository, userRepository } from '@/repository';
-import { createToken } from '@/utils'
+import { createToken } from '@/utils';
+import { customError } from '@/common/error';
+import { StatusCodes } from 'http-status-codes';
 import axios from 'axios';
 
 const socialCode = {
@@ -32,7 +34,7 @@ export const socialLoginService = {
             const socialToken = await axios.post(Options[numbericType].requestToken, null, {
                 params: {
                     code,
-                    client_id: Options[socialCode[numbericType]].clientID,
+                    client_id: Options[numbericType].clientID,
                     client_secret: Options[numbericType].clientSecret,
                     redirect_uri: uri,
                     ...(numbericType === socialCode.GITHUB ? {} : { grant_type: 'authorization_code' })
@@ -47,7 +49,7 @@ export const socialLoginService = {
             const user = await socialLoginRepository.findBySocialId(socialProfile.data.id);
             if (user) {
                 const profile = await profileRepository.findUserInformationById(user.userId);
-                const email = userRepository.findEmailByUserId(user.userId);
+                const email = await userRepository.findEmailByUserId(user.userId);
                 const userToken = await createToken(user.userId);
                 return {
                     token: userToken,
@@ -55,7 +57,7 @@ export const socialLoginService = {
                         nickname: profile.nickname,
                         imageUrl: profile.imageUrl,
                         darkmode: profile.darkmode,
-                        email
+                        email: email.dataValues.email
                     }
                 }
             }

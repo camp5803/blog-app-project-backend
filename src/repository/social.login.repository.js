@@ -40,7 +40,7 @@ const createSocialLoginRecord = async (userId, data, type, transaction) => {
     return await SocialLogin.create({
         userId,
         socialCode: socialCode[type],
-        externalId: typeof(externalId) === "number"? externalId.toString() : externalId,
+        externalId: typeof(data.id) === "number" ? data.id.toString() : data.id,
     }, { transaction });
 }
 

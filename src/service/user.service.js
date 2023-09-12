@@ -30,7 +30,7 @@ export const userService = {
     isEmailExists: async (email) => {
         try {
             await validateSchema.email.validateAsync(email);
-            const user = await userRepository.findByEmail(validated);
+            const user = await userRepository.findByEmail(email);
             if (user) {
                 throw customError(StatusCodes.BAD_REQUEST, "Email Already exists.");
             }
