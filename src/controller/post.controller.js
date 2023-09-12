@@ -143,5 +143,20 @@ export const postController = {
             console.log(error)
             res.status(500).json(error);
         }
-    })
+    }),
+
+    createComment: asyncWrapper(async (req, res) => {
+        try {
+            const {userId} = req.user;
+            const postId = req.params.id;
+            const {content, parentId} = req.body;
+
+            const result = await postService.createComment(userId, postId, content, parentId);
+
+            res.status(StatusCodes.CREATED).json(result);
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(error);
+        }
+    }),
 }

@@ -138,7 +138,7 @@ export const postService = {
             if (bookmark) {
                 await postRepository.deleteBookmark(userId, postId);
             } else {
-                await postRepository.addBookmark(userId, postId);
+                await postRepository.createBookmark(userId, postId);
             }
 
             return !!bookmark;
@@ -156,7 +156,7 @@ export const postService = {
                 await postRepository.deleteLike(userId, postId);
                 likeCount--;
             } else {
-                await postRepository.addLike(userId, postId);
+                await postRepository.createLike(userId, postId);
                 likeCount++;
             }
 
@@ -168,6 +168,22 @@ export const postService = {
             console.log(error);
             throw new Error('Error toggle like post');
         }
-    }
+    },
 
-}
+    createComment: async (userId, postId, content, parentId) => {
+        try {
+            let depth = 0;
+            if (parentId) {
+                const parent = await postRepository.getComment(postId, parentId);
+                depth = parent.depth + 1;
+            }
+
+            const comment = await postRepository.createComment(userId, postId, content, parentId, depth);
+
+            return comment;
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error create comment');
+        }
+    },
+};

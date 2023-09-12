@@ -1,6 +1,6 @@
 import db from '../database/index.js';
 
-const {Post, Image, Category, Profile, Neighbor, Bookmark, Like} = db;
+const {Post, Image, Category, Profile, Neighbor, Bookmark, Like, Comment} = db;
 
 export const postRepository = {
     findByPostId: async (postId) => {
@@ -192,7 +192,7 @@ export const postRepository = {
         return await Bookmark.findOne({where: {userId, postId}});
     },
 
-    addBookmark: async (userId, postId) => {
+    createBookmark: async (userId, postId) => {
         await Bookmark.create({userId, postId});
     },
 
@@ -206,7 +206,7 @@ export const postRepository = {
         return {like, likeCount};
     },
 
-    addLike: async (userId, postId) => {
+    createLike: async (userId, postId) => {
         await Like.create({userId, postId});
     },
 
@@ -216,5 +216,13 @@ export const postRepository = {
 
     updatePostLike: async (postId, likeCount) => {
         await Post.update({like: likeCount}, {where: {postId}});
-    }
+    },
+
+    getComment: async (postId, commentId) => {
+        return await Comment.findOne({where: {postId, commentId}});
+    },
+
+    createComment: async (userId, postId, content, parentId, depth) => {
+        return await Comment.create({userId, postId, content, parentId, depth});
+    },
 };
