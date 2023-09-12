@@ -26,34 +26,43 @@ const Options = [null, { // 1번 index : KAKAO
 }];
 
 export const socialLoginService = {
-    login: async (type, code, uri) => { // type에 .toUpperCase 사용해서 전달하기
-        let profile, email;
-        type = socialCode[type];
+    login: async (type, code, uri) => { // type과 code 검증하기, 로그인 회원가입 로직 분리하기
+        const code = socialCode[type];
         try {
-            const socialToken = await axios.post(Options[type].requestToken, null, {
+            const socialToken = await axios.post(Options[code].requestToken, null, {
                 params: {
                     code,
-                    client_id: Options[type].clientID,
-                    client_secret: Options[type].clientSecret,
+                    client_id: Options[socialCode[code]].clientID,
+                    client_secret: Options[code].clientSecret,
                     redirect_uri: uri,
-                    ...(type === socialCode.GITHUB ? {} : { grant_type: 'authorization_code' })
+                    ...(code === socialCode.GITHUB ? {} : { grant_type: 'authorization_code' })
                 }
             });
-            const socialProfile = await axios.get(Options[type].profile, {
+            const socialProfile = await axios.get(Options[code].profile, {
                 headers: {
-                    'Authorization': `Bearer ${type === socialCode.GITHUB ?
+                    'Authorization': `Bearer ${code === socialCode.GITHUB ?
                         new URLSearchParams(socialToken.data).get('access_token') : socialToken.data.access_token}`
                 }
             });
             const user = await socialLoginRepository.findBySocialId(socialProfile.data.id);
-            profile = await profileRepository.findUserInformationById(user.userId);
-            email = userRepository.findEmailByUserId(user.userId);
-            if (!user) {
-                const newUser = await socialLoginRepository.createSocialUser(socialProfile.data, type);
-                profile = await profileRepository.findUserInformationById(newUser.userId);
-                email = newUser.dataValues.email;
+            if (user) {
+                const profile = await profileRepository.findUserInformationById(user.userId);
+                const email = userRepository.findEmailByUserId(user.userId);
+                const userToken = await createToken(user.userId);
+                return {
+                    token: userToken,
+                    profile : {
+                        nickname: profile.nickname,
+                        imageUrl: profile.imageUrl,
+                        darkmode: profile.darkmode,
+                        email
+                    }
+                }
             }
-            const userToken = await createToken(user.userId);
+            const newUser = await socialLoginRepository.createSocialUser(socialProfile.data, type);
+            const profile = await profileRepository.findUserInformationById(newUser.userId);
+            const email = newUser.dataValues.email;
+            const userToken = await createToken(newUser.userId);
             return {
                 token: userToken,
                 profile : {
@@ -64,7 +73,8 @@ export const socialLoginService = {
                 }
             }
         } catch (error) {
-            return { message: error.message }
+            console.error(error.stack);
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
 }

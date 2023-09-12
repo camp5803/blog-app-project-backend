@@ -37,7 +37,6 @@ const createUserRecord = async (data, type, transaction) => {
 };
 
 const createSocialLoginRecord = async (userId, data, type, transaction) => {
-    const externalId = formatData('id', type, data);
     return await SocialLogin.create({
         userId,
         socialCode: socialCode[type],

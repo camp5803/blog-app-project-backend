@@ -1,6 +1,8 @@
+import { customError } from '@/common/error';
 import { passwordRepository } from '@/repository';
 import { createToken, getTokens, verifyToken } from '@/utils';
 import { validateSchema } from '@/utils';
+import { StatusCodes } from 'http-status-codes';
 import bcrypt from "bcrypt";
 
 export const authService = {
@@ -9,22 +11,18 @@ export const authService = {
             await validateSchema.login.validateAsync({ email, password });
             const user = await passwordRepository.findByEmail(email);
             if (!user) {
-                return { message: "[Login Failed #2] Please check your email and password." }
+                throw customError(StatusCodes.BAD_REQUEST, "Please check your email and password.");
             }
             if (bcrypt.compareSync(password, user.password.dataValues.password)) {
                 return await createToken(user.dataValues.userId);
             }
-            return { message: "[Login Failed #1] Please check your email and password." }
+            throw customError(StatusCodes.BAD_REQUEST, "Please check your email and password.");
         } catch (error) {
+            console.error(error.stack);
             if (error.name === "ValidationError") {
-                const message = [];
-                error.details.forEach(detail => {
-                    message.push(detail.message);
-                });
-
-                return { name: "ValidationError", message }
+                throw customError(StatusCodes.BAD_REQUEST, 'Data validation failed.');
             }
-            return { message: error.message }
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     reissueToken: async (accessToken, refreshToken) => {
@@ -39,7 +37,8 @@ export const authService = {
             }
             return await createToken(payload.userId);
         } catch (error) {
-            return { message: error.message }
+            console.error(error.stack);
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     }
 }

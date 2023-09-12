@@ -13,17 +13,7 @@ if (process.env.SECURE_ENABLED) {
 
 const createAuth = asyncWrapper(async (req, res) => {
     const token = await authService.login(req.body.email, req.body.password);
-    if (token.message) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-            message: token.message
-        });
-    }
     const userData = await userService.getUserInformation(token.accessToken);
-    if (userData.message) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-            message: userData.message
-        });
-    }
     res.cookie('accessToken', token.accessToken, cookieOptions);
     res.cookie('refreshToken', token.refreshToken, cookieOptions);
 
@@ -33,11 +23,6 @@ const createAuth = asyncWrapper(async (req, res) => {
 const socialCallbackHandler = asyncWrapper(async (req, res) => {
     const type = req.params.type;
     const result = await socialLoginService.login(type.toUpperCase(), req.body.code, req.body.uri);
-    if (result.message) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-            message: result.message
-        });
-    }
     res.cookie('accessToken', result.token.accessToken, cookieOptions);
     res.cookie('refreshToken', result.token.refreshToken, cookieOptions);
     if (result.profile.email == null) {
@@ -58,11 +43,6 @@ const socialCallbackHandler = asyncWrapper(async (req, res) => {
 const reissueAccessToken = asyncWrapper(async (req, res) => {
     const tokens = await authService.reissueToken(
         req.cookies['accessToken'], req.cookies['refreshToken']);
-    if (tokens.message) {
-        return res.status(StatusCodes.BAD_REQUEST).json({
-            message: tokens.message
-        });
-    }
     res.cookie('accessToken', tokens.accessToken, cookieOptions);
     res.cookie('refreshToken', tokens.refreshToken, cookieOptions);
     return res.status(StatusCodes.OK).end();

@@ -14,7 +14,7 @@ export const neighborRepository = {
             separate: true
         });
     },
-    findFollowingByUserId: async (userId) => {
+    findFollowingsByUserId: async (userId) => {
         return await Neighbor.findAll({
             where: { userId },
             attribute: "userId",
@@ -28,6 +28,12 @@ export const neighborRepository = {
     },
     follow: async (id, targetId) => {
         return await Neighbor.create({
+            userId: id,
+            followsTo: targetId
+        });
+    },
+    unFollow: async (id, targetId) => {
+        return await Neighbor.delete({
             userId: id,
             followsTo: targetId
         });
