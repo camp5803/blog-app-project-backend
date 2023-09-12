@@ -25,7 +25,7 @@ const socialCallbackHandler = asyncWrapper(async (req, res) => {
     const result = await socialLoginService.login(type.toUpperCase(), req.body.code, req.body.uri);
     res.cookie('accessToken', result.token.accessToken, cookieOptions);
     res.cookie('refreshToken', result.token.refreshToken, cookieOptions);
-    if (result.profile.email == null) {
+    if (result.profile.email === null) {
         return res.status(StatusCodes.CREATED).json({
             message: "[Alert] Email information needs to be updated",
             nickname: result.profile.nickname,
