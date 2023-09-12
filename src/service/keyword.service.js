@@ -8,16 +8,15 @@ export const keywordService = {
         try {
             return await keywordRepository.findUserKeywords(userId);
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     createUserKeyword: async (userId, keywordName) => {
         try {
-            const validated = await validateSchema.keyword.validateAsync(keywordName);
-            const keyword = await keywordRepository.findKeywordByName(validated.value);
+            await validateSchema.keyword.validateAsync(keywordName);
+            const keyword = await keywordRepository.findKeywordByName(keywordName);
             if (!keyword) {
-                const newKeyword = await keywordRepository.createKeyword(validated.value);
+                const newKeyword = await keywordRepository.createKeyword(keywordName);
                 return await keywordRepository.associateKeywordToUser(userId, newKeyword.dataValues.keywordId);
             }
             return await keywordRepository.associateKeywordToUser(userId, keyword.dataValues.keywordId);
@@ -25,16 +24,20 @@ export const keywordService = {
             if (error.name === "ValidationError") {
                 throw customError(StatusCodes.BAD_REQUEST, error.details[0].message);
             }
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     dissociateKeywordFromUser: async (userId, keywordName) => {
         try {
+            if (keywordName === undefined) {
+                throw customError(StatusCodes.BAD_REQUEST, "Keyword not received.");
+            }
             const keyword = keywordRepository.findKeywordByName(keywordName);
-            await keywordRepository.dissociateKeywordFromUser(keyword.dataValues.keywordId, userId);
+            if (keyword.dataValues === null) {
+                throw customError(StatusCodes.BAD_REQUEST, "This keyword does not exist.");
+            }
+            await keywordRepository.dissociateKeywordFromUser(userId, keyword.dataValues.keywordId);
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     }

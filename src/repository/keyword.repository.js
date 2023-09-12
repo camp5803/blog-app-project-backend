@@ -8,14 +8,14 @@ export const keywordRepository = {
     createKeyword: async (keywordName) => {
         return await Keyword.create({ keyword: keywordName });
     },
-    associateKeywordToUser: async (keywordId, userId) => {
+    associateKeywordToUser: async (userId, keywordId) => {
         const userKeyword = await UserKeyword.findOne({ where: { userId, keywordId }});
         if (userKeyword) {
             return { message: 'User already has this keyword' };
         }
         return await UserKeyword.create({ userId, keywordId });
     },
-    dissociateKeywordFromUser: async (keywordId, userId) => {
+    dissociateKeywordFromUser: async (userId, keywordId) => {
         const userKeyword = await UserKeyword.findOne({ where: { userId, keywordId }});
         if (!userKeyword) {
             return { message: 'User does not have this keyword' };
