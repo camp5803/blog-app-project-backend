@@ -1,5 +1,5 @@
 import { profileRepository, userRepository, passwordRepository } from '@/repository';
-import { validateSchema, sendVerificationMail, createToken, redisCli as redisClient } from '@/utils';
+import { validateSchema, sendVerificationMail, createToken, redisCli as redisClient, createPassword } from '@/utils';
 import { customError } from '@/common/error';
 import { StatusCodes } from 'http-status-codes';
 import crypto from 'crypto';
@@ -29,23 +29,23 @@ const generateRandomPassword = () => {
 export const userService = {
     isEmailExists: async (email) => {
         try {
-            const user = await userRepository.findByEmail(email);
+            await validateSchema.email.validateAsync(email);
+            const user = await userRepository.findByEmail(validated);
             if (user) {
                 throw customError(StatusCodes.BAD_REQUEST, "Email Already exists.");
             }
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     isNicknameExists: async (nickname) => {
         try {
-            await userRepository.findByEmail(nickname);
+            await validateSchema.nickname.validateAsync(nickname)
+            const user = await userRepository.findByNickname(nickname);
             if (user) {
                 throw customError(StatusCodes.BAD_REQUEST, "Nickname Already exists.");
             }
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
@@ -54,7 +54,6 @@ export const userService = {
             const userId = profileRepository.findUserIdByToken(accessToken);
             return await profileRepository.findUserInformationById(userId);
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
@@ -73,7 +72,6 @@ export const userService = {
                 token: await createToken(user.userId) 
             }
         } catch (error) {
-            console.error(error.stack);
             if (error.name === "ValidationError") {
                 throw customError(StatusCodes.BAD_REQUEST, `Data validation failed.`);
             }
@@ -96,7 +94,6 @@ export const userService = {
                 });
             }
         } catch (error) {
-            console.error(error.stack);
             if (error.name === "ValidationError") {
                 throw customError(StatusCodes.BAD_REQUEST, 'Data validation failed.');
             }
@@ -110,19 +107,17 @@ export const userService = {
                 throw customError(StatusCodes.NOT_FOUND, "User not found");
             }
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     updatePassword: async (userId, password) => {
         try {
             await validateSchema.password.validateAsync(password);
-            await passwordRepository.updatePassword(userId, password);
+            await passwordRepository.updatePassword(userId, createPassword(password));
         } catch (error) {
             if (error.name === "ValidationError") {
                 throw customError(StatusCodes.BAD_REQUEST, "Data validation failed.");
             }
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
@@ -137,7 +132,6 @@ export const userService = {
                 throw customError(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to send mail.");
             }
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
@@ -147,12 +141,11 @@ export const userService = {
             const password = generateRandomPassword();
             if (result === code) {
                 const user = await userRepository.findByEmail(email);
-                const result = await passwordRepository.updatePassword(user.userId, password);
+                await passwordRepository.updatePassword(user.userId, createPassword(password));
                 return password;
             }
             throw customError(StatusCodes.BAD_REQUEST, "Authentication code does not match.");
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
