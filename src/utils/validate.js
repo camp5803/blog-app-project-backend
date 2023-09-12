@@ -2,7 +2,6 @@ import Joi from 'joi';
 
 const emailValidate = /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 const passwordValidate = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,15}$/;
-const nicknameValidate = /^[a-zA-Z0-9가-힣]+$/;
 
 export const validateSchema = {
     signUp: Joi.object({
