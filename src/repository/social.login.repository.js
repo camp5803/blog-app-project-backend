@@ -1,6 +1,12 @@
 import db from '@/database/index';
 const { User, Preference, Profile, SocialLogin, sequelize } = db;
 
+const socialCode = {
+    KAKAO: 1,
+    GITHUB: 2,
+    GOOGLE: 3
+}
+
 const typeFormatters = {
     email: {
         KAKAO: (data) => data.kakao_account.email,
@@ -10,6 +16,7 @@ const typeFormatters = {
         KAKAO: (data) => data.kakao_account.profile.nickname,
         default: (data) => data.name,
     },
+    id: (data) => data.id,
     imageUrl: {
         KAKAO: (data) => data.kakao_account.profile.image_url,
         GITHUB: (data) => data.avatar_url,
@@ -25,15 +32,15 @@ const formatData = (type, provider, data) => {
 const createUserRecord = async (data, type, transaction) => {
     return await User.create({
         email: formatData('email', type, data) || null,
-        loginType: type,
+        loginType: socialCode[type],
     }, { transaction });
 };
 
 const createSocialLoginRecord = async (userId, data, type, transaction) => {
     return await SocialLogin.create({
         userId,
-        socialCode: type,
-        externalId: data.id
+        socialCode: socialCode[type],
+        externalId: typeof(externalId) === "number"? externalId.toString() : externalId,
     }, { transaction });
 }
 
