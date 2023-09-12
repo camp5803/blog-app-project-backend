@@ -1,0 +1,1 @@
+export { asyncWrapper } from '@/common/wrap';
