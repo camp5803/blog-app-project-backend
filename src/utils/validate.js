@@ -15,7 +15,6 @@ export const validateSchema = {
             .required(),
         nickname: Joi.string()
             .max(45)
-            .pattern(nicknameValidate)
             .required(),
         loginType: Joi.number()
     }),
