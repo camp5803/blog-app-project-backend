@@ -32,7 +32,7 @@ export const keywordService = {
             if (keywordName === undefined) {
                 throw customError(StatusCodes.BAD_REQUEST, "Keyword not received.");
             }
-            const keyword = keywordRepository.findKeywordByName(keywordName);
+            const keyword = await keywordRepository.findKeywordByName(keywordName);
             if (keyword.dataValues === null) {
                 throw customError(StatusCodes.BAD_REQUEST, "This keyword does not exist.");
             }
