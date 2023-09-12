@@ -22,7 +22,6 @@ export const preferenceService = {
 
             return await preferenceRepository.updatePreferences(userId, preferenceData);
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     }
