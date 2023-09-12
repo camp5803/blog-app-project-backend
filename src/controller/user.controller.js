@@ -3,6 +3,15 @@ import { StatusCodes } from 'http-status-codes';
 import { preferenceService, userService, keywordService } from '@/service';
 import { profileRepository } from "@/repository";
 
+const cookieOptions = {
+    httpOnly: true,
+    sameSite: process.env.NODE_ENV === 'production' ? 'Strict' : 'None',
+}
+
+if (process.env.SECURE_ENABLED) {
+    cookieOptions.secure = true;
+}
+
 const getProfileById = asyncWrapper(async (req, res) => {
     try {
         const userData = await profileRepository.findUserInformationById(req.user.userId);
