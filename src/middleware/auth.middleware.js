@@ -31,6 +31,7 @@ export const isAuthenticated = async (req, res, next) => {
             );
             res.cookie('accessToken', newToken.accessToken, cookieOptions);
             res.cookie('refreshToken', newToken.refreshToken, cookieOptions);
+            req.user = verifyToken(newToken.accessToken);
             return next();
         }
         return res.status(StatusCodes.UNAUTHORIZED).json({
@@ -62,6 +63,7 @@ export const isAuthorized = async (req, res, next) => {
             );
             res.cookie('accessToken', newToken.accessToken, cookieOptions);
             res.cookie('refreshToken', newToken.refreshToken, cookieOptions);
+            req.user = verifyToken(newToken.accessToken);
             return next();
         }
         return res.status(StatusCodes.UNAUTHORIZED).json({
