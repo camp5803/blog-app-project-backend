@@ -27,20 +27,20 @@ const Options = [null, { // 1번 index : KAKAO
 
 export const socialLoginService = {
     login: async (type, code, uri) => { // type과 code 검증하기, 로그인 회원가입 로직 분리하기
-        const code = socialCode[type];
+        const numbericType = socialCode[type];
         try {
-            const socialToken = await axios.post(Options[code].requestToken, null, {
+            const socialToken = await axios.post(Options[numbericType].requestToken, null, {
                 params: {
                     code,
-                    client_id: Options[socialCode[code]].clientID,
-                    client_secret: Options[code].clientSecret,
+                    client_id: Options[socialCode[numbericType]].clientID,
+                    client_secret: Options[numbericType].clientSecret,
                     redirect_uri: uri,
-                    ...(code === socialCode.GITHUB ? {} : { grant_type: 'authorization_code' })
+                    ...(numbericType === socialCode.GITHUB ? {} : { grant_type: 'authorization_code' })
                 }
             });
-            const socialProfile = await axios.get(Options[code].profile, {
+            const socialProfile = await axios.get(Options[numbericType].profile, {
                 headers: {
-                    'Authorization': `Bearer ${code === socialCode.GITHUB ?
+                    'Authorization': `Bearer ${numbericType === socialCode.GITHUB ?
                         new URLSearchParams(socialToken.data).get('access_token') : socialToken.data.access_token}`
                 }
             });
@@ -73,7 +73,6 @@ export const socialLoginService = {
                 }
             }
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
