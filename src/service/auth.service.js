@@ -18,7 +18,6 @@ export const authService = {
             }
             throw customError(StatusCodes.BAD_REQUEST, "Please check your email and password.");
         } catch (error) {
-            console.error(error.stack);
             if (error.name === "ValidationError") {
                 throw customError(StatusCodes.BAD_REQUEST, 'Data validation failed.');
             }
@@ -37,7 +36,6 @@ export const authService = {
             }
             return await createToken(payload.userId);
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     }

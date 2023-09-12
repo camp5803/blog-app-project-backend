@@ -3,6 +3,7 @@ export const asyncWrapper = (fn) => {
         try {
             await fn(req, res, next);
         } catch (error) {
+            console.error(error.stack);
             next(error);
         }
     };
