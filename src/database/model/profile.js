@@ -40,6 +40,7 @@ export const profile = (sequelize, DataTypes) => {
 
     Profile.associate = (models) => {
         Profile.belongsTo(models.User, { foreignKey: "userId", sourceKey: "userId" });
+        Profile.hasMany(models.Comment, { foreignKey: "userId" });
     }
     return Profile;
 };

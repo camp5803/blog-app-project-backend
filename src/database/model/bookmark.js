@@ -2,14 +2,10 @@
 
 export const bookmark = (sequelize, DataTypes) => {
     const Bookmark = sequelize.define('bookmark', {
-        userId: {
+        postId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
-        },
-        postId: {
-            type: DataTypes.INTEGER,
-            allowNull: false
         },
     }, {
         tableName: 'bookmark',
@@ -26,7 +22,11 @@ export const bookmark = (sequelize, DataTypes) => {
             primaryKey: true,
             allowNull: false
         }, sourceKey: "userId" });
-        Bookmark.belongsTo(models.Post, { foreignKey: "postId", sourceKey: "postId" });
+        Bookmark.belongsTo(models.Post, { foreignKey: {
+            name: "postId",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "postId" });
     };
     return Bookmark;
 };

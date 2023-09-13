@@ -33,6 +33,11 @@ export const comment = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER.UNSIGNED,
             allowNull: true
         },
+        isDeleted:{
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: false
+        },
         createdAt: {
             type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
@@ -65,6 +70,7 @@ export const comment = (sequelize, DataTypes) => {
         }, sourceKey: "commentId" });
         Comment.belongsTo(models.User, { foreignKey: "userId", sourceKey: "userId" });
         Comment.belongsTo(models.Post, { foreignKey: "postId", sourceKey: "postId" });
+        Comment.belongsTo(models.Profile, { foreignKey: "userId" });
     };
     return Comment;
 };
