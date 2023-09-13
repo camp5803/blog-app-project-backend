@@ -21,7 +21,11 @@ export const block = (sequelize, DataTypes) => {
     });
 
     Block.associate = (models) => {
-        Block.belongsTo(models.User, { foreignKey: "blockUserId", sourceKey: "userId" });
+        Block.belongsTo(models.User, { foreignKey: {
+            name: "blockUserId",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "userId" });
         Block.belongsTo(models.User, { foreignKey: {
             name: "userId",
             primaryKey: true,
