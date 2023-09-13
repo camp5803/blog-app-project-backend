@@ -1,6 +1,6 @@
 import db from '../database/index.js';
 
-const {Post, Image, Category, Profile, Neighbor, Bookmark, Like, Comment, Block} = db;
+const {Post, Image, Category, Profile, Neighbor, Bookmark, Like} = db;
 
 export const postRepository = {
     findByPostId: async (postId) => {
@@ -216,41 +216,5 @@ export const postRepository = {
 
     updatePostLike: async (postId, likeCount) => {
         await Post.update({like: likeCount}, {where: {postId}});
-    },
-
-    getComment: async (postId, commentId) => {
-        return await Comment.findOne({where: {postId, commentId}});
-    },
-
-    getCommentCount: async (postId) => {
-        return await Comment.count({where: {postId}});
-    },
-
-    getBlockedUser: async (userId) => {
-        return await Block.findAll({attributes: ['blockUserId'], where: {userId}});
-    },
-
-    getCommentList: async (filter, pagenation = null) => {
-        const options = {
-            attributes: ['createdAt', 'commentId', 'parentId', 'postId', 'content', 'depth', 'profile.nickname', 'userId', 'isDeleted'],
-            where: filter,
-            include: [
-                {
-                    model: Profile,
-                    attributes: ['nickname'],
-                    required: false,
-                },
-            ]
-        };
-
-        if (pagenation) {
-            options.offset = pagenation.offset;
-            options.limit = pagenation.limit;
-        }
-        return await Comment.findAndCountAll(options);
-    },
-
-    createComment: async (userId, postId, content, parentId, depth) => {
-        return await Comment.create({userId, postId, content, parentId, depth});
     },
 };
