@@ -7,8 +7,7 @@ export const commentController = {
     createComment: asyncWrapper(async (req, res) => {
         try {
             const {userId} = req.user;
-            const postId = req.params.id;
-            const {content, parentId} = req.body;
+            const {content, parentId, postId} = req.body;
 
             const result = await commentService.createComment(userId, postId, content, parentId);
 
@@ -21,7 +20,7 @@ export const commentController = {
 
     getCommentByPage: asyncWrapper(async (req, res) => {
         try {
-            const postId = req.params.id;
+            const {postId} = req.query;
             const page = Number(req.query.page) || 1; // 기본 페이지 1
             const pageSize = 10;
             const userId = await postService.getUserIdFromToken(req);
@@ -38,11 +37,10 @@ export const commentController = {
     updateComment: asyncWrapper(async (req, res) => {
         try {
             const {userId} = req.user;
-            const postId = req.params.id;
             const commentId = req.params.commentId;
             const {content} = req.body;
 
-            const result = await commentService.updateComment(userId, postId, commentId, content);
+            const result = await commentService.updateComment(userId, commentId, content);
 
             if (result) {
                 res.status(StatusCodes.OK).json({message: 'update success'});
@@ -58,10 +56,9 @@ export const commentController = {
     deleteComment: asyncWrapper(async (req, res) => {
         try {
             const {userId} = req.user;
-            const postId = req.params.id;
             const commentId = req.params.commentId;
 
-            const result = await commentService.deleteComment(userId, postId, commentId);
+            const result = await commentService.deleteComment(userId, commentId);
 
             if (result) {
                 res.status(StatusCodes.OK).json({message: 'delete success'});
