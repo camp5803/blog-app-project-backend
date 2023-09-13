@@ -65,6 +65,7 @@ export const comment = (sequelize, DataTypes) => {
         }, sourceKey: "commentId" });
         Comment.belongsTo(models.User, { foreignKey: "userId", sourceKey: "userId" });
         Comment.belongsTo(models.Post, { foreignKey: "postId", sourceKey: "postId" });
+        Comment.belongsTo(models.Profile, { foreignKey: "userId" });
     };
     return Comment;
 };
