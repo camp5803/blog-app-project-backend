@@ -39,13 +39,13 @@ export const commentRepository = {
         return await Comment.create({userId, postId, content, parentId, depth});
     },
 
-    updateComment: async (userId, postId, commentId, content) => {
-        const [result] =  await Comment.update({content}, {where: {userId, postId, commentId}});
+    updateComment: async (userId, commentId, content) => {
+        const [result] =  await Comment.update({content}, {where: {userId, commentId}});
         return !!result;
     },
 
-    deleteComment: async (userId, postId, commentId) => {
-        const [result] = await Comment.update({isDeleted: true},{where: {userId, postId, commentId}});
+    deleteComment: async (userId, commentId) => {
+        const [result] = await Comment.update({isDeleted: true},{where: {userId, commentId}});
         return !!result;
     },
 };

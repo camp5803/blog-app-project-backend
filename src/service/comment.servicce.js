@@ -85,18 +85,18 @@ export const commentService = {
         }
     },
 
-    updateComment: async (userId, postId, commentId, content) => {
+    updateComment: async (userId, commentId, content) => {
         try {
-            return await commentRepository.updateComment(userId, postId, commentId, content);
+            return await commentRepository.updateComment(userId, commentId, content);
         } catch (error) {
             console.log(error);
             throw new Error('Error create comment');
         }
     },
 
-    deleteComment: async (userId, postId, commentId) => {
+    deleteComment: async (userId, commentId) => {
         try {
-            return await commentRepository.deleteComment(userId, postId, commentId);
+            return await commentRepository.deleteComment(userId, commentId);
         } catch (error) {
             console.log(error);
             throw new Error('Error create comment');
