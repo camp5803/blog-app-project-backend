@@ -41,6 +41,13 @@ export const commentService = {
                 comment.nickname = comment.profile.nickname;
                 delete comment.profile;
 
+                if (comment.isBlocked) {
+                    comment.content = 'Blocked comment';
+                }
+                if (comment.isDeleted) {
+                    comment.content = 'Deleted comment';
+                }
+
                 const filter = {
                     postId,
                     depth: 1,
