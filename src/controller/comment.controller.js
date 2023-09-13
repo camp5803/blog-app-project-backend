@@ -28,9 +28,7 @@ export const commentController = {
 
             const result = await commentService.getCommentByPage(postId, page, pageSize, userId);
 
-            res.status(StatusCodes.OK).json({
-                result
-            })
+            res.status(StatusCodes.OK).json(result)
         } catch (error) {
             console.log(error)
             res.status(500).json(error);
