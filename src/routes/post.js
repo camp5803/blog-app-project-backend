@@ -17,6 +17,8 @@ router.post('/post', postController.createPost);
 router.post('/post/:id/bookmark', postController.toggleBookmark);
 router.post('/post/:id/like', postController.toggleLike);
 router.post('/post/:id/comments', commentController.createComment);
+router.patch('/post/:id/comments/:commentId', commentController.updateComment);
+router.delete('/post/:id/comments/:commentId', commentController.deleteComment);
 router.patch('/post/:id', postController.updatePost);
 router.delete('/post/:id', postController.deletePost);
 

@@ -20,6 +20,7 @@ export const commentService = {
 
     getCommentByPage: async (postId, page, pageSize, userId) => {
         try {
+            // todo 갯글 로직 최적화 필요 (고도화)
             let blockUser = [];
             if (userId) {
                 blockUser = (await commentRepository.getBlockedUser(userId)).map(obj => obj.blockUserId);
@@ -81,6 +82,24 @@ export const commentService = {
         } catch (error) {
             console.log(error);
             throw new Error('Error get comment list ');
+        }
+    },
+
+    updateComment: async (userId, postId, commentId, content) => {
+        try {
+            return await commentRepository.updateComment(userId, postId, commentId, content);
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error create comment');
+        }
+    },
+
+    deleteComment: async (userId, postId, commentId) => {
+        try {
+            return await commentRepository.deleteComment(userId, postId, commentId);
+        } catch (error) {
+            console.log(error);
+            throw new Error('Error create comment');
         }
     },
 };

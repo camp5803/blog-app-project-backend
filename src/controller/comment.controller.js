@@ -12,7 +12,7 @@ export const commentController = {
 
             const result = await commentService.createComment(userId, postId, content, parentId);
 
-            res.status(StatusCodes.CREATED).json(result);
+            res.status(StatusCodes.CREATED).json({message: 'create success'});
         } catch (error) {
             console.log(error)
             res.status(500).json(error);
@@ -28,9 +28,48 @@ export const commentController = {
 
             const result = await commentService.getCommentByPage(postId, page, pageSize, userId);
 
-            res.status(201).json({
+            res.status(StatusCodes.OK).json({
                 result
             })
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(error);
+        }
+    }),
+
+    updateComment: asyncWrapper(async (req, res) => {
+        try {
+            const {userId} = req.user;
+            const postId = req.params.id;
+            const commentId = req.params.commentId;
+            const {content} = req.body;
+
+            const result = await commentService.updateComment(userId, postId, commentId, content);
+
+            if (result) {
+                res.status(StatusCodes.OK).json({message: 'update success'});
+            } else {
+                res.status(StatusCodes.BAD_REQUEST).json({message: 'update fail'});
+            }
+        } catch (error) {
+            console.log(error)
+            res.status(500).json(error);
+        }
+    }),
+
+    deleteComment: asyncWrapper(async (req, res) => {
+        try {
+            const {userId} = req.user;
+            const postId = req.params.id;
+            const commentId = req.params.commentId;
+
+            const result = await commentService.deleteComment(userId, postId, commentId);
+
+            if (result) {
+                res.status(StatusCodes.OK).json({message: 'delete success'});
+            } else {
+                res.status(StatusCodes.BAD_REQUEST).json({message: 'delete fail'});
+            }
         } catch (error) {
             console.log(error)
             res.status(500).json(error);
