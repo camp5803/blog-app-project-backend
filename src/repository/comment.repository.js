@@ -40,12 +40,12 @@ export const commentRepository = {
     },
 
     updateComment: async (userId, commentId, content) => {
-        const [result] =  await Comment.update({content}, {where: {userId, commentId}});
+        const [result] =  await Comment.update({content, updatedAt: new Date()}, {where: {userId, commentId}});
         return !!result;
     },
 
     deleteComment: async (userId, commentId) => {
-        const [result] = await Comment.update({isDeleted: true},{where: {userId, commentId}});
+        const [result] = await Comment.update({isDeleted: true, deletedAt: new Date()},{where: {userId, commentId}});
         return !!result;
     },
 };
