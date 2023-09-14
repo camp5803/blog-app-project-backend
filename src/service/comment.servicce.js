@@ -39,6 +39,7 @@ export const commentService = {
             for (const comment of rootCommentList.rows) {
                 comment.isBlocked = blockUser.includes(comment.userId);
                 comment.nickname = comment.profile.nickname;
+                comment.imageUrl = comment.profile.imageUrl;
                 delete comment.profile;
 
                 if (comment.isBlocked) {
@@ -59,6 +60,7 @@ export const commentService = {
                 for (const comment of childCommentList) {
                     comment.isBlocked = blockUser.includes(comment.userId);
                     comment.nickname = comment.profile.nickname;
+                    comment.imageUrl = comment.profile.imageUrl;
                     delete comment.profile;
 
                     const filter = {
@@ -71,6 +73,7 @@ export const commentService = {
                     comment.child.forEach(comment =>{
                         comment.isBlocked = blockUser.includes(comment.userId);
                         comment.nickname = comment.profile.nickname;
+                        comment.imageUrl = comment.profile.imageUrl;
                         delete comment.profile;
                     })
                 }
