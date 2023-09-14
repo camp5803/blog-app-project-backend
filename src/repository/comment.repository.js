@@ -17,12 +17,12 @@ export const commentRepository = {
 
     getCommentList: async (filter, pagenation = null) => {
         const options = {
-            attributes: ['createdAt', 'commentId', 'parentId', 'postId', 'content', 'profile.nickname', 'userId', 'isDeleted'],
+            attributes: ['createdAt', 'commentId', 'parentId', 'postId', 'content', 'profile.image_url', 'profile.nickname', 'userId', 'isDeleted'],
             where: filter,
             include: [
                 {
                     model: Profile,
-                    attributes: ['nickname'],
+                    attributes: ['nickname', 'imageUrl'],
                     required: false,
                 },
             ]
