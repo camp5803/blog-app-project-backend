@@ -1,5 +1,19 @@
 import {commentRepository} from '@/repository/comment.repository';
 
+const convertComment = (comment, blockUser) => {
+    comment.isBlocked = blockUser.includes(comment.userId);
+    comment.nickname = comment.profile.nickname;
+    comment.profileImg = comment.profile.imageUrl;
+    delete comment.profile;
+
+    if (comment.isBlocked) {
+        comment.content = 'Blocked comment';
+    }
+    if (comment.isDeleted) {
+        comment.content = 'Deleted comment';
+    }
+};
+
 export const commentService = {
     createComment: async (userId, postId, content, parentId) => {
         try {
@@ -37,17 +51,7 @@ export const commentService = {
             const rootCommentList = JSON.parse(JSON.stringify(await commentRepository.getCommentList(filter, pagenation)));
 
             for (const comment of rootCommentList.rows) {
-                comment.isBlocked = blockUser.includes(comment.userId);
-                comment.nickname = comment.profile.nickname;
-                comment.profileImg = comment.profile.imageUrl;
-                delete comment.profile;
-
-                if (comment.isBlocked) {
-                    comment.content = 'Blocked comment';
-                }
-                if (comment.isDeleted) {
-                    comment.content = 'Deleted comment';
-                }
+                convertComment(comment, blockUser);
 
                 const filter = {
                     postId,
@@ -58,10 +62,7 @@ export const commentService = {
                 const childCommentList = comment.child;
 
                 for (const comment of childCommentList) {
-                    comment.isBlocked = blockUser.includes(comment.userId);
-                    comment.nickname = comment.profile.nickname;
-                    comment.profileImg = comment.profile.imageUrl;
-                    delete comment.profile;
+                    convertComment(comment, blockUser);
 
                     const filter = {
                         postId,
@@ -71,10 +72,7 @@ export const commentService = {
                     comment.child = JSON.parse(JSON.stringify((await commentRepository.getCommentList(filter)).rows));
 
                     comment.child.forEach(comment =>{
-                        comment.isBlocked = blockUser.includes(comment.userId);
-                        comment.nickname = comment.profile.nickname;
-                        comment.profileImg = comment.profile.imageUrl;
-                        delete comment.profile;
+                        convertComment(comment, blockUser);
                     })
                 }
             }
