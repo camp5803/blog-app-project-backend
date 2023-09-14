@@ -6,7 +6,6 @@ import { upload } from '@/utils';
 const router = express.Router();
 
 router.route('/users')
-    .get(isAuthenticated, userController.getProfileById)
     .post(userController.createLocalUser)
     .delete(isAuthorized, userController.deleteUser);
 
@@ -26,9 +25,12 @@ router.route('/users/keywords')
 router.patch('/users/image', isAuthenticated,
     upload.single('image'), userController.updateProfileImage);
 
+router.get('/users/me', isAuthenticated, userController.getMyProfile);
+router.get('/users/email', userController.validateEmail);
+router.patch('users/password', isAuthorized, userController.changePassword);
+router.get('/users/:id', userController.getProfileById);
 router.post('/users/password-reset/request', userController.sendMail);
 router.patch('/users/password-reset', userController.resetPassword);
-router.patch('users/password', isAuthorized, userController.changePassword);
-router.get('/users/email', userController.validateEmail);
+
 
 export default router;

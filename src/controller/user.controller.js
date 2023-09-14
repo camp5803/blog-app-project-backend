@@ -2,6 +2,7 @@ import { asyncWrapper } from '@/common';
 import { StatusCodes } from 'http-status-codes';
 import { preferenceService, userService, keywordService } from '@/service';
 import { profileRepository } from "@/repository";
+import { customError } from '@/common/error';
 
 const cookieOptions = {
     httpOnly: true,
@@ -12,14 +13,30 @@ if (process.env.SECURE_ENABLED) {
     cookieOptions.secure = true;
 }
 
-const getProfileById = asyncWrapper(async (req, res) => {
+const getMyProfile = asyncWrapper(async (req, res) => {
     try {
-        const userData = await profileRepository.findUserInformationById(req.user.userId);
-        return res.status(StatusCodes.OK).json(userData);
+        const profile = await profileRepository.findUserInformationById(req.user.userId);
+        return res.status(StatusCodes.OK).json(profile);
     } catch (error) {
         return res.status(StatusCodes.BAD_REQUEST).json({
             message: error.message
         });
+    }
+});
+
+const getProfileById = asyncWrapper(async (req, res) => {
+    try {
+        if (id === null || id === undefined) {
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Missing parameter "id".`);
+        }
+        const profile = await profileRepository.findByUserId(req.params.id);
+        return res.status(StatusCodes.OK).json({
+            userId: profile.userId, 
+            nickname: profile.nickname, 
+            imageUrl: profile.imageUrl
+        });
+    } catch (error) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end();
     }
 });
 
@@ -64,7 +81,7 @@ const deleteUser = asyncWrapper(async (req, res) => {
 
 const getUserPreferences = asyncWrapper(async (req, res) => {
     const preferences = await preferenceService.getPreferences(req.user.userId);
-    return res.status(StatusCodes.OK).json(preferences.dataValues);
+    return res.status(StatusCodes.OK).json(preferences);
 });
 
 const updateUserPreferences = asyncWrapper(async (req, res) => {
@@ -88,7 +105,7 @@ const dissociateMyKeyword = asyncWrapper(async (req, res) => {
 });
 
 const sendMail = asyncWrapper(async (req, res) => {
-    await userService.sendPasswordResetMail(req.post.email);
+    await userService.sendPasswordResetMail(req.body.email);
     return res.status(StatusCodes.OK).json({
         message: "Authentication code has been sent."
     });
@@ -107,7 +124,7 @@ const changePassword = asyncWrapper(async (req, res) => {
 });
 
 export const userController = {
-    getProfileById,
+    getMyProfile,
     validateEmail,
     validateNickname,
     createLocalUser,
@@ -121,5 +138,6 @@ export const userController = {
     dissociateMyKeyword,
     sendMail,
     resetPassword,
-    changePassword
+    changePassword,
+    getProfileById
 }
