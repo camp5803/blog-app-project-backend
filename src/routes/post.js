@@ -10,11 +10,10 @@ router.get('/post/detail/:id', postController.getByPostDetail);
 router.get('/post/:id/verification', postController.verifyUser);
 
 // 토큰 검증 필요 o
-router.use(isAuthorized);
-router.post('/post', postController.createPost);
-router.post('/post/:id/bookmark', postController.toggleBookmark);
-router.post('/post/:id/like', postController.toggleLike);
-router.patch('/post/:id', postController.updatePost);
-router.delete('/post/:id', postController.deletePost);
+router.post('/post', isAuthorized, postController.createPost);
+router.post('/post/:id/bookmark', isAuthorized, postController.toggleBookmark);
+router.post('/post/:id/like', isAuthorized, postController.toggleLike);
+router.patch('/post/:id', isAuthorized, postController.updatePost);
+router.delete('/post/:id', isAuthorized, postController.deletePost);
 
 export default router;
