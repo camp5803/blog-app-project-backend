@@ -8,10 +8,26 @@ export const keywordService = {
         try {
             const keywords = await keywordRepository.findUserKeywords(userId);
             return keywords.map(k => {
-                return { keyword: k.keyword }
+                return { 
+                    keywordId: k.keyword.keywordId,
+                    keyword: k.keyword.keyword 
+                }
             });
         } catch (error) {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    },
+    getTrendyKeywords: async () => {
+        try {
+            const keywords = await keywordRepository.findTrendyKeyword();
+            return keywords.map(k => {
+                return {
+                    keywordId: k.keyword.keywordId,
+                    keyword : k.keyword.keyword
+                }
+            });
+        } catch (error) {
+            
         }
     },
     createUserKeyword: async (userId, keywordName) => {

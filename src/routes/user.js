@@ -18,7 +18,7 @@ router.route('/users/preferences')
     .patch(isAuthorized, userController.updateUserPreferences);
 
 router.route('/users/keywords')
-    .get(isAuthorized, userController.getMyKeywords)
+    .get(isAuthenticated, userController.getKeywords)
     .post(isAuthorized, userController.createMyKeyword)
     .delete(isAuthorized, userController.dissociateMyKeyword);
 
@@ -31,10 +31,10 @@ router.patch('/users/image', isAuthenticated,
 router.get('/users/me', isAuthenticated, userController.getMyProfile);
 router.get('/users/email', userController.validateEmail);
 router.patch('users/password', isAuthorized, userController.changePassword);
-router.get('/users/:id', userController.getProfileById);
+router.patch('/users/password-reset', userController.resetPassword);
 router.post('/users/password-reset/request', userController.sendMail);
 router.post('/users/password-reset/confirm', userController.checkVerification);
-router.patch('/users/password-reset', userController.resetPassword);
 
+router.get('/users/:id', userController.getProfileById);
 
 export default router;

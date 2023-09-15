@@ -89,8 +89,12 @@ export const userController = {
         await preferenceService.updatePreferences(req.user.userId, req.body);
         return res.status(StatusCodes.OK).end();
     }),
-    getMyKeywords: asyncWrapper(async (req, res) => {
-        const keywords = await keywordService.getUserKeywords(req.user.userId);
+    getKeywords: asyncWrapper(async (req, res) => {
+        if (req.user) {
+            const keywords = await keywordService.getUserKeywords(req.user.userId);
+            return res.status(StatusCodes.OK).json(keywords);
+        }
+        const keywords = await keywordService.getTrendyKeywords();
         return res.status(StatusCodes.OK).json(keywords);
     }),
     createMyKeyword: asyncWrapper(async (req, res) => {
@@ -129,10 +133,10 @@ export const userController = {
         });
     }),
     resetPassword: asyncWrapper(async (req, res) => {
-        if (!req.body.email || !req.body.code) {
+        if (!req.body.email || !req.body.code || !req.body.password) {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
         }
-        await userService.verificationMailHandler(req.body.email, req.body.code);
+        await userService.verificationMailHandler(req.body.email, req.body.code, req.body.password);
         return res.status(StatusCodes.OK).json();
     }),
     changePassword: asyncWrapper(async (req, res) => {
