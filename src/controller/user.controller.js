@@ -134,11 +134,11 @@ export const userController = {
         return res.status(StatusCodes.OK).json(blockerdUsers);
     }),
     getFollowers: asyncWrapper(async (req, res) => {
-        const followers = await neighborService.getFollowers(req.user.userId);
+        const followers = await neighborService.getFollowers(req.params.id);
         return res.status(StatusCodes.OK).json(followers);
     }),
     getFollowings: asyncWrapper(async (req, res) => {
-        const followings = await neighborService.getFollowings(req.user.userId);
+        const followings = await neighborService.getFollowings(req.params.id);
         return res.status(StatusCodes.OK).json(followings);
     }),
     followNeighbor: asyncWrapper(async (req, res) => {
