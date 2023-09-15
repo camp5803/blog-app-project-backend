@@ -123,6 +123,15 @@ const changePassword = asyncWrapper(async (req, res) => {
     return res.status(StatusCodes.OK).end();
 });
 
+const blockUser = asyncWrapper(async (req, res) => {
+    const blockUserId = await userService.blockUser(req.user.userId, req.body.blockId);
+    return res.status(StatusCodes.OK).json(blockUserId);
+});
+
+const getBlockUser = asyncWrapper(async (req, res) => {
+
+});
+
 export const userController = {
     getMyProfile,
     validateEmail,
@@ -139,5 +148,7 @@ export const userController = {
     sendMail,
     resetPassword,
     changePassword,
-    getProfileById
+    getProfileById,
+    blockUser,
+    getBlockUser
 }

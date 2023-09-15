@@ -1,4 +1,4 @@
-import { profileRepository, userRepository, passwordRepository } from '@/repository';
+import { profileRepository, userRepository, passwordRepository, blockRepository } from '@/repository';
 import { validateSchema, sendVerificationMail, createToken, redisCli as redisClient, createPassword } from '@/utils';
 import { customError } from '@/common/error';
 import { StatusCodes } from 'http-status-codes';
@@ -151,4 +151,18 @@ export const userService = {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
+    blockUser: async (userId, blockUserId) => {
+        try {
+            if (userId || blockUserId) {
+                throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Missing request body "id".`);
+            }
+            const data = await blockRepository.block(userId, blockUserId);
+            return data.dataValues.userId;
+        } catch (error) {
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    },
+    getBlockUsers: async () => {
+        
+    }
 }
