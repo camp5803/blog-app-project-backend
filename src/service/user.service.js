@@ -142,6 +142,7 @@ export const userService = {
             if (result === code) {
                 const user = await userRepository.findUserByEmail(email);
                 await passwordRepository.updatePassword(user.userId, createPassword(password));
+                await redisClient.del(email);
                 return password;
             }
             throw customError(StatusCodes.CONFLICT, "Authentication code does not match.");
