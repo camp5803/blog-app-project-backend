@@ -6,7 +6,10 @@ import { StatusCodes } from 'http-status-codes';
 export const keywordService = {
     getUserKeywords: async (userId) => {
         try {
-            return await keywordRepository.findUserKeywords(userId);
+            const keywords = await keywordRepository.findUserKeywords(userId);
+            return keywords.map(k => {
+                return { keyword: k.keyword }
+            });
         } catch (error) {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }

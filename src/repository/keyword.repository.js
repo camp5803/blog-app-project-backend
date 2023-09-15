@@ -24,7 +24,9 @@ export const keywordRepository = {
     },
     findUserKeywords: async (userId) => {
         return await UserKeyword.findAll({ where: { userId },
-            include: [{ model: Keyword, attribute: 'keyword' }]
+            include: [{ model: Keyword, attribute: 'keyword' }],
+            order: [['createdAt', 'DESC']],
+            limit: 10
         });
     }
 }
