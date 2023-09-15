@@ -153,16 +153,20 @@ export const userService = {
     },
     blockUser: async (userId, blockUserId) => {
         try {
-            if (userId || blockUserId) {
+            if (!userId || !blockUserId) {
                 throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Missing request body "id".`);
             }
+            const blockUser = await blockRepository.findByUserIdAndBlockUserId(userId, blockUserId);
+            if (!blockUser || !blockUser.Block.userId) {
+                throw customError(!blockUser ? StatusCodes.BAD_REQUEST : StatusCodes.CONFLICT, "");
+            }
             const data = await blockRepository.block(userId, blockUserId);
-            return data.dataValues.userId;
+            return data.dataValues.blockUserId;
         } catch (error) {
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     getBlockUsers: async () => {
-        
+
     }
 }

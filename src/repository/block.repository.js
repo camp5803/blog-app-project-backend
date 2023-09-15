@@ -1,9 +1,16 @@
 import db from '@/database';
-const { Block } = db;
+const { User, Block } = db;
 
 export const blockRepository = {
-    findByUserId: async () => {
-        
+    findByUserIdAndBlockUserId: async (userId, blockUserId) => {
+        return await User.findOne({
+            where: { userId: blockUserId },
+            include: [{
+                model: Block,
+                where: { userId, blockUserId },
+                required: false
+            }]
+        });
     },
     block: async (userId, blockUserId) => {
         return await Block.create({
