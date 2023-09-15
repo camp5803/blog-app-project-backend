@@ -43,6 +43,11 @@ export const userRepository = {
             attributes: ['email']
         });
     },
+    findUserByEmail: async (email) => {
+        return await User.findOne({
+            where: { email }
+        });
+    },
     findByNickname: async (nickname) => {
         return await Profile.findOne({
             where: { nickname },

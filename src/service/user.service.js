@@ -13,19 +13,6 @@ const generateRandomString = (length) => {
     return result;
 }
 
-const generateRandomPassword = () => {
-    let result = '';
-    const charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    const specialCharset = "!@#$%^&*()";
-    for (let i = 0; i < 6; i++) {
-        result += charset.charAt(crypto.randomInt(charset.length));
-    }
-    for (let i = 0; i < 3; i++) {
-        result += specialCharset.charAt(crypto.randomInt(specialCharset.length));
-    }
-    return result;
-}
-
 export const userService = {
     isEmailExists: async (email) => {
         try {
@@ -123,7 +110,7 @@ export const userService = {
     },
     sendPasswordResetMail: async (email) => {
         try {
-            const user = await userRepository.findByEmail(email);
+            const user = await userRepository.findUserByEmail(email);
             if (!user || email.loginType !== 0) {
                 throw customError(StatusCodes.BAD_REQUEST, 
                     !user ? "No users match this email" : 
@@ -137,25 +124,32 @@ export const userService = {
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
-    verificationMailHandler: async (email, code) => {
+    checkVerification: async (email, code) => {
         try {
             const result = await redisClient.get(email);
-            const password = generateRandomPassword();
             if (result === code) {
-                const user = await userRepository.findByEmail(email);
+                return true;
+            }
+            return false
+        } catch (error) {
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, "Redis error");
+        }
+    },
+    verificationMailHandler: async (email, code, password) => {
+        try {
+            const result = await redisClient.get(email);
+            if (result === code) {
+                const user = await userRepository.findUserByEmail(email);
                 await passwordRepository.updatePassword(user.userId, createPassword(password));
                 return password;
             }
-            throw customError(StatusCodes.BAD_REQUEST, "Authentication code does not match.");
+            throw customError(StatusCodes.CONFLICT, "Authentication code does not match.");
         } catch (error) {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     blockUser: async (userId, blockUserId) => {
         try {
-            if (!userId || !blockUserId) {
-                throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Missing request body "id".`);
-            }
             const validate = await blockRepository.isBlocked(userId, blockUserId);
             if (validate) {
                 if (validate === -1) {

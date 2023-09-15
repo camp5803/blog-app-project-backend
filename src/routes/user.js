@@ -33,6 +33,7 @@ router.get('/users/email', userController.validateEmail);
 router.patch('users/password', isAuthorized, userController.changePassword);
 router.get('/users/:id', userController.getProfileById);
 router.post('/users/password-reset/request', userController.sendMail);
+router.post('/users/password-reset/confirm', userController.checkVerification);
 router.patch('/users/password-reset', userController.resetPassword);
 
 
