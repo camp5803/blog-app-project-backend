@@ -1,6 +1,6 @@
 import { asyncWrapper } from '@/common';
 import { StatusCodes } from 'http-status-codes';
-import { preferenceService, userService } from '@/service';
+import { preferenceService, userService, neighborService } from '@/service';
 import { profileRepository } from "@/repository";
 import { customError } from '@/common/error';
 
@@ -130,7 +130,29 @@ export const userController = {
         return res.status(StatusCodes.OK).json({ blockId: blockUserId });
     }),
     getBlockUser: asyncWrapper(async (req, res) => {
-    
+        const blockerdUsers = await neighborService.getBlockUsers(req.user.userId);
+        return res.status(StatusCodes.OK).json(blockerdUsers);
     }),
-    
+    getFollowers: asyncWrapper(async (req, res) => {
+        const followers = await neighborService.getFollowers(req.user.userId);
+        return res.status(StatusCodes.OK).json(followers);
+    }),
+    getFollowings: asyncWrapper(async (req, res) => {
+        const followings = await neighborService.getFollowings(req.user.userId);
+        return res.status(StatusCodes.OK).json(followings);
+    }),
+    followNeighbor: asyncWrapper(async (req, res) => {
+        if (!req.body.target) {
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+        }
+        await neighborService.follow(req.user.userId, req.body.target);
+        return res.status(StatusCodes.OK).end()
+    }),
+    unfollowNeighbor: asyncWrapper(async (req, res) => {
+        if (!req.body.target) {
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+        }
+        await neighborService.unfollow(req.user.userId, req.body.target);
+        return res.status(StatusCodes.OK).end()
+    })
 }
