@@ -156,9 +156,12 @@ export const userService = {
             if (!userId || !blockUserId) {
                 throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Missing request body "id".`);
             }
-            const blockUser = await blockRepository.findByUserIdAndBlockUserId(userId, blockUserId);
-            if (!blockUser || !blockUser.Block.userId) {
-                throw customError(!blockUser ? StatusCodes.BAD_REQUEST : StatusCodes.CONFLICT, "");
+            const validate = await blockRepository.isBlocked(userId, blockUserId);
+            if (validate) {
+                if (validate === -1) {
+                    throw customError(StatusCodes.BAD_REQUEST, "No user found that you block off.");
+                }
+                throw customError(StatusCodes.CONFLICT, "Already blocked user.");
             }
             const data = await blockRepository.block(userId, blockUserId);
             return data.dataValues.blockUserId;
