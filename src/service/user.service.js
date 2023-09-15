@@ -150,22 +150,4 @@ export const userService = {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
-    blockUser: async (userId, blockUserId) => {
-        try {
-            const validate = await blockRepository.isBlocked(userId, blockUserId);
-            if (validate) {
-                if (validate === -1) {
-                    throw customError(StatusCodes.BAD_REQUEST, "No user found that you block off.");
-                }
-                throw customError(StatusCodes.CONFLICT, "Already blocked user.");
-            }
-            const data = await blockRepository.block(userId, blockUserId);
-            return data.dataValues.blockUserId;
-        } catch (error) {
-            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
-        }
-    },
-    getBlockUsers: async () => {
-
-    }
 }

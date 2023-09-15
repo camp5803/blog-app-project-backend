@@ -80,6 +80,18 @@ export const neighborService = {
         }
     },
     getBlockUsers: async () => {
-
+        try {
+            const data = await blockRepository.findBlockedUser(userId);
+            const blockedUsers = data.map(block => {
+                return {
+                    userId: block.userId,
+                    nickname: block.nickname,
+                    imageUrl: block.imageUrl
+                }
+            });
+            return blockedUsers;
+        } catch (error) {
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
     }
 }
