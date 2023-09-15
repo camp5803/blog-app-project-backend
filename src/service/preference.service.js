@@ -11,7 +11,6 @@ export const preferenceService = {
                 setNeighborPrivate: preference.setNeighborPrivate
             }
         } catch (error) {
-            console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
