@@ -27,7 +27,7 @@ export const keywordService = {
                 }
             });
         } catch (error) {
-            
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     createUserKeyword: async (userId, keywordName) => {
@@ -49,11 +49,11 @@ export const keywordService = {
     dissociateKeywordFromUser: async (userId, keywordName) => {
         try {
             if (keywordName === undefined) {
-                throw customError(StatusCodes.BAD_REQUEST, "Keyword not received.");
+                throw customError(StatusCodes.UNPROCESSABLE_ENTITY, "Keyword not received.");
             }
             const keyword = await keywordRepository.findKeywordByName(keywordName);
             if (keyword.dataValues === null) {
-                throw customError(StatusCodes.BAD_REQUEST, "This keyword does not exist.");
+                throw customError(StatusCodes.PRECONDITION_REQUIRED, "This keyword does not exist.");
             }
             await keywordRepository.dissociateKeywordFromUser(userId, keyword.dataValues.keywordId);
         } catch (error) {
