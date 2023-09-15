@@ -17,11 +17,6 @@ router.route('/users/preferences')
     .get(isAuthorized, userController.getUserPreferences)
     .patch(isAuthorized, userController.updateUserPreferences);
 
-router.route('/users/keywords')
-    .get(isAuthenticated, userController.getKeywords)
-    .post(isAuthorized, userController.createMyKeyword)
-    .delete(isAuthorized, userController.dissociateMyKeyword);
-
 router.route('/users/block/:block_id')
     .post(isAuthorized, userController.blockUser);
 

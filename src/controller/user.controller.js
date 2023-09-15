@@ -1,6 +1,6 @@
 import { asyncWrapper } from '@/common';
 import { StatusCodes } from 'http-status-codes';
-import { preferenceService, userService, keywordService } from '@/service';
+import { preferenceService, userService } from '@/service';
 import { profileRepository } from "@/repository";
 import { customError } from '@/common/error';
 
@@ -19,9 +19,7 @@ export const userController = {
             const profile = await profileRepository.findUserInformationById(req.user.userId);
             return res.status(StatusCodes.OK).json(profile);
         } catch (error) {
-            return res.status(StatusCodes.BAD_REQUEST).json({
-                message: error.message
-            });
+            return res.status(StatusCodes.BAD_REQUEST).end();
         }
     }),
     getProfileById: asyncWrapper(async (req, res) => {
@@ -89,28 +87,6 @@ export const userController = {
         await preferenceService.updatePreferences(req.user.userId, req.body);
         return res.status(StatusCodes.OK).end();
     }),
-    getKeywords: asyncWrapper(async (req, res) => {
-        if (req.user) {
-            const keywords = await keywordService.getUserKeywords(req.user.userId);
-            return res.status(StatusCodes.OK).json(keywords);
-        }
-        const keywords = await keywordService.getTrendyKeywords();
-        return res.status(StatusCodes.OK).json(keywords);
-    }),
-    createMyKeyword: asyncWrapper(async (req, res) => {
-        if (!req.body.keyword) {
-            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
-        }
-        await keywordService.createUserKeyword(req.user.userId, req.body.keyword);
-        return res.status(StatusCodes.CREATED).end();
-    }),
-    dissociateMyKeyword: asyncWrapper(async (req, res) => {
-        if (!req.body.keyword) {
-            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
-        }
-        await keywordService.dissociateKeywordFromUser(req.user.userId, req.body.keyword);
-        return res.status(StatusCodes.OK).end();
-    }),
     sendMail: asyncWrapper(async (req, res) => {
         if (!req.body.email) {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
@@ -155,6 +131,6 @@ export const userController = {
     }),
     getBlockUser: asyncWrapper(async (req, res) => {
     
-    })
+    }),
     
 }
