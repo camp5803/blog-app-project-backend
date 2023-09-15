@@ -1,4 +1,5 @@
 'use strict';
+import { Sequelize } from "sequelize"; 
 
 export const userKeyword = (sequelize, DataTypes) => {
     const UserKeyword = sequelize.define('user_keyword', {
@@ -11,6 +12,11 @@ export const userKeyword = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false
+        },
+        createdAt: {
+            type: DataTypes.DATE,
+            defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
+            allowNull: true
         },
     }, {
         tableName: 'user_keyword',
