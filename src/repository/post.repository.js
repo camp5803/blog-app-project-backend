@@ -192,7 +192,7 @@ export const postRepository = {
         return await Bookmark.findOne({where: {userId, postId}});
     },
 
-    addBookmark: async (userId, postId) => {
+    createBookmark: async (userId, postId) => {
         await Bookmark.create({userId, postId});
     },
 
@@ -206,7 +206,7 @@ export const postRepository = {
         return {like, likeCount};
     },
 
-    addLike: async (userId, postId) => {
+    createLike: async (userId, postId) => {
         await Like.create({userId, postId});
     },
 
@@ -216,5 +216,5 @@ export const postRepository = {
 
     updatePostLike: async (postId, likeCount) => {
         await Post.update({like: likeCount}, {where: {postId}});
-    }
+    },
 };
