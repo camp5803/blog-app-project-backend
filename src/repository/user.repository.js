@@ -31,6 +31,9 @@ const createProfileRecord = async (userId, nickname, transaction) => {
 };
 
 export const userRepository = {
+    findByUserId: async (userId) => {
+        return await User.findOne({ where: { userId }});
+    },
     findEmailByUserId: async (userId) => {
         return await User.findOne({
             where: { userId },

@@ -17,20 +17,23 @@ router.route('/users/preferences')
     .get(isAuthorized, userController.getUserPreferences)
     .patch(isAuthorized, userController.updateUserPreferences);
 
-router.route('/users/keywords')
-    .get(isAuthenticated, userController.getKeywords)
-    .post(isAuthorized, userController.createMyKeyword)
-    .delete(isAuthorized, userController.dissociateMyKeyword);
-
 router.route('/users/block/:block_id')
     .post(isAuthorized, userController.blockUser);
 
 router.patch('/users/image', isAuthenticated,
     upload.single('image'), userController.updateProfileImage);
 
+router.route('/users/neighbor/:id')
+    .post(isAuthorized, userController.followNeighbor)
+    .delete(isAuthorized, userController.unfollowNeighbor);
+
 router.get('/users/me', isAuthenticated, userController.getMyProfile);
+router.get('/users/block', isAuthorized, userController.getBlockUser);
 router.get('/users/email', userController.validateEmail);
-router.patch('users/password', isAuthorized, userController.changePassword);
+router.get('/users/neighbor/follower/:id', userController.getFollowers);
+router.get('/users/neighbor/following/:id', userController.getFollowings);
+
+router.patch('/users/password', isAuthorized, userController.changePassword);
 router.patch('/users/password-reset', userController.resetPassword);
 router.post('/users/password-reset/request', userController.sendMail);
 router.post('/users/password-reset/confirm', userController.checkVerification);

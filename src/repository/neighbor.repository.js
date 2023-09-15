@@ -1,29 +1,47 @@
 import db from '@/database';
-const { Neighbor, Profile } = db;
+const { Neighbor, Profile, User } = db;
 
-export const neighborRepository = {
+export const neighborRepository = { // 이거 고쳐야함
     findFollowersByUserId: async (userId) => {
         return await Neighbor.findAll({
             where: { followsTo: userId },
-            attribute: "userId",
-            include: [{ 
-                model: Profile,
-                attributes: ["nickname", "imageUrl"],
-                order: ["nickname", "DESC"]
+            attribute: "followsTo",
+            include: [{
+                model: User,
+                attributes: [],
+                include: [{
+                    model: Profile,
+                    attributes: ["nickname", "imageUrl"],
+                    required: true
+                }]
             }],
-            separate: true
+            order: [[
+                { model: User, as: 'user' }, 
+                { model: Profile, as: 'profile' }, 
+                'nickname', 'ASC'
+            ]], 
+            raw: true
         });
     },
     findFollowingsByUserId: async (userId) => {
         return await Neighbor.findAll({
             where: { userId },
-            attribute: "userId",
-            include: [{ 
-                model: Profile,
-                attributes: ["nickname", "imageUrl"],
-                order: ["nickname", "DESC"]
+            attribute: "followsTo",
+            include: [{
+                model: User,
+                attributes: [],
+                include: [{
+                    model: Profile,
+                    attributes: ["nickname", "imageUrl"],
+                    required: true
+                }]
             }],
-            separate: true
+            order: [[
+                { model: User, as: 'user' }, 
+                { model: Profile, as: 'profile' }, 
+                'nickname', 'ASC'
+            ]], 
+            raw: true
         });
     },
     follow: async (id, targetId) => {
@@ -32,10 +50,15 @@ export const neighborRepository = {
             followsTo: targetId
         });
     },
-    unFollow: async (id, targetId) => {
+    unfollow: async (id, targetId) => {
         return await Neighbor.delete({
             userId: id,
             followsTo: targetId
+        });
+    },
+    isFollowing: async (userId, targetId) => {
+        return await Neighbor.findOne({
+            where: { userId, followsTo: targetId }
         });
     }
 }

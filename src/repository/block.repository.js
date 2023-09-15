@@ -1,21 +1,34 @@
 import db from '@/database';
-const { User, Block } = db;
+const { User, Block, Profile } = db;
 
 export const blockRepository = {
     isBlocked: async (userId, blockUserId) => {
-        const user = await User.findOne({ where: { blockUserId }});
-        const blockUser = await Block.findOne({ where: { userId, blockUserId }});
-        if (!user || !blockUser) {
-            if (!user) {
-                return -1;
-            } 
-            return -2;
-        }
-        return false;
+        return await Block.findOne({ where: { userId, blockUserId }});
     },
     block: async (userId, blockUserId) => {
         return await Block.create({
             userId, blockUserId
         });
+    },
+    findBlockedUser: async (userId) => {
+        return await Block.findAll({
+            where: { userId },
+            attribute: "blockUserId",
+            include: [{
+                model: User,
+                attributes: [],
+                include: [{
+                    model: Profile,
+                    attributes: ["nickname", "imageUrl"],
+                    required: true
+                }]
+            }],
+            order: [[
+                { model: User, as: 'user' }, 
+                { model: Profile, as: 'profile' }, 
+                'nickname', 'ASC'
+            ]], 
+            raw: true
+        })
     }
 }

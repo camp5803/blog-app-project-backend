@@ -6,7 +6,7 @@ export const preferenceRepository = {
         return await Preference.findOne({
             where: { userId },
             attributes: [
-                'darkmodeStatus', 'neighborAlert', 
+                'setNeighborPrivate', 'neighborAlert', 
                 'commentAlert', 'chatAlert'
             ]
         });
