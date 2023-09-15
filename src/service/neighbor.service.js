@@ -79,7 +79,7 @@ export const neighborService = {
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
-    getBlockUsers: async () => {
+    getBlockUsers: async (userId) => {
         try {
             const data = await blockRepository.findBlockedUser(userId);
             const blockedUsers = data.map(block => {
