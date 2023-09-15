@@ -111,12 +111,13 @@ export const userService = {
     sendPasswordResetMail: async (email) => {
         try {
             const user = await userRepository.findUserByEmail(email);
-            if (!user || email.loginType !== 0) {
+            if (!user || user.loginType !== 0) {
                 throw customError(StatusCodes.BAD_REQUEST, 
                     !user ? "No users match this email" : 
                     `This feature is not available to social sign-up users.`);
             }
-            const info = await sendVerificationMail(email, generateRandomString(6));
+            const profile = await profileRepository.findByUserId(user.userId);
+            const info = await sendVerificationMail(email, profile.nickname, generateRandomString(6));
             if (info.error) {
                 throw customError(StatusCodes.INTERNAL_SERVER_ERROR, "Failed to send mail.");
             }
