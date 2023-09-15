@@ -1,4 +1,5 @@
 import db from '@/database';
+import Sequelize from 'sequelize';
 const { Keyword, UserKeyword } = db;
 
 export const keywordRepository = {
@@ -7,6 +8,15 @@ export const keywordRepository = {
     },
     createKeyword: async (keywordName) => {
         return await Keyword.create({ keyword: keywordName });
+    },
+    findTrendyKeyword: async () => {
+        return await UserKeyword.findAll({
+            attribute: 'keywordId',
+            group: ['keywordId'],
+            include: [{ model: Keyword, attribute: 'keyword' }],
+            order: [[ Sequelize.fn('COUNT', Sequelize.col('keywordId')), 'DESC' ]],
+            limit: 10
+        });
     },
     associateKeywordToUser: async (userId, keywordId) => {
         const userKeyword = await UserKeyword.findOne({ where: { userId, keywordId }});
@@ -30,3 +40,21 @@ export const keywordRepository = {
         });
     }
 }
+
+/* 
+const result = await Post.findAll({
+      attributes: [
+        [sequelize.literal('bar'), 'barValue'],
+        [sequelize.fn('COUNT', sequelize.col('bar')), 'count'],
+      ],
+      group: ['bar'],
+      include: [
+        {
+          model: User,
+          attributes: [],
+        },
+      ],
+      order: [[sequelize.fn('COUNT', sequelize.col('bar')), 'DESC']],
+      limit: 10,
+    });
+*/
