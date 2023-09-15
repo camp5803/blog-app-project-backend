@@ -3,7 +3,13 @@ import { preferenceRepository } from "@/repository";
 export const preferenceService = {
     getPreferences: async (userId) => {
         try {
-            return await preferenceRepository.getPreferences(userId);
+            const preference = await preferenceRepository.getPreferences(userId);
+            return {
+                neighborAlert: preference.neighborAlert,
+                commentAlert: preference.commentAlert,
+                chatAlert: preference.chatAlert,
+                setNeighborPrivate: preference.setNeighborPrivate
+            }
         } catch (error) {
             console.error(error.stack);
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);

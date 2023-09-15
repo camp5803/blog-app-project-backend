@@ -27,6 +27,11 @@ export const preference = (sequelize, DataTypes) => {
             allowNull: true,
             defaultValue: true
         },
+        setNeighborPrivate: {
+            type: DataTypes.BOOLEAN,
+            allowNull: true,
+            defaultValue: true
+        }
     }, {
         tableName: 'preference',
         underscored: true,

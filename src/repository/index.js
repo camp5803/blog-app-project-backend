@@ -5,4 +5,5 @@ export { profileRepository } from '@/repository/profile.repository';
 export { preferenceRepository } from '@/repository/preference.repository';
 export { keywordRepository } from '@/repository/keyword.repository';
 export { neighborRepository } from '@/repository/neighbor.repository';
+export { blockRepository } from '@/repository/block.repository';
 // export { createPost, updatePost, deletePost, getByPostDetail, getPostsByPage, toggleBookmark, toggleLike } from '@/repository/post.repository';
