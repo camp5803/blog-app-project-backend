@@ -21,7 +21,11 @@ export const neighbor = (sequelize, DataTypes) => {
     });
 
     Neighbor.associate = (models) => {
-        Neighbor.belongsTo(models.User, { foreignKey: "followsTo", sourceKey: "userId" });
+        Neighbor.belongsTo(models.User, { foreignKey: {
+            name: "followsTo",
+            primaryKey: true,
+            allowNull: false
+        }, sourceKey: "userId" });
         Neighbor.belongsTo(models.User, { foreignKey: {
             name: "userId",
             primaryKey: true,
