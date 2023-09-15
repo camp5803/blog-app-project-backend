@@ -2,15 +2,16 @@ import db from '@/database';
 const { User, Block } = db;
 
 export const blockRepository = {
-    findByUserIdAndBlockUserId: async (userId, blockUserId) => {
-        return await User.findOne({
-            where: { userId: blockUserId },
-            include: [{
-                model: Block,
-                where: { userId, blockUserId },
-                required: false
-            }]
-        });
+    isBlocked: async (userId, blockUserId) => {
+        const user = await User.findOne({ where: { blockUserId }});
+        const blockUser = await Block.findOne({ where: { userId, blockUserId }});
+        if (!user || !blockUser) {
+            if (!user) {
+                return -1;
+            } 
+            return -2;
+        }
+        return false;
     },
     block: async (userId, blockUserId) => {
         return await Block.create({

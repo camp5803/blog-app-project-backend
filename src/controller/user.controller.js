@@ -26,8 +26,8 @@ const getMyProfile = asyncWrapper(async (req, res) => {
 
 const getProfileById = asyncWrapper(async (req, res) => {
     try {
-        if (id === null || id === undefined) {
-            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Missing parameter "id".`);
+        if (!req.params.id) {
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
         }
         const profile = await profileRepository.findByUserId(req.params.id);
         return res.status(StatusCodes.OK).json({
@@ -51,6 +51,9 @@ const validateNickname = asyncWrapper(async (req, res) => {
 });
 
 const createLocalUser = asyncWrapper(async (req, res) => {
+    if (!req.body) {
+        throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+    }
     const user = await userService.createUser(req.body);
     const userData = await profileRepository.findUserInformationById(user.data.userId);
 
@@ -60,6 +63,9 @@ const createLocalUser = asyncWrapper(async (req, res) => {
 });
 
 const updateNickname = asyncWrapper(async (req, res) => {
+    if (!req.body.nickname) {
+        throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+    }
     await userService.updateUser(req.user.userId, { nickname: req.body.nickname });
     return res.status(StatusCodes.OK).end();
 });
@@ -85,6 +91,9 @@ const getUserPreferences = asyncWrapper(async (req, res) => {
 });
 
 const updateUserPreferences = asyncWrapper(async (req, res) => {
+    if (!req.body) {
+        throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+    }
     await preferenceService.updatePreferences(req.user.userId, req.body);
     return res.status(StatusCodes.OK).end();
 });
@@ -95,35 +104,64 @@ const getMyKeywords = asyncWrapper(async (req, res) => {
 });
 
 const createMyKeyword = asyncWrapper(async (req, res) => {
+    if (!req.body.keyword) {
+        throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+    }
     await keywordService.createUserKeyword(req.user.userId, req.body.keyword);
     return res.status(StatusCodes.CREATED).end();
 });
 
 const dissociateMyKeyword = asyncWrapper(async (req, res) => {
+    if (!req.body.keyword) {
+        throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+    }
     await keywordService.dissociateKeywordFromUser(req.user.userId, req.body.keyword);
     return res.status(StatusCodes.OK).end();
 });
 
 const sendMail = asyncWrapper(async (req, res) => {
+    if (!req.body.email) {
+        throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+    }
     await userService.sendPasswordResetMail(req.body.email);
     return res.status(StatusCodes.OK).json({
         message: "Authentication code has been sent."
     });
 });
 
-const resetPassword = asyncWrapper(async (req, res) => {
-    const result = await userService.verificationMailHandler(req.body.email, req.body.code);
-    return res.status(StatusCodes.OK).json({
-        message: `The changed temporary password is ${result}`
+const checkVerification = asyncWrapper(async (req, res) => {
+    if (!req.body.email || !req.body.code) {
+        throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+    }
+    const result = await userService.checkVerification(req.body.email, req.body.code);
+    if (result) {
+        return res.status(StatusCodes.OK).json();
+    }
+    return res.status(StatusCodes.CONFLICT).json({
+        message: "Authentication code does not match."
     });
 });
 
+const resetPassword = asyncWrapper(async (req, res) => {
+    if (!req.body.email || !req.body.code) {
+        throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+    }
+    await userService.verificationMailHandler(req.body.email, req.body.code);
+    return res.status(StatusCodes.OK).json();
+});
+
 const changePassword = asyncWrapper(async (req, res) => {
+    if (!req.body.password) {
+        throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+    }
     await userService.updatePassword(req.user.userId, req.body.password);
     return res.status(StatusCodes.OK).end();
 });
 
 const blockUser = asyncWrapper(async (req, res) => {
+    if (!req.params.block_id) {
+        throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+    }
     const blockUserId = await userService.blockUser(req.user.userId, req.params.block_id);
     return res.status(StatusCodes.OK).json({ blockId: blockUserId });
 });
@@ -150,5 +188,6 @@ export const userController = {
     changePassword,
     getProfileById,
     blockUser,
-    getBlockUser
+    getBlockUser,
+    checkVerification
 }
