@@ -11,7 +11,7 @@ export const neighborRepository = { // 이거 고쳐야함
                 attributes: [],
                 include: [{
                     model: Profile,
-                    attributes: ["nickname", "image_url"],
+                    attributes: ["nickname", "imageUrl"],
                     required: true
                 }]
             }],
@@ -32,7 +32,7 @@ export const neighborRepository = { // 이거 고쳐야함
                 attributes: [],
                 include: [{
                     model: Profile,
-                    attributes: ["nickname", "image_url"],
+                    attributes: ["nickname", "imageUrl"],
                     required: true
                 }]
             }],
