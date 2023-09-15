@@ -124,7 +124,7 @@ const changePassword = asyncWrapper(async (req, res) => {
 });
 
 const blockUser = asyncWrapper(async (req, res) => {
-    const blockUserId = await userService.blockUser(req.user.userId, req.body.blockId);
+    const blockUserId = await userService.blockUser(req.user.userId, req.params.block_id);
     return res.status(StatusCodes.OK).json(blockUserId);
 });
 

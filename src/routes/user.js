@@ -22,7 +22,7 @@ router.route('/users/keywords')
     .post(isAuthorized, userController.createMyKeyword)
     .delete(isAuthorized, userController.dissociateMyKeyword);
 
-router.route('/users/block/:id')
+router.route('/users/block/:block_id')
     .post(isAuthorized, userController.blockUser);
 
 router.patch('/users/image', isAuthenticated,
