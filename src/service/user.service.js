@@ -19,7 +19,7 @@ export const userService = {
             await validateSchema.email.validateAsync(email);
             const user = await userRepository.findByEmail(email);
             if (user) {
-                throw customError(StatusCodes.BAD_REQUEST, "Email Already exists.");
+                throw customError(StatusCodes.CONFLICT, "Email Already exists.");
             }
         } catch (error) {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
@@ -30,7 +30,7 @@ export const userService = {
             await validateSchema.nickname.validateAsync(nickname)
             const user = await userRepository.findByNickname(nickname);
             if (user) {
-                throw customError(StatusCodes.BAD_REQUEST, "Nickname Already exists.");
+                throw customError(StatusCodes.CONFLICT, "Nickname Already exists.");
             }
         } catch (error) {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
@@ -50,7 +50,7 @@ export const userService = {
             const email = await userRepository.findByEmail(data.email);
             const nickname = await userRepository.findByNickname(data.nickname);
             if (email || nickname) {
-                throw customError(StatusCodes.BAD_REQUEST, email ? `[Signup Error#1] Email Already exists.`
+                throw customError(StatusCodes.CONFLICT, email ? `[Signup Error#1] Email Already exists.`
                         : `[Signup Error#2] Nickname Already exists.`);
             }
             const user = await userRepository.createUser(data);
@@ -112,9 +112,10 @@ export const userService = {
         try {
             const user = await userRepository.findUserByEmail(email);
             if (!user || user.loginType !== 0) {
-                throw customError(StatusCodes.BAD_REQUEST, 
-                    !user ? "No users match this email" : 
-                    `This feature is not available to social sign-up users.`);
+                if (!user) {
+                    throw customError(StatusCodes.NOT_FOUND, "No users match this email");
+                }
+                throw customError(StatusCodes.BAD_REQUEST, "This feature is not available to social sign-up users.");
             }
             const profile = await profileRepository.findByUserId(user.userId);
             const info = await sendVerificationMail(email, profile.nickname, generateRandomString(6));
