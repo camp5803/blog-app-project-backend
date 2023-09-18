@@ -71,6 +71,10 @@ describe("POST /api/auth/login", () => {
 
     test("[POST /api/auth/login] Success", async () => {
         await request(app)
+            .post('/api/users')
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "test" });
+
+        await request(app)
             .post('/api/auth/login')
             .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"})
             .expect((res) => {
@@ -99,8 +103,8 @@ describe("POST /api/auth/login", () => {
 
     test("[POST /api/auth/login] Failed: Invalid password.", async () => {
         await request(app)
-            .post('/api/auth/login')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"});
+            .post('/api/users')
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "test" });
 
         await request(app)
             .post('/api/auth/login')
@@ -124,7 +128,7 @@ describe("POST /api/auth/refresh", () => {
     test("[POST /api/auth/refresh] Success", async () => {
         await request(app) // 로컬 로그인으로 쿠키 발급
             .post('/api/users/login')
-            .data({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
 
         await request(app)
             .post('/api/auth/refresh')
