@@ -11,12 +11,12 @@ export const authService = {
             await validateSchema.login.validateAsync({ email, password });
             const user = await passwordRepository.findByEmail(email);
             if (!user) {
-                throw customError(StatusCodes.BAD_REQUEST, "Please check your email and password.");
+                throw customError(StatusCodes.NOT_FOUND, "User not found.");
             }
             if (bcrypt.compareSync(password, user.password.dataValues.password)) {
                 return await createToken(user.dataValues.userId);
             }
-            throw customError(StatusCodes.BAD_REQUEST, "Please check your email and password.");
+            throw customError(StatusCodes.CONFLICT, "Please check your email and password.");
         } catch (error) {
             if (error.name === "ValidationError") {
                 throw customError(StatusCodes.BAD_REQUEST, 'Data validation failed.');

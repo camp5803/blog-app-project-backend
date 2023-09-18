@@ -12,6 +12,9 @@ if (process.env.SECURE_ENABLED) {
 }
 
 const createAuth = asyncWrapper(async (req, res) => {
+    if (!req.body) {
+        throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+    }
     const token = await authService.login(req.body.email, req.body.password);
     const userData = await userService.getUserInformation(token.accessToken);
     res.cookie('accessToken', token.accessToken, cookieOptions);
