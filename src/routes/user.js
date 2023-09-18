@@ -23,15 +23,15 @@ router.route('/users/block/:block_id')
 router.patch('/users/image', isAuthenticated,
     upload.single('image'), userController.updateProfileImage);
 
-router.route('/users/neighbor/:id')
+router.route('/users/neighbors/:id')
     .post(isAuthorized, userController.followNeighbor)
     .delete(isAuthorized, userController.unfollowNeighbor);
 
 router.get('/users/me', isAuthenticated, userController.getMyProfile);
 router.get('/users/block', isAuthorized, userController.getBlockUser);
 router.get('/users/email', userController.validateEmail);
-router.get('/users/neighbor/follower/:id', userController.getFollowers);
-router.get('/users/neighbor/following/:id', userController.getFollowings);
+router.get('/users/neighbors/follower/:id', userController.getFollowers);
+router.get('/users/neighbors/following/:id', userController.getFollowings);
 
 router.patch('/users/password', isAuthorized, userController.changePassword);
 router.patch('/users/password-reset', userController.resetPassword);
