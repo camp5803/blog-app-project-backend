@@ -46,7 +46,7 @@ export const userController = {
         return res.status(StatusCodes.OK).end();
     }),
     createLocalUser: asyncWrapper(async (req, res) => {
-        if (!req.body) {
+        if (!req.body.email || !req.body.password || !req.body.nickname) {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
         }
         const user = await userService.createUser(req.body);

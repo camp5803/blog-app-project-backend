@@ -10,16 +10,12 @@ describe("POST /api/users", () => {
         app = createApp();
         await db.sequelize.sync({ force: true });
     });
-    afterAll(async () => {
-        await db.sequelize.close();
-    });
 
     test("[POST /api/users] Success", async () => {
         await request(app)
             .post('/api/users')
             .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "jiyong123" })
-            .expect(StatusCodes.UNPROCESSABLE_ENTITY)
-            .expect({ message: `Request body not present.` });
+            .expect(StatusCodes.CREATED)
     });
 
     test("[POST /api/users] Failed: No request body", async () => {
@@ -72,9 +68,6 @@ describe("POST /api/auth/login", () => {
         app = createApp();
         await db.sequelize.sync({ force: true });
     });
-    afterAll(async () => {
-        await db.sequelize.close();
-    });
 
     test("[POST /api/auth/login] Success", async () => {
         await request(app)
@@ -92,7 +85,7 @@ describe("POST /api/auth/login", () => {
         await request(app)
             .post('/api/auth/login')
             .send({ email: "jiyong2", password: "dudals123!@" })
-            .expect(StatusCodes.CONFLICT)
+            .expect(StatusCodes.BAD_REQUEST)
             .expect({ message: "Data validation failed." });
     });
 
@@ -105,6 +98,10 @@ describe("POST /api/auth/login", () => {
     });
 
     test("[POST /api/auth/login] Failed: Invalid password.", async () => {
+        await request(app)
+            .post('/api/auth/login')
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"});
+
         await request(app)
             .post('/api/auth/login')
             .send({ email: "jiyong@sch.ac.kr", password: "dudals123!@" })

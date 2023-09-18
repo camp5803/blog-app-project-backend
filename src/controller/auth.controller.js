@@ -12,7 +12,7 @@ if (process.env.SECURE_ENABLED) {
 }
 
 const createAuth = asyncWrapper(async (req, res) => {
-    if (!req.body) {
+    if (!req.body.email || !req.body.password) {
         throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
     }
     const token = await authService.login(req.body.email, req.body.password);
