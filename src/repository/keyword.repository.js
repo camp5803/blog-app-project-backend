@@ -1,4 +1,5 @@
 import db from '@/database';
+import Sequelize from 'sequelize';
 const { Keyword, UserKeyword } = db;
 
 export const keywordRepository = {
@@ -8,23 +9,52 @@ export const keywordRepository = {
     createKeyword: async (keywordName) => {
         return await Keyword.create({ keyword: keywordName });
     },
-    associateKeywordToUser: async (keywordId, userId) => {
+    findTrendyKeyword: async () => {
+        return await UserKeyword.findAll({
+            attribute: 'keywordId',
+            group: ['keywordId'],
+            include: [{ model: Keyword, attribute: 'keyword' }],
+            order: [[ Sequelize.fn('COUNT', Sequelize.col('keywordId')), 'DESC' ]],
+            limit: 10
+        });
+    },
+    associateKeywordToUser: async (userId, keywordId) => {
         const userKeyword = await UserKeyword.findOne({ where: { userId, keywordId }});
         if (userKeyword) {
             return { message: 'User already has this keyword' };
         }
-        return await UserKeyword.create({ user_id: userId, keyword_id: keywordId });
+        return await UserKeyword.create({ userId, keywordId });
     },
-    dissociateKeywordFromUser: async (keywordId, userId) => {
+    dissociateKeywordFromUser: async (userId, keywordId) => {
         const userKeyword = await UserKeyword.findOne({ where: { userId, keywordId }});
         if (!userKeyword) {
             return { message: 'User does not have this keyword' };
         }
-        return await userKeyword.destroy({ where: { user_id: userId, keyword_id: keywordId }});
+        return await userKeyword.destroy({ where: { userId, keywordId }});
     },
     findUserKeywords: async (userId) => {
-        return await UserKeyword.findAll({ where: { user_id: userId },
-            include: [{ model: Keyword, attribute: 'keyword' }]
+        return await UserKeyword.findAll({ where: { userId },
+            include: [{ model: Keyword, attribute: 'keyword' }],
+            order: [['createdAt', 'DESC']],
+            limit: 10
         });
     }
 }
+
+/* 
+const result = await Post.findAll({
+      attributes: [
+        [sequelize.literal('bar'), 'barValue'],
+        [sequelize.fn('COUNT', sequelize.col('bar')), 'count'],
+      ],
+      group: ['bar'],
+      include: [
+        {
+          model: User,
+          attributes: [],
+        },
+      ],
+      order: [[sequelize.fn('COUNT', sequelize.col('bar')), 'DESC']],
+      limit: 10,
+    });
+*/

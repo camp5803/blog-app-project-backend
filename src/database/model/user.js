@@ -2,7 +2,7 @@
 
 export const user = (sequelize, DataTypes) => {
     const User = sequelize.define('user', {
-        user_id: {
+        userId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
@@ -13,12 +13,13 @@ export const user = (sequelize, DataTypes) => {
             allowNull: true,
             unique: true,
         },
-        login_type: {
+        loginType: {
             type: DataTypes.INTEGER,
             allowNull: false
         }
     }, {
         tableName: 'user',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',
@@ -28,76 +29,76 @@ export const user = (sequelize, DataTypes) => {
     User.associate = (models) => {
         // 생성될 관계 컬럼들에 대한 attribute 제공
         User.hasOne(models.SocialLogin, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             allowNull: false
-        }, sourceKey: "user_id", onDelete: 'CASCADE' });
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
         
         User.hasOne(models.Password, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             allowNull: false
-        }, sourceKey: "user_id", onDelete: 'CASCADE' });
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
         
         User.hasMany(models.Neighbor, { foreignKey: {
-            name: "follows_to",
+            name: "followsTo",
             allowNull: false
-        }, sourceKey: "user_id", onDelete: 'CASCADE' });
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
         
         User.hasMany(models.Comment, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             allowNull: false
-        }, sourceKey: "user_id", onDelete: 'CASCADE' });
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
         
         User.hasMany(models.Block, { foreignKey: {
-            name: "block_user_id",
+            name: "blockUserId",
             allowNull: false
-        }, sourceKey: "user_id", onDelete: 'CASCADE' });
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
         
         User.hasMany(models.Post, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             allowNull: false
-        }, sourceKey: "user_id", onDelete: 'CASCADE' });
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
 
         User.hasOne(models.Preference, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "user_id", onDelete: 'CASCADE' });
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
 
         User.hasOne(models.Profile, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "user_id", onDelete: 'CASCADE' });
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
 
         User.hasMany(models.Bookmark, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "user_id", onDelete: 'CASCADE' });
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
 
         User.hasMany(models.Block, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "user_id", onDelete: 'CASCADE' });
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
 
         User.hasMany(models.Neighbor, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "user_id", onDelete: 'CASCADE' });
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
 
         User.hasMany(models.UserKeyword, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "user_id", onDelete: 'CASCADE' });
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
 
         User.hasMany(models.Like, { foreignKey: {
-            name: "user_id",
+            name: "userId",
             primaryKey: true,
             allowNull: false
-        }, sourceKey: "user_id", onDelete: 'CASCADE' });
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
     };
     return User;
 };

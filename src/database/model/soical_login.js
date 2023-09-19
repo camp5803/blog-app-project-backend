@@ -2,26 +2,27 @@
 
 export const socialLogin = (sequelize, DataTypes) => {
     const SocialLogin = sequelize.define('social_login', {
-        social_id: {
+        socialId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
             allowNull: false,
         },
-        // user_id: {
+        // userId: {
         //     type: DataTypes.INTEGER,
         //     allowNull: false
         // },
-        social_code: {
+        socialCode: {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        external_id: {
+        externalId: {
             type: DataTypes.STRING(30),
             allowNull: false,
         }
     }, {
         tableName: 'social_login',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',
@@ -29,7 +30,7 @@ export const socialLogin = (sequelize, DataTypes) => {
     });
 
     SocialLogin.associate = (models) => {
-        SocialLogin.belongsTo(models.User, { foreignKey: "user_id", sourceKey: "user_id" });
+        SocialLogin.belongsTo(models.User, { foreignKey: "userId", sourceKey: "userId" });
     }
     return SocialLogin;
 };

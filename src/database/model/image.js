@@ -2,7 +2,7 @@
 
 export const image = (sequelize, DataTypes) => {
     const Image = sequelize.define('image', {
-        image_id: {
+        imageId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true,
@@ -16,12 +16,13 @@ export const image = (sequelize, DataTypes) => {
             type: DataTypes.TEXT('long'),
             allowNull: false
         },
-        image_name: {
+        imageName: {
             type: DataTypes.STRING(45),
             allowNull: true,
         },
     }, {
         tableName: 'image',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',
@@ -29,7 +30,7 @@ export const image = (sequelize, DataTypes) => {
     });
 
     Image.associate = (models) => {
-        Image.belongsTo(models.Post, { foreignKey: "post_id", sourceKey: "post_id" });
+        Image.belongsTo(models.Post, { foreignKey: "postId", sourceKey: "postId" });
     };
     return Image;
 };

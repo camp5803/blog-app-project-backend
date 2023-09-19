@@ -3,19 +3,21 @@ import { preferenceRepository } from "@/repository";
 export const preferenceService = {
     getPreferences: async (userId) => {
         try {
-            return await preferenceRepository.getPreferences(userId);
+            const preference = await preferenceRepository.getPreferences(userId);
+            return {
+                neighborAlert: preference.neighborAlert,
+                commentAlert: preference.commentAlert,
+                chatAlert: preference.chatAlert,
+                setNeighborPrivate: preference.setNeighborPrivate
+            }
         } catch (error) {
-            return { message: error }
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     updatePreferences: async (userId, data) => {
         try {
             const preference = await preferenceRepository.getPreferences(userId);
             const preferenceData = preference.dataValues;
-
-            if (data['darkmode']) {
-                data['darkmode_status'] = data['darkmode'];
-            }
 
             Object.keys(preferenceData).forEach(key => {
                 if (data[key]) {
@@ -25,7 +27,7 @@ export const preferenceService = {
 
             return await preferenceRepository.updatePreferences(userId, preferenceData);
         } catch (error) {
-            return { message: error }
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     }
 }

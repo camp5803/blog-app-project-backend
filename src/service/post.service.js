@@ -1,7 +1,21 @@
-import * as postRepository from '@/repository/post.repository';
+import {postRepository} from '@/repository/post.repository';
 import {verifyToken, redisCli as redisClient} from "@/utils";
 
 export const postService = {
+    getUserIdFromToken: async (req) => {
+        const token = req.cookies["accessToken"];
+        if (!token) {
+            return false;
+        }
+
+        const verifyResult = verifyToken(token);
+        if (verifyResult.error) {
+            return false
+        }
+
+        return  verifyResult.userId;
+    },
+
     createPost: async (postData) => {
         try {
             const post = await postRepository.createPost(postData);
@@ -12,7 +26,7 @@ export const postService = {
     },
 
     verifyUser: async (req) => {
-        const token = req.cookies["access_token"];
+        const token = req.cookies["accessToken"];
         if (!token) {
             return false;
         }
@@ -22,11 +36,11 @@ export const postService = {
             return false
         }
 
-        const user_id = verifyResult.user_id;
-        const post_id = req.params.id;
+        const userId = verifyResult.userId;
+        const postId = req.params.id;
 
-        const post = await postRepository.findByPostId(post_id);
-        return post.user_id === Number(user_id);
+        const post = await postRepository.findByPostId(postId);
+        return post.userId === Number(userId);
     },
 
     updatePost: async (postData) => {
@@ -38,16 +52,16 @@ export const postService = {
         }
 
         if (postData.img && postData.img.length > 0) {
-            await postRepository.updatePostImage(postData.post_id, postData.img);
+            await postRepository.updatePostImage(postData.postId, postData.img);
         }
 
         return post;
     },
 
-    deletePost: async (post_id) => {
+    deletePost: async (postId) => {
         try {
-            console.log('service', post_id)
-            const post = await postRepository.deletePost(post_id);
+            console.log('service', postId)
+            const post = await postRepository.deletePost(postId);
             return post;
         } catch (error) {
             console.log(error)
@@ -56,7 +70,7 @@ export const postService = {
     },
 
     increaseViewCount: async (ip, post) => {
-        const viewerKey = `viewer:${post.post_id}:${ip}`;
+        const viewerKey = `viewer:${post.postId}:${ip}`;
 
         const isViewed = await redisClient.get(viewerKey);
         if (isViewed) {
@@ -64,7 +78,7 @@ export const postService = {
         }
 
         const EXPIRATION_TIME = 1800;   // 1800초(30분) 이내 조회 여부
-        await redisClient.set(`viewer:${post.post_id}:${ip}`, new Date().getTime(), {EX: EXPIRATION_TIME});
+        await redisClient.set(`viewer:${post.postId}:${ip}`, new Date().getTime(), {EX: EXPIRATION_TIME});
 
         const updatedViewCount = await postRepository.increaseViewCount(post);
         return updatedViewCount
@@ -76,16 +90,16 @@ export const postService = {
             const post = await postRepository.findByPostId(postId);
 
             // 작성자 닉네임 조회
-            const nickname = await postRepository.getUserNickname(post.user_id);
+            const nickname = await postRepository.getUserNickname(post.userId);
 
             // 좋아요 여부를 불리언으로 설정
-            const liked = await postRepository.isLiked(post.user_id, post.post_id);
+            const liked = await postRepository.isLiked(post.userId, post.postId);
 
             const categories = await post.getCategories();
             const images = await post.getImages();
 
             const postDetail = {
-                post_id: post.post_id,
+                postId: post.postId,
                 isAuthor,
                 nickname,
                 title: post.title,
@@ -94,7 +108,7 @@ export const postService = {
                 like: post.like,
                 liked,
                 categories: categories.map((category) => category.category),
-                created_at: post.created_at,
+                createdAt: post.createdAt,
                 img: images.map((image) => image.image),
                 thumbnail: post.thumbnail
             };
@@ -115,27 +129,44 @@ export const postService = {
             console.log(error);
             throw new Error('Error get listbyPage post');
         }
-    }, 
+    },
 
-    toggleBookmark: async (user_id, post_id) => {
+    toggleBookmark: async (userId, postId) => {
         try {
-            console.log(user_id, post_id)
-            const bookmark = await postRepository.toggleBookmark(user_id, post_id);
-            return bookmark;
+            const bookmark = await postRepository.getBookmark(userId, postId);
+
+            if (bookmark) {
+                await postRepository.deleteBookmark(userId, postId);
+            } else {
+                await postRepository.createBookmark(userId, postId);
+            }
+
+            return !!bookmark;
         } catch (error) {
             console.log(error);
             throw new Error('Error toggle bookmark post');
         }
     },
 
-    toggleLike: async (user_id, post_id) => {
+    toggleLike: async (userId, postId) => {
         try {
-            const like = await postRepository.toggleLike(user_id, post_id);
-            return like;
+            let {like, likeCount} = await postRepository.getLike(userId, postId);
+
+            if (like) {
+                await postRepository.deleteLike(userId, postId);
+                likeCount--;
+            } else {
+                await postRepository.createLike(userId, postId);
+                likeCount++;
+            }
+
+            // todo 좋아요 동시성 처리 및 좋아요 수 가져오는 로직 변경 필요성 확인
+            await postRepository.updatePostLike(postId, likeCount);
+
+            return {isLiked: !!like, likeCount};
         } catch (error) {
             console.log(error);
             throw new Error('Error toggle like post');
         }
-    }
-
-}
+    },
+};

@@ -14,6 +14,7 @@ module.exports = {
                 NODE_ENV: 'development',
                 PORT: 8000,
                 SERVER_URL: "jiyong.world",
+                SECURE_ENABLED: true,
                 PRIVATE_KEY: process.env.PRIVATE_KEY,
                 PUBLIC_KEY: process.env.PUBLIC_KEY,
                 REDIS_HOST: process.env.REDIS_HOST,
@@ -31,6 +32,8 @@ module.exports = {
                 AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
                 AWS_REGION: process.env.AWS_REGION,
                 AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
+                ZOHO_USER: process.env.ZOHO_USER,
+                ZOHO_APP_SECRET: process.env.ZOHO_APP_SECRET
             },
             env_production: {
                 NODE_ENV: 'production',

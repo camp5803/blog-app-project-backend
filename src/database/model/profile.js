@@ -3,7 +3,7 @@ import { Sequelize } from "sequelize";
 
 export const profile = (sequelize, DataTypes) => {
     const Profile = sequelize.define('profile', {
-        user_id: {
+        userId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             allowNull: false,
@@ -14,22 +14,24 @@ export const profile = (sequelize, DataTypes) => {
             allowNull: false,
             unique: true
         },
-        image_url: {
-            type: DataTypes.TEXT('long'),
-            allowNull: true
+        imageUrl: {
+            type: DataTypes.STRING(200),
+            allowNull: false,
+            defaultValue: "https://julietlog.s3.ap-northeast-2.amazonaws.com/profile_img/default.png"
         },
-        created_at: {
+        createdAt: {
             type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
         },
-        updated_at: {
+        updatedAt: {
             type: DataTypes.DATE,
             defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
             allowNull: true
         }
     }, {
         tableName: 'profile',
+        underscored: true,
         // sequelize,
         timestamps: false,
         charset: 'utf8',
@@ -37,7 +39,8 @@ export const profile = (sequelize, DataTypes) => {
     });
 
     Profile.associate = (models) => {
-        Profile.belongsTo(models.User, { foreignKey: "user_id", sourceKey: "user_id" });
+        Profile.belongsTo(models.User, { foreignKey: "userId", sourceKey: "userId" });
+        Profile.hasMany(models.Comment, { foreignKey: "userId" });
     }
     return Profile;
 };

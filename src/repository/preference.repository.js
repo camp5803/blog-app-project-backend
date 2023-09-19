@@ -4,14 +4,14 @@ const { Preference } = db;
 export const preferenceRepository = {
     getPreferences: async (userId) => {
         return await Preference.findOne({
-            where: { user_id: userId },
+            where: { userId },
             attributes: [
-                ['darkmode_status', 'darkmode'],
-                'neighbor_alert', 'comment_alert', 'chat_alert'
+                'setNeighborPrivate', 'neighborAlert', 
+                'commentAlert', 'chatAlert'
             ]
         });
     },
     updatePreferences: async (userId, preferences) => {
-        return await Preference.update(preferences, { where: { user_id: userId }});
+        return await Preference.update(preferences, { where: { userId }});
     }
 }

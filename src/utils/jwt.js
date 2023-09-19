@@ -17,11 +17,11 @@ export const createToken = async (userId) => {
         userId = userId.toString();
     }
     try {
-        const accessToken = jwt.sign({ user_id: userId }, privateKey, {
+        const accessToken = jwt.sign({ userId }, privateKey, {
             algorithm: "RS512",
-            expiresIn: '30m' 
+            expiresIn: "30m"
         });
-        const refreshToken = jwt.sign({ user_id: userId }, privateKey, {
+        const refreshToken = jwt.sign({ userId }, privateKey, {
             algorithm: "RS512",
             expiresIn: "14d"
         });

@@ -11,21 +11,33 @@ router.route('/users')
 
 router.route('/users/name')
     .get(userController.validateNickname)
-    .patch(isAuthorized, userController.updateUser);
+    .patch(isAuthorized, userController.updateNickname);
 
 router.route('/users/preferences')
     .get(isAuthorized, userController.getUserPreferences)
     .patch(isAuthorized, userController.updateUserPreferences);
 
+router.route('/users/block/:block_id')
+    .post(isAuthorized, userController.blockUser);
+
 router.patch('/users/image', isAuthenticated,
     upload.single('image'), userController.updateProfileImage);
 
-router.route('/users/keyword')
-    .get(userController.getMyKeywords)
-    .post(isAuthorized, userController.createMyKeyword)
-    .delete(isAuthorized, userController.dissociateMyKeyword);
+router.route('/users/neighbors/:id')
+    .post(isAuthorized, userController.followNeighbor)
+    .delete(isAuthorized, userController.unfollowNeighbor);
 
+router.get('/users/me', isAuthenticated, userController.getMyProfile);
+router.get('/users/block', isAuthorized, userController.getBlockUser);
 router.get('/users/email', userController.validateEmail);
-router.get('/users/me', isAuthenticated, userController.getProfileById);
+router.get('/users/neighbors/follower/:id', userController.getFollowers);
+router.get('/users/neighbors/following/:id', userController.getFollowings);
+
+router.patch('/users/password', isAuthorized, userController.changePassword);
+router.patch('/users/password-reset', userController.resetPassword);
+router.post('/users/password-reset/request', userController.sendMail);
+router.post('/users/password-reset/confirm', userController.checkVerification);
+
+router.get('/users/:id', userController.getProfileById);
 
 export default router;

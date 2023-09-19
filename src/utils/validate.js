@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-const emailValidate = /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/g;
+const emailValidate = /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 const passwordValidate = /^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,15}$/;
 
 export const validateSchema = {
@@ -13,10 +13,12 @@ export const validateSchema = {
             .min(8)
             .pattern(passwordValidate)
             .required(),
-        nickname: Joi.string().max(45).required(),
-        image_url: Joi.string()
+        nickname: Joi.string()
+            .max(45)
+            .required(),
+        loginType: Joi.number()
     }),
-    signIn: Joi.object({
+    login: Joi.object({
         email: Joi.string()
             .max(45)
             .pattern(emailValidate)
@@ -26,13 +28,7 @@ export const validateSchema = {
             .pattern(passwordValidate)
             .required()
     }),
-    preference: Joi.object({
-        darkmode_status: Joi.boolean(),
-        neighbor_alert: Joi.boolean(),
-        comment_alert: Joi.boolean(),
-        chat_alert: Joi.boolean()
-    }),
-    keyword: Joi.String().max(45).required(),
+    keyword: Joi.string().max(45).required(),
     email: Joi.string()
         .max(45)
         .pattern(emailValidate)
