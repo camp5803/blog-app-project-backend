@@ -2,28 +2,28 @@ import {asyncWrapper} from '@/common';
 import {discussionService} from '@/service/discussion.service';
 import {StatusCodes} from 'http-status-codes';
 
+const validateInput = async (input) => {
+    const {title, content, category, thumbnail, startTime, endTime} = input;
+
+    const isInputValid = (title && content && thumbnail && startTime && endTime) &&
+        (category.length <= 3) &&
+        (new Date(startTime) >= new Date()) &&
+        (new Date(endTime) > new Date(startTime));
+
+    return !!isInputValid;
+};
+
 export const discussionController = {
     createDiscussion: asyncWrapper(async (req, res) => {
         try {
-            const {title, content, category, image, thumbnail, startTime, endTime} = req.body;
-            const {userId} = req.user;
+            const validation = await validateInput(req.body);
 
-            if (!(title && content && thumbnail && startTime && endTime)) {
+            if (!validation) {
                 return res.status(StatusCodes.BAD_REQUEST).json({message: 'Check all the inputs'});
             }
 
-            if (category.length > 3) {
-                return res.status(StatusCodes.BAD_REQUEST).json({message: 'Up to 3 categories can be registered'});
-            }
-
-            if (new Date(startTime) < new Date()) {
-                return res.status(StatusCodes.BAD_REQUEST).json({message: 'Check the start time'});
-            }
-
-            if (new Date(endTime) <= new Date(startTime)) {
-                // 날짜 형식맞는 지도 확인 필요
-                return res.status(StatusCodes.BAD_REQUEST).json({message: 'Check the end time'});
-            }
+            const {title, content, category, image, thumbnail, startTime, endTime} = req.body;
+            const {userId} = req.user;
 
             const dto = {
                 title,
@@ -44,4 +44,35 @@ export const discussionController = {
         }
     }),
 
+    updatediscussion: asyncWrapper(async (req, res) => {
+        try {
+            const validation = await validateInput(req.body);
+
+            if (!validation) {
+                return res.status(StatusCodes.BAD_REQUEST).json({message: 'Check all the inputs'});
+            }
+
+            const {title, content, category, image, thumbnail, startTime, endTime} = req.body;
+            const {discussionId} = req.params;
+            const {userId} = req.user;
+
+            const dto = {
+                discussionId,
+                title,
+                content,
+                category,
+                image,
+                thumbnail,
+                startTime,
+                endTime,
+                userId
+            }
+            await discussionService.updateDiscussion(dto);
+
+            res.status(StatusCodes.OK).json({message: 'Update success'});
+        }catch (error) {
+            console.error(error)
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
+        }
+    }),
 }
