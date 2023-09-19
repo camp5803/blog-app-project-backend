@@ -4,6 +4,7 @@ import { isAuthorized } from "@/middleware";
 
 const router = express.Router();
 
+router.get('/auth/logout', authController.logout);
 router.post('/auth/login', authController.createAuth);
 router.post('/auth/refresh', isAuthorized, authController.reissueAccessToken);
 

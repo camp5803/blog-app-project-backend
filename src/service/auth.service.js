@@ -1,7 +1,7 @@
 import { customError } from '@/common/error';
 import { passwordRepository } from '@/repository';
 import { createToken, getTokens, verifyToken } from '@/utils';
-import { validateSchema } from '@/utils';
+import { validateSchema, redisCli as redisClient } from '@/utils';
 import { StatusCodes } from 'http-status-codes';
 import bcrypt from "bcrypt";
 
@@ -22,6 +22,15 @@ export const authService = {
                 throw customError(StatusCodes.BAD_REQUEST, 'Data validation failed.');
             }
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    },
+    logout: async (userId) => {
+        try {
+            if (await redisClient.hGet("tokens", userId)) {
+                await redisClient.hDel("tokens", userId);
+            }
+        } catch (error) {
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR);
         }
     },
     reissueToken: async (accessToken, refreshToken) => {
