@@ -45,7 +45,7 @@ export const neighborService = {
             }
             return await neighborRepository.follow(userId, targetUserId);
         } catch (error) {
-            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     unfollow: async (userId, targetUserId) => {
@@ -60,7 +60,7 @@ export const neighborService = {
             }
             return await neighborRepository.unfollow(userId, targetUserId);
         } catch (error) {
-            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     blockUser: async (userId, blockUserId) => {
@@ -76,7 +76,7 @@ export const neighborService = {
             const data = await blockRepository.block(userId, blockUserId);
             return data.dataValues.blockUserId;
         } catch (error) {
-            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     getBlockUsers: async (userId) => {
