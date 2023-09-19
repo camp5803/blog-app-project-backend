@@ -13,6 +13,11 @@ import { comment } from "./comment";
 import { category } from "./category";
 import { bookmark } from "./bookmark";
 import { block } from "./block";
+import { discussion } from "./discussion";
+import { discussionCategory } from "./discussion_category";
+import { discussionImage } from "./discussion_image";
+import { discussionBookmark } from "./discussion_bookmark";
+import { discussionLike } from "./discussion_like";
 
 export const models = {
     User: user,
@@ -29,5 +34,10 @@ export const models = {
     Comment: comment,
     Category: category,
     Bookmark: bookmark,
-    Block: block
+    Block: block,
+    Discussion: discussion,
+    DiscussionCategory: discussionCategory,
+    DiscussionImage: discussionImage,
+    DiscussionBookmark: discussionBookmark,
+    DiscussionLike: discussionLike
 }

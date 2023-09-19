@@ -60,26 +60,26 @@ export const discussion = (sequelize, DataTypes) => {
         Discussion.belongsTo(models.User, { foreignKey: "userId", sourceKey: "userId" });
 
 
-        // Discussion.hasMany(models.Category, { foreignKey: {
-        //         name: "discussionId",
-        //         allowNull: false
-        //     }, sourceKey: "discussionId", onDelete: 'CASCADE' });
+        Discussion.hasMany(models.DiscussionCategory, { foreignKey: {
+                name: "discussionId",
+                allowNull: false
+            }, sourceKey: "discussionId", onDelete: 'CASCADE' });
 
-        // Discussion.hasMany(models.Bookmark, { foreignKey: {
-        //         name: "discussionId",
-        //         allowNull: false
-        //     }, sourceKey: "discussionId", onDelete: 'CASCADE' });
-        //
-        // Discussion.hasMany(models.Image, { foreignKey: {
-        //         name: "discussionId",
-        //         allowNull: false
-        //     }, sourceKey: "discussionId", onDelete: 'CASCADE' });
-        //
-        // Discussion.hasMany(models.Like, { foreignKey: {
-        //         name: "discussionId",
-        //         primaryKey: true,
-        //         allowNull: false
-        //     }, sourceKey: "discussionId", onDelete: 'CASCADE' });
+        Discussion.hasMany(models.DiscussionBookmark, { foreignKey: {
+                name: "discussionId",
+                allowNull: false
+            }, sourceKey: "discussionId", onDelete: 'CASCADE' });
+
+        Discussion.hasMany(models.DiscussionImage, { foreignKey: {
+                name: "discussionId",
+                allowNull: false
+            }, sourceKey: "discussionId", onDelete: 'CASCADE' });
+
+        Discussion.hasMany(models.DiscussionLike, { foreignKey: {
+                name: "discussionId",
+                primaryKey: true,
+                allowNull: false
+            }, sourceKey: "discussionId", onDelete: 'CASCADE' });
     };
     return Discussion;
 };
