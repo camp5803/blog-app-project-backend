@@ -99,6 +99,12 @@ export const user = (sequelize, DataTypes) => {
             primaryKey: true,
             allowNull: false
         }, sourceKey: "userId", onDelete: 'CASCADE' });
+
+        User.hasMany(models.DiscussionUser, { foreignKey: {
+                name: "userId",
+                primaryKey: true,
+                allowNull: false
+        }, sourceKey: "userId", onDelete: 'CASCADE' });
     };
     return User;
 };
