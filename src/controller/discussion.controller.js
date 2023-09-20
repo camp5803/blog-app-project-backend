@@ -44,7 +44,7 @@ export const discussionController = {
         }
     }),
 
-    updatediscussion: asyncWrapper(async (req, res) => {
+    updateDiscussion: asyncWrapper(async (req, res) => {
         try {
             const validation = await validateInput(req.body);
 
@@ -77,6 +77,28 @@ export const discussionController = {
             }
 
             res.status(StatusCodes.OK).json({message: 'Update success'});
+        }catch (error) {
+            console.error(error)
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
+        }
+    }),
+
+    deleteDiscussion: asyncWrapper(async (req, res) => {
+        try {
+            const {discussionId} = req.params;
+            const {userId} = req.user;
+
+
+            const result = await discussionService.deleteDiscussion(discussionId, userId);
+
+            if (result === 'Non-existent discussion') {
+                return res.status(StatusCodes.NOT_FOUND).json({message: result});
+            }
+            if (result === 'Not the author') {
+                return res.status(StatusCodes.FORBIDDEN).json({message: result});
+            }
+
+            res.status(StatusCodes.OK).json({message: 'Delete success'});
         }catch (error) {
             console.error(error)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
