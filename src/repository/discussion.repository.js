@@ -3,6 +3,10 @@ import db from '../database/index.js';
 const {Discussion, Category, DiscussionImage, DiscussionCategory, DiscussionBookmark, DiscussionLike, sequelize} = db;
 
 export const discussionRepository = {
+    getDiscussionById: async (discussionId)=>{
+        return await Discussion.findByPk(discussionId);
+    },
+
     createDiscussion: async (dto, transaction) => {
         return await Discussion.create(dto, {transaction});
     },

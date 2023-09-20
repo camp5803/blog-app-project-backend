@@ -67,7 +67,14 @@ export const discussionController = {
                 endTime,
                 userId
             }
-            await discussionService.updateDiscussion(dto);
+            const result = await discussionService.updateDiscussion(dto);
+
+            if (result === 'Non-existent discussion') {
+                return res.status(StatusCodes.NOT_FOUND).json({message: result});
+            }
+            if (result === 'Not the author') {
+                return res.status(StatusCodes.FORBIDDEN).json({message: result});
+            }
 
             res.status(StatusCodes.OK).json({message: 'Update success'});
         }catch (error) {

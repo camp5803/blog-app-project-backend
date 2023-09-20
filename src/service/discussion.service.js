@@ -4,12 +4,12 @@ import db from '@/database/index';
 
 export const discussionService = {
     createDiscussion: async (dto) => {
+        const transaction = await db.sequelize.transaction();
+        const promises = [];
+
         try {
             dto.view = 0;
             dto.like = 0;
-
-            const transaction = await db.sequelize.transaction();
-            const promises = [];
 
             const discussion = await discussionRepository.createDiscussion(dto,transaction);
             if (dto.category.length > 0) {
@@ -30,10 +30,17 @@ export const discussionService = {
     },
 
     updateDiscussion: async (dto) => {
-        try {
-            // discussionId 검증
+        const transaction = await db.sequelize.transaction();
 
-            const transaction = await db.sequelize.transaction();
+        try {
+            const discussion = await discussionRepository.getDiscussionById(dto.discussionId);
+
+            if (!discussion) {
+                return 'Non-existent discussion';
+            }
+            if (Number(discussion.userId) !== Number(dto.userId)) {
+                return 'Not the author';
+            }
 
             await discussionRepository.updateDiscussion(dto, transaction);
             await discussionRepository.updateDiscussionCategory(dto.discussionId, dto.category, transaction);
