@@ -70,7 +70,7 @@ export const postService = {
     },
 
     increaseViewCount: async (ip, post) => {
-        const viewerKey = `viewer:${post.postId}:${ip}`;
+        const viewerKey = `viewer:postId:${post.postId}:ip:${ip}`;
 
         const isViewed = await redisClient.get(viewerKey);
         if (isViewed) {
@@ -78,7 +78,7 @@ export const postService = {
         }
 
         const EXPIRATION_TIME = 1800;   // 1800초(30분) 이내 조회 여부
-        await redisClient.set(`viewer:${post.postId}:${ip}`, new Date().getTime(), {EX: EXPIRATION_TIME});
+        await redisClient.set(viewerKey, new Date().getTime(), {EX: EXPIRATION_TIME});
 
         const updatedViewCount = await postRepository.increaseViewCount(post);
         return updatedViewCount

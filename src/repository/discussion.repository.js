@@ -82,4 +82,40 @@ export const discussionRepository = {
             }]
         });
     },
+
+    increaseViewCount: async (discussion) => {
+        discussion.view += 1;
+        await discussion.save();
+        return discussion.view;
+    },
+
+    getBookmark: async (userId, discussionId) => {
+        return await DiscussionBookmark.findOne({where: {userId, discussionId}});
+    },
+
+    createBookmark: async (userId, discussionId) => {
+        await DiscussionBookmark.create({userId, discussionId});
+    },
+
+    deleteBookmark: async (userId, discussionId) => {
+        await DiscussionBookmark.destroy({where: {userId, discussionId}});
+    },
+
+    getLike: async (userId, discussionId) => {
+        const like = await DiscussionLike.findOne({where: {userId, discussionId}});
+        const likeCount = await DiscussionLike.count({where: {discussionId}});
+        return {like, likeCount};
+    },
+
+    createLike: async (userId, discussionId) => {
+        await DiscussionLike.create({userId, discussionId});
+    },
+
+    deleteLike: async (userId, discussionId) => {
+        await DiscussionLike.destroy({where: {userId, discussionId}});
+    },
+
+    updatePostLike: async (discussionId, likeCount) => {
+        await Discussion.update({like: likeCount}, {where: {discussionId}});
+    },
 };

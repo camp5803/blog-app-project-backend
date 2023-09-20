@@ -88,7 +88,6 @@ export const discussionController = {
             const {discussionId} = req.params;
             const {userId} = req.user;
 
-
             const result = await discussionService.deleteDiscussion(discussionId, userId);
 
             if (result === 'Non-existent discussion') {
@@ -129,15 +128,52 @@ export const discussionController = {
             const {discussionId} = req.params;
             const userId = await discussionService.getUserIdFromToken(req);
 
-            const result = await discussionService.getDiscussionByDetail(discussionId, userId);
-            console.log(result);
+            const {result, discussion} = await discussionService.getDiscussionByDetail(discussionId, userId);
 
             if (result === 'Non-existent discussion') {
                 return res.status(StatusCodes.NOT_FOUND).json({message: result});
             }
 
+            result.view = await discussionService.increaseViewCount(req.ip, discussion);
+
             res.status(StatusCodes.OK).json(result);
         }catch (error) {
+            console.error(error)
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
+        }
+    }),
+
+    toggleBookmark: asyncWrapper(async (req, res) => {
+        try {
+            const {discussionId} = req.params;
+            const {userId} = req.user;
+
+            const bookmark = await discussionService.toggleBookmark(userId, discussionId);
+
+            if (!bookmark) {
+                res.status(StatusCodes.OK).json({bookmark: true, message: "Bookmark add success"});
+            } else {
+                res.status(StatusCodes.OK).json({bookmark: false, message: "Bookmark remove success"});
+            }
+        } catch (error) {
+            console.error(error)
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
+        }
+    }),
+
+    toggleLike: asyncWrapper(async (req, res) => {
+        try {
+            const {discussionId} = req.params;
+            const {userId} = req.user;
+
+            const like = await discussionService.toggleLike(userId, discussionId);
+
+            if (!like.isLiked) {
+                res.status(StatusCodes.OK).json({liked: true, like: like.likeCount, message: "Like success"});
+            } else {
+                res.status(StatusCodes.OK).json({liekd: false, like: like.likeCount, message: "Like cancel success"});
+            }
+        } catch (error) {
             console.error(error)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
         }

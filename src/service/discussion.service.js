@@ -142,7 +142,7 @@ export const discussionService = {
             const discussion = await discussionRepository.getDiscussionByDetail(discussionId);
 
             if (!discussion) {
-                return 'Non-existent discussion';
+                return {result:'Non-existent discussion', discussion};
             }
 
             const result = {
@@ -175,7 +175,61 @@ export const discussionService = {
                 result.isAuthor = Number(discussion.userId) === Number(userId)
             }
 
-            return result
+            return {result, discussion}
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
+
+    increaseViewCount: async (ip, discussion) => {
+        try {
+            const viewerKey = `viewer:discussionId:${discussion.discussionId}:ip:${ip}`;
+
+            const isViewed = await redisClient.get(viewerKey);
+            if (isViewed) {
+                return discussion.view;
+            }
+
+            const EXPIRATION_TIME = 1800;   // 1800초(30분) 이내 조회 여부
+            await redisClient.set(viewerKey, new Date().getTime(), {EX: EXPIRATION_TIME});
+
+            return await discussionRepository.increaseViewCount(discussion);
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
+
+    toggleBookmark: async (userId, discussionId) => {
+        try {
+            const bookmark = await discussionRepository.getBookmark(userId, discussionId);
+
+            if (bookmark) {
+                await discussionRepository.deleteBookmark(userId, discussionId);
+            } else {
+                await discussionRepository.createBookmark(userId, discussionId);
+            }
+
+            return !!bookmark;
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
+
+    toggleLike: async (userId, discussionId) => {
+        try {
+            let {like, likeCount} = await discussionRepository.getLike(userId, discussionId);
+
+            if (like) {
+                await discussionRepository.deleteLike(userId, discussionId);
+                likeCount--;
+            } else {
+                await discussionRepository.createLike(userId, discussionId);
+                likeCount++;
+            }
+
+            await discussionRepository.updatePostLike(discussionId, likeCount);
+
+            return {isLiked: !!like, likeCount};
         } catch (error) {
             throw new Error(error);
         }
