@@ -84,6 +84,7 @@ export const discussionService = {
         }
     },
 
+    //todo 차단 유저 글 안보이게
     getDiscussionByPage: async (page, pageSize, sort, userId) => {
         try {
             const offset = (page - 1) * pageSize || 0;
@@ -105,7 +106,7 @@ export const discussionService = {
                     thumbnail: discussion.thumbnail,
                     title: discussion.title,
                     createdAt: discussion.createdAt,
-                    categories: discussion.categories.map((category) => category.category),
+                    category: discussion.categories.map((category) => category.category),
                     bookmarked: false,
                     liked: false,
                     like: discussion.like,
@@ -135,4 +136,48 @@ export const discussionService = {
         }
     },
 
+    //todo 강퇴 시 조회 x
+    getDiscussionByDetail: async (discussionId, userId) => {
+        try {
+            const discussion = await discussionRepository.getDiscussionByDetail(discussionId);
+
+            if (!discussion) {
+                return 'Non-existent discussion';
+            }
+
+            const result = {
+                discussionId: discussion.discussionId,
+                thumbnail: discussion.thumbnail,
+                title: discussion.title,
+                content: discussion.content,
+                createdAt: discussion.createdAt,
+                category: discussion.categories.map((category) => category.category),
+                image: discussion.images.map((image) => image.image),
+                bookmarked: false,
+                liked: false,
+                isAuthor: false,
+                like: discussion.like,
+                view: discussion.view,
+                startTime: discussion.startTime,
+                endTime: discussion.endTime,
+                // remainingTime: (discussion.endTime - new Date()) / 1000
+                // elapsedTime:
+            };
+
+            const userProfile = await discussionRepository.getProfileById(discussion.userId);
+            result.nickname = userProfile.nickname;
+
+            if (userId) {
+                const bookmark = await discussionRepository.getBookmarkById(userId, discussion.discussionId);
+                result.bookmarked = !!bookmark;
+                const like = await discussionRepository.getLikeById(userId, discussion.discussionId);
+                result.liked = !!like;
+                result.isAuthor = Number(discussion.userId) === Number(userId)
+            }
+
+            return result
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
 };

@@ -117,7 +117,26 @@ export const discussionController = {
             res.status(StatusCodes.OK).json({
                 hasMore: result.hasMore,
                 discussions: result.discussions,
-            })
+            });
+        }catch (error) {
+            console.error(error)
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
+        }
+    }),
+
+    getDiscussionByDetail: asyncWrapper(async (req, res) => {
+        try {
+            const {discussionId} = req.params;
+            const userId = await discussionService.getUserIdFromToken(req);
+
+            const result = await discussionService.getDiscussionByDetail(discussionId, userId);
+            console.log(result);
+
+            if (result === 'Non-existent discussion') {
+                return res.status(StatusCodes.NOT_FOUND).json({message: result});
+            }
+
+            res.status(StatusCodes.OK).json(result);
         }catch (error) {
             console.error(error)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
