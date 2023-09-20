@@ -105,13 +105,14 @@ export const discussionService = {
                     discussionId: discussion.discussionId,
                     thumbnail: discussion.thumbnail,
                     title: discussion.title,
-                    createdAt: discussion.createdAt,
+                    startTime: discussion.startTime,
+                    endTime: discussion.endTime,
                     category: discussion.categories.map((category) => category.category),
                     bookmarked: false,
                     liked: false,
                     like: discussion.like,
                     view: discussion.view,
-                    // remainingTime: (discussion.endTime - new Date()) / 1000
+                    remainingTime: Math.max(parseInt((discussion.endTime - new Date()) / 1000), 0),
                 };
 
                 const userProfile = await discussionRepository.getProfileById(discussion.userId);
@@ -150,7 +151,6 @@ export const discussionService = {
                 thumbnail: discussion.thumbnail,
                 title: discussion.title,
                 content: discussion.content,
-                createdAt: discussion.createdAt,
                 category: discussion.categories.map((category) => category.category),
                 image: discussion.images.map((image) => image.image),
                 bookmarked: false,
@@ -160,7 +160,7 @@ export const discussionService = {
                 view: discussion.view,
                 startTime: discussion.startTime,
                 endTime: discussion.endTime,
-                // remainingTime: (discussion.endTime - new Date()) / 1000
+                remainingTime: Math.max(parseInt((discussion.endTime - new Date()) / 1000), 0),
                 // elapsedTime:
             };
 
