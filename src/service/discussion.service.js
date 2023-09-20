@@ -52,4 +52,21 @@ export const discussionService = {
             throw new Error(error);
         }
     },
+
+    deleteDiscussion: async (discussionId, userId) => {
+        try {
+            const discussion = await discussionRepository.getDiscussionById(discussionId);
+
+            if (!discussion) {
+                return 'Non-existent discussion';
+            }
+            if (Number(discussion.userId) !== Number(userId)) {
+                return 'Not the author';
+            }
+
+            await discussionRepository.deleteDiscussion(discussionId);
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
 };

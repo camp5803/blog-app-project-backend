@@ -38,4 +38,8 @@ export const discussionRepository = {
         const image = images.map(image => ({discussionId, image}))
         await DiscussionImage.bulkCreate(image, {transaction});
     },
+
+    deleteDiscussion: async (discussionId) => {
+        await DiscussionImage.destroy({where: {discussionId}});
+    },
 };
