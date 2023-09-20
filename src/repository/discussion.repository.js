@@ -1,9 +1,9 @@
 import db from '../database/index.js';
 
-const {Discussion, Category, DiscussionImage, DiscussionCategory, DiscussionBookmark, DiscussionLike, sequelize} = db;
+const {Discussion, Profile, DiscussionImage, DiscussionCategory, DiscussionBookmark, DiscussionLike, sequelize} = db;
 
 export const discussionRepository = {
-    getDiscussionById: async (discussionId)=>{
+    getDiscussionById: async (discussionId) => {
         return await Discussion.findByPk(discussionId);
     },
 
@@ -40,6 +40,46 @@ export const discussionRepository = {
     },
 
     deleteDiscussion: async (discussionId) => {
-        await DiscussionImage.destroy({where: {discussionId}});
+        await Discussion.destroy({where: {discussionId}});
+    },
+
+    getDiscussionByPage: async (offset, limit, order) => {
+        return await Discussion.findAndCountAll({
+            include: [{
+                model: DiscussionCategory,
+                as: 'categories',
+                attributes: ['category'],
+            }],
+            offset,
+            limit,
+            order
+        });
+    },
+
+    getProfileById: async (userId) => {
+        return await Profile.findByPk(userId);
+    },
+
+    getBookmarkById: async (userId, discussionId) => {
+        return await DiscussionBookmark.findOne({where: {userId, discussionId}});
+    },
+
+    getLikeById: async (userId, discussionId) => {
+        return await DiscussionLike.findOne({where: {userId, discussionId}});
+    },
+
+    getDiscussionByDetail: async (discussionId) => {
+        return await Discussion.findOne({
+            where: {discussionId},
+            include: [{
+                model: DiscussionCategory,
+                as: 'categories',
+                attributes: ['category'],
+            }, {
+                model: DiscussionImage,
+                as: 'images',
+                attributes: ['image'],
+            }]
+        });
     },
 };

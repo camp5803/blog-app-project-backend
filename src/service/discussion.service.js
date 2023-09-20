@@ -3,6 +3,20 @@ import {verifyToken, redisCli as redisClient} from "@/utils";
 import db from '@/database/index';
 
 export const discussionService = {
+    getUserIdFromToken: async (req) => {
+        const token = req.cookies["accessToken"];
+        if (!token) {
+            return false;
+        }
+
+        const verifyResult = verifyToken(token);
+        if (verifyResult.error) {
+            return false
+        }
+
+        return  verifyResult.userId;
+    },
+
     createDiscussion: async (dto) => {
         const transaction = await db.sequelize.transaction();
         const promises = [];
@@ -65,6 +79,103 @@ export const discussionService = {
             }
 
             await discussionRepository.deleteDiscussion(discussionId);
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
+
+    //todo 차단 유저 글 안보이게
+    getDiscussionByPage: async (page, pageSize, sort, userId) => {
+        try {
+            const offset = (page - 1) * pageSize || 0;
+            const limit = pageSize;
+            let order = [['createdAt', 'DESC']];
+
+            if (sort === 'views') {
+                order = [['view', 'DESC']]; // 조회수 순으로 정렬
+            }
+
+            const discussions = await discussionRepository.getDiscussionByPage(offset, limit, order);
+
+            const totalPages = Math.ceil(discussions.count / pageSize);
+
+            const results = [];
+            for (const discussion of discussions.rows) {
+                const result = {
+                    discussionId: discussion.discussionId,
+                    thumbnail: discussion.thumbnail,
+                    title: discussion.title,
+                    createdAt: discussion.createdAt,
+                    category: discussion.categories.map((category) => category.category),
+                    bookmarked: false,
+                    liked: false,
+                    like: discussion.like,
+                    view: discussion.view,
+                    // remainingTime: (discussion.endTime - new Date()) / 1000
+                };
+
+                const userProfile = await discussionRepository.getProfileById(discussion.userId);
+                result.nickname = userProfile.nickname;
+
+                if (userId) {
+                    const bookmark = await discussionRepository.getBookmarkById(userId, discussion.discussionId);
+                    result.bookmarked = !!bookmark;
+                    const like = await discussionRepository.getLikeById(userId, discussion.discussionId);
+                    result.liked = !!like;
+                }
+
+                results.push(result);
+            }
+
+            return {
+                hasMore: totalPages > page,
+                discussions: results
+            }
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
+
+    //todo 강퇴 시 조회 x
+    getDiscussionByDetail: async (discussionId, userId) => {
+        try {
+            const discussion = await discussionRepository.getDiscussionByDetail(discussionId);
+
+            if (!discussion) {
+                return 'Non-existent discussion';
+            }
+
+            const result = {
+                discussionId: discussion.discussionId,
+                thumbnail: discussion.thumbnail,
+                title: discussion.title,
+                content: discussion.content,
+                createdAt: discussion.createdAt,
+                category: discussion.categories.map((category) => category.category),
+                image: discussion.images.map((image) => image.image),
+                bookmarked: false,
+                liked: false,
+                isAuthor: false,
+                like: discussion.like,
+                view: discussion.view,
+                startTime: discussion.startTime,
+                endTime: discussion.endTime,
+                // remainingTime: (discussion.endTime - new Date()) / 1000
+                // elapsedTime:
+            };
+
+            const userProfile = await discussionRepository.getProfileById(discussion.userId);
+            result.nickname = userProfile.nickname;
+
+            if (userId) {
+                const bookmark = await discussionRepository.getBookmarkById(userId, discussion.discussionId);
+                result.bookmarked = !!bookmark;
+                const like = await discussionRepository.getLikeById(userId, discussion.discussionId);
+                result.liked = !!like;
+                result.isAuthor = Number(discussion.userId) === Number(userId)
+            }
+
+            return result
         } catch (error) {
             throw new Error(error);
         }
