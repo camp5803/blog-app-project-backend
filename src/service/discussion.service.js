@@ -3,6 +3,20 @@ import {verifyToken, redisCli as redisClient} from "@/utils";
 import db from '@/database/index';
 
 export const discussionService = {
+    getUserIdFromToken: async (req) => {
+        const token = req.cookies["accessToken"];
+        if (!token) {
+            return false;
+        }
+
+        const verifyResult = verifyToken(token);
+        if (verifyResult.error) {
+            return false
+        }
+
+        return  verifyResult.userId;
+    },
+
     createDiscussion: async (dto) => {
         const transaction = await db.sequelize.transaction();
         const promises = [];
@@ -69,4 +83,56 @@ export const discussionService = {
             throw new Error(error);
         }
     },
+
+    getDiscussionByPage: async (page, pageSize, sort, userId) => {
+        try {
+            const offset = (page - 1) * pageSize || 0;
+            const limit = pageSize;
+            let order = [['createdAt', 'DESC']];
+
+            if (sort === 'views') {
+                order = [['view', 'DESC']]; // 조회수 순으로 정렬
+            }
+
+            const discussions = await discussionRepository.getDiscussionByPage(offset, limit, order);
+
+            const totalPages = Math.ceil(discussions.count / pageSize);
+
+            const results = [];
+            for (const discussion of discussions.rows) {
+                const result = {
+                    discussionId: discussion.discussionId,
+                    thumbnail: discussion.thumbnail,
+                    title: discussion.title,
+                    createdAt: discussion.createdAt,
+                    categories: discussion.categories.map((category) => category.category),
+                    bookmarked: false,
+                    liked: false,
+                    like: discussion.like,
+                    view: discussion.view,
+                    // remainingTime: (discussion.endTime - new Date()) / 1000
+                };
+
+                const userProfile = await discussionRepository.getProfileById(discussion.userId);
+                result.nickname = userProfile.nickname;
+
+                if (userId) {
+                    const bookmark = await discussionRepository.getBookmarkById(userId, discussion.discussionId);
+                    result.bookmarked = !!bookmark;
+                    const like = await discussionRepository.getLikeById(userId, discussion.discussionId);
+                    result.liked = !!like;
+                }
+
+                results.push(result);
+            }
+
+            return {
+                hasMore: totalPages > page,
+                discussions: results
+            }
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
+
 };
