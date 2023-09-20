@@ -82,4 +82,10 @@ export const discussionRepository = {
             }]
         });
     },
+
+    increaseViewCount: async (discussion) => {
+        discussion.view += 1;
+        await discussion.save();
+        return discussion.view;
+    },
 };

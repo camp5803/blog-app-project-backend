@@ -129,12 +129,13 @@ export const discussionController = {
             const {discussionId} = req.params;
             const userId = await discussionService.getUserIdFromToken(req);
 
-            const result = await discussionService.getDiscussionByDetail(discussionId, userId);
-            console.log(result);
+            const {result, discussion} = await discussionService.getDiscussionByDetail(discussionId, userId);
 
             if (result === 'Non-existent discussion') {
                 return res.status(StatusCodes.NOT_FOUND).json({message: result});
             }
+
+            result.view = await discussionService.increaseViewCount(req.ip, discussion);
 
             res.status(StatusCodes.OK).json(result);
         }catch (error) {

@@ -142,7 +142,7 @@ export const discussionService = {
             const discussion = await discussionRepository.getDiscussionByDetail(discussionId);
 
             if (!discussion) {
-                return 'Non-existent discussion';
+                return {result:'Non-existent discussion', discussion};
             }
 
             const result = {
@@ -175,9 +175,24 @@ export const discussionService = {
                 result.isAuthor = Number(discussion.userId) === Number(userId)
             }
 
-            return result
+            return {result, discussion}
         } catch (error) {
             throw new Error(error);
         }
+    },
+
+    increaseViewCount: async (ip, discussion) => {
+        const viewerKey = `viewer:discussionId:${discussion.discussionId}:ip:${ip}`;
+
+        const isViewed = await redisClient.get(viewerKey);
+        if (isViewed) {
+            return discussion.view;
+        }
+
+        const EXPIRATION_TIME = 1800;   // 1800초(30분) 이내 조회 여부
+        await redisClient.set(viewerKey, new Date().getTime(), {EX: EXPIRATION_TIME});
+
+        const updatedViewCount = await discussionRepository.increaseViewCount(discussion);
+        return updatedViewCount
     },
 };
