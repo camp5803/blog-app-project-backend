@@ -188,4 +188,24 @@ export const discussionController = {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
         }
     }),
+
+    deleteDiscussionUser: asyncWrapper(async (req, res) => {
+        try {
+            const {discussionId} = req.params;
+            const {userId} = req.user;
+
+            const result = await discussionService.deleteDiscussionUser(userId, discussionId);
+
+            if (result === 'Banned user') {
+                res.status(StatusCodes.FORBIDDEN).json({message: 'Banned user'});
+            }else if (result === 'Not participating') {
+                res.status(StatusCodes.NOT_FOUND).json({message: 'Not participating'});
+            } else {
+                res.status(StatusCodes.OK).json({message: "Successfully left the discussion"});
+            }
+        } catch (error) {
+            console.error(error)
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
+        }
+    }),
 }
