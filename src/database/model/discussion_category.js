@@ -1,7 +1,7 @@
 'use strict';
 
 export const discussionCategory = (sequelize, DataTypes) => {
-    const DiscussionCategory = sequelize.define('category', {
+    const DiscussionCategory = sequelize.define('discussion_category', {
         categoryId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
