@@ -168,4 +168,24 @@ export const discussionController = {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
         }
     }),
+
+    createDiscussionUser: asyncWrapper(async (req, res) => {
+        try {
+            const {discussionId} = req.params;
+            const {userId} = req.user;
+
+            const result = await discussionService.createDiscussionUser(userId, discussionId);
+
+            if (result === 'Banned user') {
+                res.status(StatusCodes.FORBIDDEN).json({message: 'Banned user'});
+            }else if (result === 'Already participating') {
+                res.status(StatusCodes.CONFLICT).json({message: 'Already participating'});
+            } else {
+                res.status(StatusCodes.CREATED).json({message: "Participate success"});
+            }
+        } catch (error) {
+            console.error(error)
+            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
+        }
+    }),
 }

@@ -10,5 +10,6 @@ router.patch('/discussions/:discussionId', validateDiscussionId, isAuthorized, d
 router.delete('/discussions/:discussionId', validateDiscussionId, isAuthorized, discussionController.deleteDiscussion);
 router.post('/discussions/:discussionId/bookmark', validateDiscussionId, isAuthorized, discussionController.toggleBookmark);
 router.post('/discussions/:discussionId/like', validateDiscussionId, isAuthorized, discussionController.toggleLike);
+router.post('/discussions/:discussionId/participation', validateDiscussionId, isAuthorized, discussionController.createDiscussionUser);
 
 export default router;

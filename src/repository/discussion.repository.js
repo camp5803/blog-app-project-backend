@@ -115,4 +115,12 @@ export const discussionRepository = {
     updatePostLike: async (discussionId, likeCount) => {
         await Discussion.update({like: likeCount}, {where: {discussionId}});
     },
+
+    getDiscussionUser: async (userId, discussionId) => {
+        return await DiscussionUser.findOne({where: {userId, discussionId}});
+    },
+
+    createDiscussionUser: async (userId, discussionId) => {
+        return await DiscussionUser.create({userId, discussionId});
+    }
 };
