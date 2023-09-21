@@ -1,6 +1,6 @@
 import db from '../database/index.js';
 
-const {Discussion, Profile, DiscussionImage, DiscussionCategory, DiscussionBookmark, DiscussionLike, sequelize} = db;
+const {Discussion, Profile, DiscussionImage, DiscussionCategory, DiscussionBookmark, DiscussionLike, DiscussionUser} = db;
 
 export const discussionRepository = {
     getDiscussionById: async (discussionId) => {
