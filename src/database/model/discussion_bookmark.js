@@ -1,7 +1,7 @@
 'use strict';
 
 export const discussionBookmark = (sequelize, DataTypes) => {
-    const DiscussionBookmark = sequelize.define('discussion_bookmark', {
+    const DiscussionBookmark = sequelize.define('bookmark', {
         discussionId: {
             type: DataTypes.INTEGER,
             primaryKey: true,

@@ -1,7 +1,7 @@
 'use strict';
 
 export const discussionImage = (sequelize, DataTypes) => {
-    const DiscussionImage = sequelize.define('discussion_image', {
+    const DiscussionImage = sequelize.define('image', {
         imageId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
