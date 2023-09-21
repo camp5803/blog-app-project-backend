@@ -122,5 +122,9 @@ export const discussionRepository = {
 
     createDiscussionUser: async (userId, discussionId) => {
         return await DiscussionUser.create({userId, discussionId});
-    }
+    },
+
+    deleteDiscussionUser: async (userId, discussionId) => {
+        await DiscussionUser.destroy({where: {userId, discussionId}});
+    },
 };

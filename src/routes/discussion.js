@@ -11,5 +11,6 @@ router.delete('/discussions/:discussionId', validateDiscussionId, isAuthorized, 
 router.post('/discussions/:discussionId/bookmark', validateDiscussionId, isAuthorized, discussionController.toggleBookmark);
 router.post('/discussions/:discussionId/like', validateDiscussionId, isAuthorized, discussionController.toggleLike);
 router.post('/discussions/:discussionId/participation', validateDiscussionId, isAuthorized, discussionController.createDiscussionUser);
+router.delete('/discussions/:discussionId/participation', validateDiscussionId, isAuthorized, discussionController.deleteDiscussionUser);
 
 export default router;

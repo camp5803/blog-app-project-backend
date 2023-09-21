@@ -19,7 +19,7 @@ export const discussionService = {
             return false
         }
 
-        return  verifyResult.userId;
+        return verifyResult.userId;
     },
 
     createDiscussion: async (dto) => {
@@ -30,7 +30,7 @@ export const discussionService = {
             dto.view = 0;
             dto.like = 0;
 
-            const discussion = await discussionRepository.createDiscussion(dto,transaction);
+            const discussion = await discussionRepository.createDiscussion(dto, transaction);
             if (dto.category.length > 0) {
                 promises.push(discussionRepository.createCategory(discussion.discussionId, dto.category, transaction));
             }
@@ -232,9 +232,7 @@ export const discussionService = {
 
     createDiscussionUser: async (userId, discussionId) => {
         try {
-            // 이미 참여중인지 확인 ( 참여자인지  강퇴자인지 구별)
             const isExisted = await discussionRepository.getDiscussionUser(userId, discussionId);
-            console.log(isExisted);
 
             if (isExisted) {
                 if (isExisted.isBanned) {
@@ -250,5 +248,21 @@ export const discussionService = {
         }
     },
 
-    // 토의 나갈때
+    deleteDiscussionUser: async (userId, discussionId) => {
+        try {
+            const isExisted = await discussionRepository.getDiscussionUser(userId, discussionId);
+
+            if (!isExisted) {
+                return 'Not participating';
+            }
+
+            if (isExisted.isBanned) {
+                return 'Banned user';
+            } else {
+                return await discussionRepository.deleteDiscussionUser(userId, discussionId);
+            }
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
 };
