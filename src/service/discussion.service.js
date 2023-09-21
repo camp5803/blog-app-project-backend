@@ -54,9 +54,6 @@ export const discussionService = {
         try {
             const discussion = await discussionRepository.getDiscussionById(dto.discussionId);
 
-            if (!discussion) {
-                return 'Non-existent discussion';
-            }
             if (Number(discussion.userId) !== Number(dto.userId)) {
                 return 'Not the author';
             }
@@ -76,9 +73,6 @@ export const discussionService = {
         try {
             const discussion = await discussionRepository.getDiscussionById(discussionId);
 
-            if (!discussion) {
-                return 'Non-existent discussion';
-            }
             if (Number(discussion.userId) !== Number(userId)) {
                 return 'Not the author';
             }
@@ -146,10 +140,6 @@ export const discussionService = {
     getDiscussionByDetail: async (discussionId, userId) => {
         try {
             const discussion = await discussionRepository.getDiscussionByDetail(discussionId);
-
-            if (!discussion) {
-                return {result:'Non-existent discussion', discussion};
-            }
 
             const result = {
                 discussionId: discussion.discussionId,
@@ -239,4 +229,26 @@ export const discussionService = {
             throw new Error(error);
         }
     },
+
+    createDiscussionUser: async (userId, discussionId) => {
+        try {
+            // 이미 참여중인지 확인 ( 참여자인지  강퇴자인지 구별)
+            const isExisted = await discussionRepository.getDiscussionUser(userId, discussionId);
+            console.log(isExisted);
+
+            if (isExisted) {
+                if (isExisted.isBanned) {
+                    return 'Banned user';
+                } else {
+                    return 'Already participating';
+                }
+            }
+
+            return await discussionRepository.createDiscussionUser(userId, discussionId);
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
+
+    // 토의 나갈때
 };
