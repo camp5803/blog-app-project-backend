@@ -47,7 +47,6 @@ export const discussionRepository = {
         return await Discussion.findAndCountAll({
             include: [{
                 model: DiscussionCategory,
-                as: 'categories',
                 attributes: ['category'],
             }],
             offset,
@@ -73,11 +72,9 @@ export const discussionRepository = {
             where: {discussionId},
             include: [{
                 model: DiscussionCategory,
-                as: 'categories',
                 attributes: ['category'],
             }, {
                 model: DiscussionImage,
-                as: 'images',
                 attributes: ['image'],
             }]
         });

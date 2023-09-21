@@ -1,7 +1,7 @@
 'use strict';
 
 export const discussionLike = (sequelize, DataTypes) => {
-    const DiscussionLike = sequelize.define('like', {
+    const DiscussionLike = sequelize.define('discussion_like', {
         discussionId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
