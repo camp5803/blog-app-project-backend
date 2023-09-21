@@ -1,15 +1,14 @@
 import express from 'express';
-import {discussionController} from '@/controller/discussion.controller';
-
 const router = express.Router();
-import { isAuthenticated, isAuthorized } from "@/middleware";
+import {validateDiscussionId, isAuthorized} from "@/middleware";
+import {discussionController} from '@/controller/discussion.controller';
 
 router.get('/discussions/all/:sort', discussionController.getDiscussionByPage);
 router.post('/discussions', isAuthorized, discussionController.createDiscussion);
-router.get('/discussions/:discussionId', discussionController.getDiscussionByDetail);
-router.patch('/discussions/:discussionId', isAuthorized, discussionController.updateDiscussion);
-router.delete('/discussions/:discussionId', isAuthorized, discussionController.deleteDiscussion);
-router.post('/discussions/:discussionId/bookmark', isAuthorized, discussionController.toggleBookmark);
-router.post('/discussions/:discussionId/like', isAuthorized, discussionController.toggleLike);
+router.get('/discussions/:discussionId', validateDiscussionId, discussionController.getDiscussionByDetail);
+router.patch('/discussions/:discussionId', validateDiscussionId, isAuthorized, discussionController.updateDiscussion);
+router.delete('/discussions/:discussionId', validateDiscussionId, isAuthorized, discussionController.deleteDiscussion);
+router.post('/discussions/:discussionId/bookmark', validateDiscussionId, isAuthorized, discussionController.toggleBookmark);
+router.post('/discussions/:discussionId/like', validateDiscussionId, isAuthorized, discussionController.toggleLike);
 
 export default router;

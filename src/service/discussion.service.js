@@ -3,6 +3,11 @@ import {verifyToken, redisCli as redisClient} from "@/utils";
 import db from '@/database/index';
 
 export const discussionService = {
+    validateDiscussionId: async (discussionId) => {
+        const discussion = await discussionRepository.getDiscussionById(discussionId);
+        return !!discussion;
+    },
+
     getUserIdFromToken: async (req) => {
         const token = req.cookies["accessToken"];
         if (!token) {

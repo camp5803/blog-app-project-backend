@@ -69,9 +69,6 @@ export const discussionController = {
             }
             const result = await discussionService.updateDiscussion(dto);
 
-            if (result === 'Non-existent discussion') {
-                return res.status(StatusCodes.NOT_FOUND).json({message: result});
-            }
             if (result === 'Not the author') {
                 return res.status(StatusCodes.FORBIDDEN).json({message: result});
             }
@@ -90,9 +87,6 @@ export const discussionController = {
 
             const result = await discussionService.deleteDiscussion(discussionId, userId);
 
-            if (result === 'Non-existent discussion') {
-                return res.status(StatusCodes.NOT_FOUND).json({message: result});
-            }
             if (result === 'Not the author') {
                 return res.status(StatusCodes.FORBIDDEN).json({message: result});
             }
@@ -129,10 +123,6 @@ export const discussionController = {
             const userId = await discussionService.getUserIdFromToken(req);
 
             const {result, discussion} = await discussionService.getDiscussionByDetail(discussionId, userId);
-
-            if (result === 'Non-existent discussion') {
-                return res.status(StatusCodes.NOT_FOUND).json({message: result});
-            }
 
             result.view = await discussionService.increaseViewCount(req.ip, discussion);
 
