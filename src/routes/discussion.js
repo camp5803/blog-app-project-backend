@@ -11,6 +11,6 @@ router.delete('/discussions/:discussionId', validateDiscussionId, isAuthorized, 
 router.post('/discussions/:discussionId/like', validateDiscussionId, isAuthorized, discussionController.toggleLike);
 router.post('/discussions/:discussionId/participation', validateDiscussionId, isAuthorized, discussionController.createDiscussionUser);
 router.delete('/discussions/:discussionId/participation', validateDiscussionId, isAuthorized, discussionController.deleteDiscussionUser);
-router.get('/discussions/:discussionId/verification', discussionController.verifyUser);
+router.get('/discussions/:discussionId/verification', validateDiscussionId, discussionController.verifyUser);
 
 export default router;
