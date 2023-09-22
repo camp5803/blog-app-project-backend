@@ -134,7 +134,7 @@ export const discussionController = {
 
             const {result, discussion} = await discussionService.getDiscussionByDetail(discussionId, userId);
 
-            result.view = await discussionService.increaseViewCount(req.ip, discussion);
+            await discussionService.increaseViewCount(req.ip, discussion);
 
             res.status(StatusCodes.OK).json(result);
         }catch (error) {
