@@ -60,7 +60,6 @@ export const discussionService = {
             }
 
             await discussionRepository.updateDiscussion(dto, transaction);
-            await discussionRepository.updateDiscussionCategory(dto.discussionId, dto.category, transaction);
             await discussionRepository.updateDiscussionImage(dto.discussionId, dto.image, transaction);
 
             await transaction.commit();

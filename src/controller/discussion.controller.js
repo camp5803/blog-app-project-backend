@@ -47,13 +47,13 @@ export const discussionController = {
 
     updateDiscussion: asyncWrapper(async (req, res) => {
         try {
-            const validation = await validateInput(req.body);
+            // const validation = await validateInput(req.body);
+            //
+            // if (!validation) {
+            //     return res.status(StatusCodes.BAD_REQUEST).json({message: 'Check all the inputs'});
+            // }
 
-            if (!validation) {
-                return res.status(StatusCodes.BAD_REQUEST).json({message: 'Check all the inputs'});
-            }
-
-            const {title, content, category, image, thumbnail, startTime, endTime} = req.body;
+            const {title, content, image, thumbnail, endTime, capacity} = req.body;
             const {discussionId} = req.params;
             const {userId} = req.user;
 
@@ -61,11 +61,10 @@ export const discussionController = {
                 discussionId,
                 title,
                 content,
-                category,
                 image,
                 thumbnail,
-                startTime,
                 endTime,
+                capacity,
                 userId
             }
             const result = await discussionService.updateDiscussion(dto);
