@@ -8,6 +8,23 @@ export const discussionService = {
         return !!discussion;
     },
 
+    verifyUser: async (req) => {
+        const token = req.cookies["accessToken"];
+        if (!token) {
+            return false;
+        }
+
+        const verifyResult = verifyToken(token);
+        if (verifyResult.error) {
+            return false
+        }
+
+        const userId = verifyResult.userId;
+        const discussion = await discussionRepository.getDiscussionById(req.params.discussionId);
+
+        return discussion.userId === Number(userId);
+    },
+
     getUserIdFromToken: async (req) => {
         const token = req.cookies["accessToken"];
         if (!token) {
