@@ -70,11 +70,6 @@ export const discussion = (sequelize, DataTypes) => {
                 allowNull: false
             }, sourceKey: "discussionId", onDelete: 'CASCADE' });
 
-        Discussion.hasMany(models.DiscussionBookmark, { foreignKey: {
-                name: "discussionId",
-                allowNull: false
-            }, sourceKey: "discussionId", onDelete: 'CASCADE' });
-
         Discussion.hasMany(models.DiscussionImage, { foreignKey: {
                 name: "discussionId",
                 allowNull: false

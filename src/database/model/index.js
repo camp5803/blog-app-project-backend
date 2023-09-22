@@ -16,7 +16,6 @@ import { block } from "./block";
 import { discussion } from "./discussion";
 import { discussionCategory } from "./discussion_category";
 import { discussionImage } from "./discussion_image";
-import { discussionBookmark } from "./discussion_bookmark";
 import { discussionLike } from "./discussion_like";
 import { discussionUser } from "./discussion_user";
 
@@ -39,7 +38,6 @@ export const models = {
     Discussion: discussion,
     DiscussionCategory: discussionCategory,
     DiscussionImage: discussionImage,
-    DiscussionBookmark: discussionBookmark,
     DiscussionLike: discussionLike,
     DiscussionUser: discussionUser
 }

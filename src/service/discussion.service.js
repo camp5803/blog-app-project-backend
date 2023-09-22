@@ -37,6 +37,7 @@ export const discussionService = {
             if (dto.image.length > 0) {
                 promises.push(discussionRepository.createImage(discussion.discussionId, dto.image, transaction));
             }
+            await discussionRepository.createDiscussionUser(dto.userId, discussion.discussionId, transaction);
 
             await Promise.all(promises);
             await transaction.commit();
@@ -107,21 +108,20 @@ export const discussionService = {
                     startTime: discussion.startTime,
                     endTime: discussion.endTime,
                     category: discussion.discussion_categories.map((category) => category.category),
-                    bookmarked: false,
+                    participating: false,
                     liked: false,
                     like: discussion.like,
-                    view: discussion.view,
+                    // view: discussion.view,
                     remainingTime: Math.max(parseInt((discussion.endTime - new Date()) / 1000), 0),
+                    capacity: discussion.capacity,
                 };
 
-                const userProfile = await discussionRepository.getProfileById(discussion.userId);
-                result.nickname = userProfile.nickname;
+                result.nickname = (await discussionRepository.getProfileById(discussion.userId)).nickname;
+                result.participants = await discussionRepository.getDiscussionUserCount(discussion.discussionId);
 
                 if (userId) {
-                    const bookmark = await discussionRepository.getBookmarkById(userId, discussion.discussionId);
-                    result.bookmarked = !!bookmark;
-                    const like = await discussionRepository.getLikeById(userId, discussion.discussionId);
-                    result.liked = !!like;
+                    result.participating = !!(await discussionRepository.getDiscussionUser(userId, discussion.discussionId));
+                    result.liked = !!(await discussionRepository.getLikeById(userId, discussion.discussionId));
                 }
 
                 results.push(result);
@@ -148,11 +148,11 @@ export const discussionService = {
                 content: discussion.content,
                 category: discussion.discussion_categories.map((category) => category.category),
                 image: discussion.discussion_images.map((image) => image.image),
-                bookmarked: false,
+                participating: false,
                 liked: false,
                 isAuthor: false,
                 like: discussion.like,
-                view: discussion.view,
+                // view: discussion.view,
                 startTime: discussion.startTime,
                 endTime: discussion.endTime,
                 remainingTime: Math.max(parseInt((discussion.endTime - new Date()) / 1000), 0),
@@ -163,10 +163,7 @@ export const discussionService = {
             result.nickname = userProfile.nickname;
 
             if (userId) {
-                const bookmark = await discussionRepository.getBookmarkById(userId, discussion.discussionId);
-                result.bookmarked = !!bookmark;
-                const like = await discussionRepository.getLikeById(userId, discussion.discussionId);
-                result.liked = !!like;
+                result.liked = !!(await discussionRepository.getLikeById(userId, discussion.discussionId));
                 result.isAuthor = Number(discussion.userId) === Number(userId)
             }
 
@@ -189,22 +186,6 @@ export const discussionService = {
             await redisClient.set(viewerKey, new Date().getTime(), {EX: EXPIRATION_TIME});
 
             return await discussionRepository.increaseViewCount(discussion);
-        } catch (error) {
-            throw new Error(error);
-        }
-    },
-
-    toggleBookmark: async (userId, discussionId) => {
-        try {
-            const bookmark = await discussionRepository.getBookmark(userId, discussionId);
-
-            if (bookmark) {
-                await discussionRepository.deleteBookmark(userId, discussionId);
-            } else {
-                await discussionRepository.createBookmark(userId, discussionId);
-            }
-
-            return !!bookmark;
         } catch (error) {
             throw new Error(error);
         }

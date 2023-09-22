@@ -134,24 +134,6 @@ export const discussionController = {
         }
     }),
 
-    toggleBookmark: asyncWrapper(async (req, res) => {
-        try {
-            const {discussionId} = req.params;
-            const {userId} = req.user;
-
-            const bookmark = await discussionService.toggleBookmark(userId, discussionId);
-
-            if (!bookmark) {
-                res.status(StatusCodes.OK).json({bookmark: true, message: "Bookmark add success"});
-            } else {
-                res.status(StatusCodes.OK).json({bookmark: false, message: "Bookmark remove success"});
-            }
-        } catch (error) {
-            console.error(error)
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
-        }
-    }),
-
     toggleLike: asyncWrapper(async (req, res) => {
         try {
             const {discussionId} = req.params;
