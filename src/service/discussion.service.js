@@ -41,7 +41,7 @@ export const discussionService = {
             await Promise.all(promises);
             await transaction.commit();
 
-            return discussion;
+            return discussion.discussionId;
         } catch (error) {
             await transaction.rollback();
             throw new Error(error);
