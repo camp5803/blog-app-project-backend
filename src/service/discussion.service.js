@@ -172,6 +172,7 @@ export const discussionService = {
                 startTime: discussion.startTime,
                 endTime: discussion.endTime,
                 remainingTime: Math.max(parseInt((discussion.endTime - new Date()) / 1000), 0),
+                capacity: discussion.capacity,
                 // elapsedTime:
             };
 
