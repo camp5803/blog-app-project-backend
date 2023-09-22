@@ -1,6 +1,6 @@
 import db from '../database/index.js';
 
-const {Discussion, Profile, DiscussionImage, DiscussionCategory, DiscussionBookmark, DiscussionLike, DiscussionUser} = db;
+const {Discussion, Profile, DiscussionImage, DiscussionCategory, DiscussionLike, DiscussionUser} = db;
 
 export const discussionRepository = {
     getDiscussionById: async (discussionId) => {
@@ -22,15 +22,9 @@ export const discussionRepository = {
     },
 
     updateDiscussion: async (dto, transaction) => {
-        const {discussionId, title, content, thumbnail, startTime, endTime} = dto;
-        await Discussion.update({title, content, thumbnail, startTime, endTime, updatedAt: new Date()},
+        const {discussionId, title, content, thumbnail, endTime, capacity} = dto;
+        await Discussion.update({title, content, thumbnail, endTime, capacity, updatedAt: new Date()},
             {where: {discussionId}}, {transaction})
-    },
-
-    updateDiscussionCategory: async (discussionId, categories, transaction) => {
-        await DiscussionCategory.destroy({where: {discussionId}});
-        const category = await categories.map(category => ({discussionId, category}));
-        await DiscussionCategory.bulkCreate(category, {transaction});
     },
 
     updateDiscussionImage: async (discussionId, images, transaction) => {
@@ -59,10 +53,6 @@ export const discussionRepository = {
         return await Profile.findByPk(userId);
     },
 
-    getBookmarkById: async (userId, discussionId) => {
-        return await DiscussionBookmark.findOne({where: {userId, discussionId}});
-    },
-
     getLikeById: async (userId, discussionId) => {
         return await DiscussionLike.findOne({where: {userId, discussionId}});
     },
@@ -84,18 +74,6 @@ export const discussionRepository = {
         discussion.view += 1;
         await discussion.save();
         return discussion.view;
-    },
-
-    getBookmark: async (userId, discussionId) => {
-        return await DiscussionBookmark.findOne({where: {userId, discussionId}});
-    },
-
-    createBookmark: async (userId, discussionId) => {
-        await DiscussionBookmark.create({userId, discussionId});
-    },
-
-    deleteBookmark: async (userId, discussionId) => {
-        await DiscussionBookmark.destroy({where: {userId, discussionId}});
     },
 
     getLike: async (userId, discussionId) => {
@@ -120,8 +98,12 @@ export const discussionRepository = {
         return await DiscussionUser.findOne({where: {userId, discussionId}});
     },
 
-    createDiscussionUser: async (userId, discussionId) => {
-        return await DiscussionUser.create({userId, discussionId});
+    getDiscussionUserCount: async (discussionId) => {
+        return await DiscussionUser.count({where: {discussionId, isBanned: false}});
+    },
+
+    createDiscussionUser: async (userId, discussionId, transaction) => {
+        return await DiscussionUser.create({userId, discussionId}, {transaction});
     },
 
     deleteDiscussionUser: async (userId, discussionId) => {

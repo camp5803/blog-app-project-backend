@@ -47,13 +47,13 @@ export const discussionController = {
 
     updateDiscussion: asyncWrapper(async (req, res) => {
         try {
-            const validation = await validateInput(req.body);
+            // const validation = await validateInput(req.body);
+            //
+            // if (!validation) {
+            //     return res.status(StatusCodes.BAD_REQUEST).json({message: 'Check all the inputs'});
+            // }
 
-            if (!validation) {
-                return res.status(StatusCodes.BAD_REQUEST).json({message: 'Check all the inputs'});
-            }
-
-            const {title, content, category, image, thumbnail, startTime, endTime} = req.body;
+            const {title, content, image, thumbnail, endTime, capacity} = req.body;
             const {discussionId} = req.params;
             const {userId} = req.user;
 
@@ -61,11 +61,10 @@ export const discussionController = {
                 discussionId,
                 title,
                 content,
-                category,
                 image,
                 thumbnail,
-                startTime,
                 endTime,
+                capacity,
                 userId
             }
             const result = await discussionService.updateDiscussion(dto);
@@ -129,24 +128,6 @@ export const discussionController = {
 
             res.status(StatusCodes.OK).json(result);
         }catch (error) {
-            console.error(error)
-            res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
-        }
-    }),
-
-    toggleBookmark: asyncWrapper(async (req, res) => {
-        try {
-            const {discussionId} = req.params;
-            const {userId} = req.user;
-
-            const bookmark = await discussionService.toggleBookmark(userId, discussionId);
-
-            if (!bookmark) {
-                res.status(StatusCodes.OK).json({bookmark: true, message: "Bookmark add success"});
-            } else {
-                res.status(StatusCodes.OK).json({bookmark: false, message: "Bookmark remove success"});
-            }
-        } catch (error) {
             console.error(error)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
         }
