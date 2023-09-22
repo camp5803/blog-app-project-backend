@@ -45,6 +45,16 @@ export const discussionController = {
         }
     }),
 
+    verifyUser: asyncWrapper(async (req, res) => {
+        const verification = await discussionService.verifyUser(req);
+
+        if (verification) {
+            res.status(StatusCodes.OK).json({message: 'ok'});
+        } else {
+            res.status(StatusCodes.FORBIDDEN).json({message: 'Permission Denied'});
+        }
+    }),
+
     updateDiscussion: asyncWrapper(async (req, res) => {
         try {
             // const validation = await validateInput(req.body);
