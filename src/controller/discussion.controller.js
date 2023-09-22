@@ -16,13 +16,13 @@ const validateInput = async (input) => {
 export const discussionController = {
     createDiscussion: asyncWrapper(async (req, res) => {
         try {
-            const validation = await validateInput(req.body);
+            // const validation = await validateInput(req.body);
+            //
+            // if (!validation) {
+            //     return res.status(StatusCodes.BAD_REQUEST).json({message: 'Check all the inputs'});
+            // }
 
-            if (!validation) {
-                return res.status(StatusCodes.BAD_REQUEST).json({message: 'Check all the inputs'});
-            }
-
-            const {title, content, category, image, thumbnail, startTime, endTime} = req.body;
+            const {title, content, category, image, thumbnail, startTime, endTime, capacity} = req.body;
             const {userId} = req.user;
 
             const dto = {
@@ -33,11 +33,12 @@ export const discussionController = {
                 thumbnail,
                 startTime,
                 endTime,
+                capacity,
                 userId
             }
-            await discussionService.createDiscussion(dto);
+            const discussionId = await discussionService.createDiscussion(dto);
 
-            res.status(StatusCodes.CREATED).json({message: 'Create success'});
+            res.status(StatusCodes.CREATED).json({discussionId, message: 'Create success'});
         }catch (error) {
             console.error(error)
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});

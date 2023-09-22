@@ -47,6 +47,11 @@ export const discussion = (sequelize, DataTypes) => {
             type: DataTypes.DATE,
             allowNull: false
         },
+        capacity: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            allowNull: true,
+            defaultValue: 100
+        },
     }, {
         tableName: 'discussion',
         underscored: true,
