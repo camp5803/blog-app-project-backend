@@ -3,12 +3,12 @@ import {discussionService} from '@/service/discussion.service';
 import {StatusCodes} from 'http-status-codes';
 
 const validateInput = async (input) => {
-    const {title, content, category, thumbnail, startTime, endTime} = input;
+    const {title, content, category, thumbnail, startDate, endDate} = input;
 
-    const isInputValid = (title && content && thumbnail && startTime && endTime) &&
+    const isInputValid = (title && content && thumbnail && startDate && endDate) &&
         (category.length <= 3) &&
-        (new Date(startTime) >= new Date()) &&
-        (new Date(endTime) > new Date(startTime));
+        (new Date(startDate) >= new Date()) &&
+        (new Date(endDate) > new Date(startDate));
 
     return !!isInputValid;
 };
@@ -22,7 +22,7 @@ export const discussionController = {
             //     return res.status(StatusCodes.BAD_REQUEST).json({message: 'Check all the inputs'});
             // }
 
-            const {title, content, category, image, thumbnail, startTime, endTime, capacity} = req.body;
+            const {title, content, category, image, thumbnail, startDate, endDate, capacity} = req.body;
             const {userId} = req.user;
 
             const dto = {
@@ -31,8 +31,8 @@ export const discussionController = {
                 category,
                 image,
                 thumbnail,
-                startTime,
-                endTime,
+                startDate,
+                endDate,
                 capacity,
                 userId
             }
@@ -63,7 +63,7 @@ export const discussionController = {
             //     return res.status(StatusCodes.BAD_REQUEST).json({message: 'Check all the inputs'});
             // }
 
-            const {title, content, image, thumbnail, endTime, capacity} = req.body;
+            const {title, content, image, thumbnail, endDate, capacity} = req.body;
             const {discussionId} = req.params;
             const {userId} = req.user;
 
@@ -73,7 +73,7 @@ export const discussionController = {
                 content,
                 image,
                 thumbnail,
-                endTime,
+                endDate,
                 capacity,
                 userId
             }
