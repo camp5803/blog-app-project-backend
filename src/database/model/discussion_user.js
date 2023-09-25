@@ -22,6 +22,11 @@ export const discussionUser = (sequelize, DataTypes) => {
             allowNull: false,
             defaultValue: 0
         },
+        status: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        }
     }, {
         tableName: 'discussion_user',
         underscored: true,
