@@ -31,8 +31,8 @@ export const discussionController = {
                 category,
                 image,
                 thumbnail,
-                startDate,
-                endDate,
+                startTime: startDate,
+                endTime: endDate,
                 capacity,
                 userId
             }
@@ -73,7 +73,7 @@ export const discussionController = {
                 content,
                 image,
                 thumbnail,
-                endDate,
+                endTime: endDate,
                 capacity,
                 userId
             }
