@@ -136,6 +136,30 @@ export const discussionController = {
 
             await discussionService.increaseViewCount(req.ip, discussion);
 
+            const createDiscussionUserResult = userId ? await discussionService.createDiscussionUser(userId, discussionId) : 'Permission Denied';
+
+            if (createDiscussionUserResult === 'Permission Denied') {
+                result.participationResponse = {
+                    status: StatusCodes.UNAUTHORIZED,
+                    message: 'Permission Denied'
+                }
+            } else if (createDiscussionUserResult === 'Banned user') {
+                result.participationResponse = {
+                    status: StatusCodes.FORBIDDEN,
+                    message: 'Banned user'
+                }
+            } else if (createDiscussionUserResult === 'Already participating') {
+                result.participationResponse = {
+                    status: StatusCodes.CONFLICT,
+                    message: 'Already participating'
+                }
+            } else {
+                result.participationResponse = {
+                    status: StatusCodes.CREATED,
+                    message: 'Participate success'
+                }
+            }
+
             res.status(StatusCodes.OK).json(result);
         }catch (error) {
             console.error(error)
