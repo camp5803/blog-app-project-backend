@@ -13,10 +13,11 @@ export const profileRepository = {
             attributes: ['nickname', 'imageUrl'],
         });
         const preference = await Preference.findOne({
-            where: { user_id: userId },
+            where: { userId },
             attributes: ['darkmodeStatus']
         });
         return {
+            userId,
             nickname: profile.dataValues.nickname,
             imageUrl: profile.dataValues.imageUrl || '',
             darkmode: preference.dataValues.darkmodeStatus ? 1 : 0

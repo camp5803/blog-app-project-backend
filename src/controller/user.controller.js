@@ -1,6 +1,6 @@
 import { asyncWrapper } from '@/common';
 import { StatusCodes } from 'http-status-codes';
-import { preferenceService, userService, neighborService } from '@/service';
+import { authService, preferenceService, userService, neighborService } from '@/service';
 import { profileRepository } from "@/repository";
 import { customError } from '@/common/error';
 
@@ -74,6 +74,10 @@ export const userController = {
     }),
     deleteUser: asyncWrapper(async (req, res) => {
         await userService.deleteUser(req.user.userId);
+        await authService.logout(req.user.userId);
+
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
         return res.status(StatusCodes.OK).end();
     }),
     getUserPreferences: asyncWrapper(async (req, res) => {
@@ -114,13 +118,6 @@ export const userController = {
         }
         await userService.verificationMailHandler(req.body.email, req.body.code, req.body.password);
         return res.status(StatusCodes.OK).json();
-    }),
-    changePassword: asyncWrapper(async (req, res) => {
-        if (!req.body.password) {
-            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
-        }
-        await userService.updatePassword(req.user.userId, req.body.password);
-        return res.status(StatusCodes.OK).end();
     }),
     blockUser: asyncWrapper(async (req, res) => {
         if (!req.params.block_id) {

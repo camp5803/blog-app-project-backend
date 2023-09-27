@@ -33,7 +33,6 @@ router.get('/users/email', userController.validateEmail);
 router.get('/users/neighbors/follower/:id', userController.getFollowers);
 router.get('/users/neighbors/following/:id', userController.getFollowings);
 
-router.patch('/users/password', isAuthorized, userController.changePassword);
 router.patch('/users/password-reset', userController.resetPassword);
 router.post('/users/password-reset/request', userController.sendMail);
 router.post('/users/password-reset/confirm', userController.checkVerification);

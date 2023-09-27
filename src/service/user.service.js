@@ -89,12 +89,9 @@ export const userService = {
     },
     deleteUser: async (userId) => {
         try {
-            const count = await userRepository.deleteUser(userId);
-            if (count === 0) {
-                throw customError(StatusCodes.NOT_FOUND, "User not found");
-            }
+            await userRepository.deleteUser(userId);
         } catch (error) {
-            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     updatePassword: async (userId, password) => {
