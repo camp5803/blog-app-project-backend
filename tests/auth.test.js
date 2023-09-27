@@ -19,7 +19,6 @@ describe("POST /api/auth/login", () => {
         const response = await request(app)
             .post('/api/auth/login')
             .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"})
-            .expect(res.status).toBe(StatusCodes.OK);
         
         const cookies = response.header['set-cookie'];
             const cookieKeys = cookies.map((cookie) => {
@@ -28,6 +27,7 @@ describe("POST /api/auth/login", () => {
             return keyValuePair[0];
         });
 
+        expect(response.status).toBe(StatusCodes.OK);
         expect(cookieKeys)
             .toContain('accessToken')
             .toContain('refreshToken');
@@ -82,10 +82,10 @@ describe("POST /api/auth/refresh", () => {
             .post('/api/users')
             .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "test" });
     });
-    
+
     test("[POST /api/auth/refresh] Success", async () => {
         await request(app) // 로컬 로그인으로 쿠키 발급
-            .post('/api/users/login')
+            .post('/api/auth/login')
             .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
 
         await request(app)
@@ -108,7 +108,7 @@ describe("GET /api/auth/logout", () => {
 
     test("[GET /api/auth/logout] Success", async () => {
         await request(app) // 로컬 로그인으로 쿠키 발급
-            .post('/api/users/login')
+            .post('/api/auth/login')
             .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
 
         await request(app)

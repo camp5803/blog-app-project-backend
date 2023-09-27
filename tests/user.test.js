@@ -80,7 +80,6 @@ describe("DELETE /api/users", () => {
 
         await request(app)
             .delete('/api/users')
-            .send({})
             .expect(StatusCodes.OK);
     });
 });
@@ -100,21 +99,21 @@ describe("GET /api/users/email", () => {
     test("[GET /api/users/email] Success", async () => {
         await request(app)
             .get('/api/users/email')
-            .send({ value: "soiledeggrice@naver.com" })
+            .query({ value: "soiledeggrice@naver.com" })
             .expect(StatusCodes.OK);
     });
 
     test("[GET /api/users/email] Failed: Confict", async () => {
         await request(app)
             .get('/api/users/email')
-            .send({ value: "jiyong@sch.ac.kr" })
+            .query({ value: "jiyong@sch.ac.kr" })
             .expect(StatusCodes.CONFLICT);
     });
 
     test("[GET /api/users/email] Failed: Validation failed", async () => {
         await request(app)
             .get('/api/users/email')
-            .send({ value: "soiledeggrice" })
+            .query({ value: "soiledeggrice" })
             .expect(StatusCodes.BAD_REQUEST);
     });
 });
@@ -134,21 +133,21 @@ describe("GET /api/users/name", () => {
     test("[GET /api/users/name] Success", async () => {
         await request(app)
             .get('/api/users/name')
-            .send({ value: "jiyong" })
+            .query({ value: "jiyong" })
             .expect(StatusCodes.OK);
     });
 
     test("[GET /api/users/name] Failed: Confict", async () => {
         await request(app)
             .get('/api/users/name')
-            .send({ value: "saewon" })
+            .query({ value: "saewon" })
             .expect(StatusCodes.CONFLICT);
     });
 
     test("[GET /api/users/name] Failed: Validation failed", async () => {
         await request(app)
             .get('/api/users/name')
-            .send({ value: "soiledeggrice@히히테스트123길어져라길어져라얍abcd12345678" })
+            .query({ value: "soiledeggrice@히히테스트123길어져라길어져라얍abcd12345678" })
             .expect(StatusCodes.BAD_REQUEST);
     });
 });
@@ -183,7 +182,6 @@ describe("PATCH /api/users/name", () => {
 
         await request(app)
             .patch('/api/users/name')
-            .send()
             .expect(StatusCodes.UNPROCESSABLE_ENTITY)
     });
 
@@ -218,7 +216,6 @@ describe("GET /api/users/preferences", () => {
 
         const response = await request(app)
             .get("/api/users/preferences")
-            .send()
             .expect(StatusCodes.OK);
         
         expect(response.body).toHaveProperty("neighborAlert");
@@ -282,9 +279,9 @@ describe("GET /api/users/me", () => {
 
         const response = await request(app)
             .post("/api/users/me")
-            .send()
             .expect(StatusCodes.OK);
 
+        expect(response.body).toHaveProperty("userId");
         expect(response.body).toHaveProperty("nickname");
         expect(response.body).toHaveProperty("imageUrl");
         expect(response.body).toHaveProperty("darkmode");
@@ -310,11 +307,9 @@ describe("GET /api/users/:id", () => {
 
         const postResponse = await request(app)
             .get("/api/users/me")
-            .send()
         
         const response = await request(app)
-            .get(`/api/users/:${postResponse.userId}`)
-            .send()
+            .get(`/api/users/:${postResponse.body.userId}`)
             .expect(StatusCodes.OK);
 
         expect(response.body).toHaveProperty("nickname");
