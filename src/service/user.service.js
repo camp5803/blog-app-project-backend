@@ -22,7 +22,7 @@ export const userService = {
                 throw customError(StatusCodes.CONFLICT, "Email Already exists.");
             }
         } catch (error) {
-            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     isNicknameExists: async (nickname) => {
@@ -33,7 +33,7 @@ export const userService = {
                 throw customError(StatusCodes.CONFLICT, "Nickname Already exists.");
             }
         } catch (error) {
-            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     getUserInformation: async (accessToken) => {
@@ -41,7 +41,7 @@ export const userService = {
             const userId = profileRepository.findUserIdByToken(accessToken);
             return await profileRepository.findUserInformationById(userId);
         } catch (error) {
-            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     createUser: async (data) => {
@@ -62,7 +62,7 @@ export const userService = {
             if (error.name === "ValidationError") {
                 throw customError(StatusCodes.BAD_REQUEST, `Data validation failed.`);
             }
-            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     updateUser: async (userId, data) => {
@@ -84,7 +84,7 @@ export const userService = {
             if (error.name === "ValidationError") {
                 throw customError(StatusCodes.BAD_REQUEST, 'Data validation failed.');
             }
-            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     deleteUser: async (userId) => {
@@ -94,7 +94,7 @@ export const userService = {
                 throw customError(StatusCodes.NOT_FOUND, "User not found");
             }
         } catch (error) {
-            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     updatePassword: async (userId, password) => {
@@ -105,7 +105,7 @@ export const userService = {
             if (error.name === "ValidationError") {
                 throw customError(StatusCodes.BAD_REQUEST, "Data validation failed.");
             }
-            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     sendPasswordResetMail: async (email) => {
@@ -148,7 +148,7 @@ export const userService = {
             }
             throw customError(StatusCodes.CONFLICT, "Authentication code does not match.");
         } catch (error) {
-            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
 }

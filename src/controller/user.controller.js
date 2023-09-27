@@ -34,7 +34,7 @@ export const userController = {
                 imageUrl: profile.imageUrl
             });
         } catch (error) {
-            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).end();
+            return res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).end();
         }
     }),
     validateEmail: asyncWrapper(async (req, res) => {

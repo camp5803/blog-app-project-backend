@@ -57,7 +57,7 @@ export const keywordService = {
             }
             await keywordRepository.dissociateKeywordFromUser(userId, keyword.dataValues.keywordId);
         } catch (error) {
-            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     }
 }
