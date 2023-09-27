@@ -22,6 +22,9 @@ export const userService = {
                 throw customError(StatusCodes.CONFLICT, "Email Already exists.");
             }
         } catch (error) {
+            if (error.name === "ValidationError") {
+                throw customError(StatusCodes.BAD_REQUEST, `Data validation failed.`);
+            }
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
@@ -33,6 +36,9 @@ export const userService = {
                 throw customError(StatusCodes.CONFLICT, "Nickname Already exists.");
             }
         } catch (error) {
+            if (error.name === "ValidationError") {
+                throw customError(StatusCodes.BAD_REQUEST, `Data validation failed.`);
+            }
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },

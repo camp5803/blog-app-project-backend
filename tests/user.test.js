@@ -67,12 +67,16 @@ describe("DELETE /api/users", () => {
     beforeAll(async () => {
         app = createApp();
         await db.sequelize.sync({ force: false });
+
+        await request(app)
+            .post('/api/users')
+            .send({ email: "dudals@sch.ac.kr", password: "dudals123!", nickname: "dudals123123" })
     });
 
     test("[DELETE /api/users] Success", async () => {
         const response = await request(app) // 로컬 로그인으로 쿠키 발급
             .post('/api/auth/login')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
+            .send({ email: "dudals@sch.ac.kr", password: "dudals123!" });
         
         const cookies = response.headers['set-cookie'];
 
@@ -138,7 +142,7 @@ describe("GET /api/users/name", () => {
     test("[GET /api/users/name] Failed: Validation failed", async () => {
         await request(app)
             .get('/api/users/name')
-            .query({ value: "soiledeggrice@히히테스트123길어져라길어져라얍abcd12345678" })
+            .query({ value: "soiledeggrice@히히테스트123길어져라길어져라얍abcd12345678123123" })
             .expect(StatusCodes.BAD_REQUEST);
     });
 });
@@ -189,7 +193,7 @@ describe("PATCH /api/users/name", () => {
         await request(app)
             .patch('/api/users/name')
             .set("Cookie", cookies)
-            .send({ nickname: "길이가45자를넘어야함길이가45자를넘어야함길이가45자를넘어야함길이가45자를넘어야함길이가45자를넘어야함" })
+            .send({ nickname: "길이가45자를넘어야함길이가45자를넘어야함길이가45자를넘어야함길이가45자를넘어야함길이가45자를넘어야함123" })
             .expect(StatusCodes.BAD_REQUEST);
     });
 });
@@ -305,11 +309,11 @@ describe("GET /api/users/:id", () => {
             .set("Cookie", cookies)
         
         const response = await request(app)
-            .get(`/api/users/:${postResponse.body.userId}`)
+            .get(`/api/users/${postResponse.body.userId}`)
             .expect(StatusCodes.OK);
 
         expect(response.body).toHaveProperty("nickname");
         expect(response.body).toHaveProperty("imageUrl");
-        expect(response.body).toHaveProperty("darkmode");
+        expect(response.body).toHaveProperty("userId");
     });
 });

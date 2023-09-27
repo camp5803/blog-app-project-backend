@@ -85,7 +85,7 @@ export const userController = {
         return res.status(StatusCodes.OK).json(preferences);
     }),
     updateUserPreferences: asyncWrapper(async (req, res) => {
-        if (!req.body) {
+        if (!req.body || !Object.keys(req.body).length) {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
         }
         await preferenceService.updatePreferences(req.user.userId, req.body);
