@@ -66,20 +66,19 @@ describe("DELETE /api/users", () => {
 
     beforeAll(async () => {
         app = createApp();
-        await db.sequelize.sync({ force: true });
-
-        await request(app)
-            .post('/api/users')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "test" });
+        await db.sequelize.sync({ force: false });
     });
 
     test("[DELETE /api/users] Success", async () => {
-        await request(app)
+        const response = await request(app) // 로컬 로그인으로 쿠키 발급
             .post('/api/auth/login')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"});
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
+        
+        const cookies = response.headers['set-cookie'];
 
         await request(app)
             .delete('/api/users')
+            .set('Cookie', cookies)
             .expect(StatusCodes.OK);
     });
 });
@@ -89,11 +88,7 @@ describe("GET /api/users/email", () => {
 
     beforeAll(async () => {
         app = createApp();
-        await db.sequelize.sync({ force: true });
-
-        await request(app)
-            .post('/api/users')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "test" });
+        await db.sequelize.sync({ force: false });
     });
 
     test("[GET /api/users/email] Success", async () => {
@@ -123,11 +118,7 @@ describe("GET /api/users/name", () => {
 
     beforeAll(async () => {
         app = createApp();
-        await db.sequelize.sync({ force: true });
-
-        await request(app)
-            .post('/api/users')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "saewon" });
+        await db.sequelize.sync({ force: false });
     });
 
     test("[GET /api/users/name] Success", async () => {
@@ -140,7 +131,7 @@ describe("GET /api/users/name", () => {
     test("[GET /api/users/name] Failed: Confict", async () => {
         await request(app)
             .get('/api/users/name')
-            .query({ value: "saewon" })
+            .query({ value: "jiyong123" })
             .expect(StatusCodes.CONFLICT);
     });
 
@@ -157,41 +148,47 @@ describe("PATCH /api/users/name", () => {
 
     beforeAll(async () => {
         app = createApp();
-        await db.sequelize.sync({ force: true });
-
-        await request(app)
-            .post('/api/users')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "test" });
+        await db.sequelize.sync({ force: false });
     });
 
     test("[PATCH /api/users/name] Success", async () => {
-        await request(app)
+        const response = await request(app) // 로컬 로그인으로 쿠키 발급
             .post('/api/auth/login')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"});
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
+        
+        const cookies = response.headers['set-cookie'];
 
         await request(app)
             .patch('/api/users/name')
+            .set("Cookie", cookies)
             .send({ nickname: "moonmin" })
             .expect(StatusCodes.OK)
     });
 
     test("[PATCH /api/users/name] Failed: body not present", async () => {
-        await request(app)
+        const response = await request(app) // 로컬 로그인으로 쿠키 발급
             .post('/api/auth/login')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"});
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
+        
+        const cookies = response.headers['set-cookie'];
 
         await request(app)
             .patch('/api/users/name')
+            .set("Cookie", cookies)
+            .send({})
             .expect(StatusCodes.UNPROCESSABLE_ENTITY)
     });
 
     test("[PATCH /api/users/name] Failed: Validation failed", async () => {
-        await request(app)
+        const response = await request(app) // 로컬 로그인으로 쿠키 발급
             .post('/api/auth/login')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"});
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
+        
+        const cookies = response.headers['set-cookie'];
 
         await request(app)
             .patch('/api/users/name')
+            .set("Cookie", cookies)
             .send({ nickname: "길이가45자를넘어야함길이가45자를넘어야함길이가45자를넘어야함길이가45자를넘어야함길이가45자를넘어야함" })
             .expect(StatusCodes.BAD_REQUEST);
     });
@@ -202,20 +199,19 @@ describe("GET /api/users/preferences", () => {
 
     beforeAll(async () => {
         app = createApp();
-        await db.sequelize.sync({ force: true });
-
-        await request(app)
-            .post('/api/users')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "test" });
+        await db.sequelize.sync({ force: false });
     });
 
     test("[GET /api/users/preferences] Success", async () => {
-        await request(app)
+        const loginResponse = await request(app) // 로컬 로그인으로 쿠키 발급
             .post('/api/auth/login')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"});
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
+        
+        const cookies = loginResponse.headers['set-cookie'];
 
         const response = await request(app)
             .get("/api/users/preferences")
+            .set("Cookie", cookies)
             .expect(StatusCodes.OK);
         
         expect(response.body).toHaveProperty("neighborAlert");
@@ -230,32 +226,34 @@ describe("PATCH /api/users/preferences", () => {
 
     beforeAll(async () => {
         app = createApp();
-        await db.sequelize.sync({ force: true });
-
-        await request(app)
-            .post('/api/users')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "test" });
+        await db.sequelize.sync({ force: false });
     });
 
     test("[PATCH /api/users/preferences] Success", async () => {
-        await request(app)
+        const response = await request(app) // 로컬 로그인으로 쿠키 발급
             .post('/api/auth/login')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"});
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
+        
+        const cookies = response.headers['set-cookie'];
 
         await request(app)
             .patch("/api/users/preferences")
+            .set("Cookie", cookies)
             .send({ commentAlert: true })
             .expect(StatusCodes.OK);
     });
 
     test("[PATCH /api/users/preferences] Failed: body not present", async () => {
-        await request(app)
+        const response = await request(app) // 로컬 로그인으로 쿠키 발급
             .post('/api/auth/login')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"});
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
+        
+        const cookies = response.headers['set-cookie'];
 
         await request(app)
             .patch("/api/users/preferences")
-            .send()
+            .set("Cookie", cookies)
+            .send({})
             .expect(StatusCodes.UNPROCESSABLE_ENTITY);
     });
 });
@@ -265,20 +263,19 @@ describe("GET /api/users/me", () => {
 
     beforeAll(async () => {
         app = createApp();
-        await db.sequelize.sync({ force: true });
-
-        await request(app)
-            .post('/api/users')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "test" });
+        await db.sequelize.sync({ force: false });
     });
 
     test("[GET /api/users/me] Success", async () => {
-        await request(app)
+        const loginResponse= await request(app) // 로컬 로그인으로 쿠키 발급
             .post('/api/auth/login')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"});
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
+        
+        const cookies = loginResponse.headers['set-cookie'];
 
         const response = await request(app)
-            .post("/api/users/me")
+            .get("/api/users/me")
+            .set("Cookie", cookies)
             .expect(StatusCodes.OK);
 
         expect(response.body).toHaveProperty("userId");
@@ -293,20 +290,19 @@ describe("GET /api/users/:id", () => {
 
     beforeAll(async () => {
         app = createApp();
-        await db.sequelize.sync({ force: true });
-
-        await request(app)
-            .post('/api/users')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "test" });
+        await db.sequelize.sync({ force: false });
     });
 
-    test("[GET /api/users/me] Success", async () => {
-        await request(app)
+    test("[GET /api/users/:id] Success", async () => {
+        const loginResponse = await request(app) // 로컬 로그인으로 쿠키 발급
             .post('/api/auth/login')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"});
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
+        
+        const cookies = loginResponse.headers['set-cookie'];
 
         const postResponse = await request(app)
             .get("/api/users/me")
+            .set("Cookie", cookies)
         
         const response = await request(app)
             .get(`/api/users/:${postResponse.body.userId}`)
