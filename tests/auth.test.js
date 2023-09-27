@@ -3,86 +3,43 @@ import { StatusCodes } from 'http-status-codes';
 import { createApp } from '@/app';
 import db from '@/database';
 
-describe("POST /api/users", () => {
-    let app;
-
-    beforeAll(async () => {
-        app = createApp();
-        await db.sequelize.sync({ force: true });
-    });
-
-    test("[POST /api/users] Success", async () => {
-        await request(app)
-            .post('/api/users')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "jiyong123" })
-            .expect(StatusCodes.CREATED)
-    });
-
-    test("[POST /api/users] Failed: No request body", async () => {
-        await request(app)
-            .post('/api/users')
-            .send({})
-            .expect(StatusCodes.UNPROCESSABLE_ENTITY)
-            .expect({ message: `Request body not present.` });
-    });
-
-    test("[POST /api/users] Failed: Email validate failed", async () => {
-        await request(app)
-            .post('/api/users')
-            .send({ email: "youngmin", password: "dudals123!", nickname: "nickname123" })
-            .expect(StatusCodes.BAD_REQUEST)
-            .expect({ message: `Data validation failed.` });
-    });
-
-    test("[POST /api/users] Failed: Email Already exists", async () => {
-        await request(app) // 일반적인 회원가입 성공 케이스
-            .post('/api/users')
-            .send({ email: "youngmin1@naver.com", password: "dudals123!", nickname: "영미니1" })
-            .expect(StatusCodes.CREATED)
-
-        await request(app)
-            .post('/api/users')
-            .send({ email: "youngmin1@naver.com", password: "dudals123!", nickname: "영미니2" })
-            .expect(StatusCodes.CONFLICT)
-            .expect({ message: `[Signup Error#1] Email Already exists.` });
-    });
-
-    test("[POST /api/users] Failed: Nickname Already exists", async () => {
-        await request(app) // 일반적인 회원가입 성공 케이스
-            .post('/api/users')
-            .send({ email: "youngmin2@naver.com", password: "dudals123!", nickname: "영미니2" })
-            .expect(StatusCodes.CREATED)
-
-        await request(app)
-            .post('/api/users')
-            .send({ email: "youngmin1@naver.com", password: "dudals123!", nickname: "영미니2" })
-            .expect(StatusCodes.CONFLICT)
-            .expect({ message: `[Signup Error#1] Email Already exists.` });
-    });
-});
-
 describe("POST /api/auth/login", () => {
     let app;
 
     beforeAll(async () => {
         app = createApp();
         await db.sequelize.sync({ force: true });
-    });
 
-    test("[POST /api/auth/login] Success", async () => {
         await request(app)
             .post('/api/users')
             .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "test" });
+    });
 
-        await request(app)
+    test("[POST /api/auth/login] Success", async () => {
+        const response = await request(app)
             .post('/api/auth/login')
             .send({ email: "jiyong@sch.ac.kr", password: "dudals123!"})
-            .expect((res) => {
-                expect(res.status).toBe(StatusCodes.OK);
-                expect(res.body)
-                    .toHaveProperty("accessToken")
-                    .toHaveProperty("refreshToken");
-            });
+            .expect(res.status).toBe(StatusCodes.OK);
+        
+        const cookies = response.header['set-cookie'];
+            const cookieKeys = cookies.map((cookie) => {
+            const parts = cookie.split(';');
+            const keyValuePair = parts[0].split('=');
+            return keyValuePair[0];
+        });
+
+        expect(cookieKeys)
+            .toContain('accessToken')
+            .toContain('refreshToken');
+
+        expect(response.body)
+            .toHaveProperty("nickname");
+
+        expect(response.body)
+            .toHaveProperty("imageUrl");
+            
+        expect(response.body)
+            .toHaveProperty("darkmode");
     });
 
     test("[POST /api/auth/login] Failed: ValidationError", async () => {
@@ -120,11 +77,12 @@ describe("POST /api/auth/refresh", () => {
     beforeAll(async () => {
         app = createApp();
         await db.sequelize.sync({ force: true });
+        
+        await request(app)
+            .post('/api/users')
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "test" });
     });
-    afterAll(async () => {
-        await db.sequelize.close();
-    });
-
+    
     test("[POST /api/auth/refresh] Success", async () => {
         await request(app) // 로컬 로그인으로 쿠키 발급
             .post('/api/users/login')
@@ -134,19 +92,27 @@ describe("POST /api/auth/refresh", () => {
             .post('/api/auth/refresh')
             .expect(StatusCodes.OK);
     });
-})
+});
 
-/**
-describe("", () => {
+describe("GET /api/auth/logout", () => {
     let app;
 
     beforeAll(async () => {
         app = createApp();
         await db.sequelize.sync({ force: true });
+
+        await request(app)
+            .post('/api/users')
+            .send({ email: "youngmin@sch.ac.kr", password: "dudals123!", nickname: "test" });
     });
-    afterAll(async () => {
-        await db.sequelize.close();
+
+    test("[GET /api/auth/logout] Success", async () => {
+        await request(app) // 로컬 로그인으로 쿠키 발급
+            .post('/api/users/login')
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
+
+        await request(app)
+            .get('/api/auth/logout')
+            .expect(StatusCodes.OK);
     });
 });
-
- */
