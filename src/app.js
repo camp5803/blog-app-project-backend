@@ -6,6 +6,9 @@ import { errorMiddleware } from '@/middleware';
 import compression from 'compression';
 import cookieParser from 'cookie-parser';
 import { routes } from '@/routes';
+import { socket } from '@/socket/socket';
+import http from 'http';
+import {Server} from 'socket.io';
 
 export const createApp = () => {
     const app = express();
@@ -39,5 +42,11 @@ export const createApp = () => {
     });
     app.use(errorMiddleware);
 
-    return app;
+    const server = http.createServer(app);
+    const io = new Server(server, {
+        // path: '/'
+    });
+    socket(io);
+
+    return server;
 }
