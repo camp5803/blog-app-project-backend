@@ -5,7 +5,7 @@
     "main": "app.js",
     "scripts": {
         "start": "nodemon -r dotenv/config --exec babel-node ./src/app.js",
-        "test": "jest"
+        "test": "DOTENV_CONFIG_PATH=.env.test jest --setupFiles=dotenv/config --runInBand"
     },
     "keywords": [],
     "author": "",
