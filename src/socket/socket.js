@@ -21,7 +21,7 @@ export const socket = (io) => {
         try {
             const user = {};
 
-            const verifyResult = await socketService.verifyUser(socket);
+            const verifyResult = await socketService.isAuthenticated(socket);
 
             if (!verifyResult.error) {
                 user[socket.id] = verifyResult;
@@ -92,30 +92,34 @@ export const socket = (io) => {
                 io.to(discussionId).emit(event.message, res);
             });
 
-            // 연결 끊김
-            socket.on(event.disconnect, () => {
-                // 짧은 시간 동안 인터넷 연결이 끊길 수 있음 -> heartBeat 이벤트 사용
-                console.log('User disconnected');
-            });
+            // 토의 진행 현황 업데이트
+            socket.on(event.discussionProgress, async (data) => {
+                const {discussionId, progress} = data;
 
-            socket.on(event.discussionProgress, (data) => {
-                const {discussionId, jwt, progress} = data;
-                // jwt 검증 + 작성자 확인
-                const nickname = '';
+                // discussionid 검증
+                const discussion = await socketService.validateDiscussionId(discussionId);
+                if (!discussion) {
+                    io.to(socket.id).emit(event.error, {message: '존재하지 않는 토의입니다.'});
+                    return;
+                }
 
-                // 진행현황 저장
-                const {messageId, createdAt} = '';
+                // 작성자인지 확인
+                const isAuthor = await socketService.verifyUser(discussionId, socket);
+                if (!isAuthor) {
+                    io.to(socket.id).emit(event.error, {message: '작성자가 아닙니다.'});
+                    return;
+                }
+
+                // 진행현황 저장 (추후 업데이트 시간 추가)
+                await socketService.updateDiscussionProgress(discussionId, progress);
 
                 // 모든 유저에게 전송
                 const res = {
                     discussionId,
-                    nickname,
-                    messageId,
-                    message,
-                    createdAt,
+                    progress
                 }
 
-                io.to(discussionId).emit(event.message, res);
+                io.to(discussionId).emit(event.discussionProgress, res);
             });
 
             // 연결 끊김
