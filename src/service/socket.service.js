@@ -13,7 +13,7 @@ if (process.env.SECURE_ENABLED) {
 }
 
 export const socketService = {
-    verifyUser: async (socket) => {
+    isAuthenticated: async (socket) => {
 
         const {cookie} = socket.handshake.headers;
 
@@ -108,6 +108,36 @@ export const socketService = {
 
             await transaction.commit();
             return !!discussion;
+        } catch (error) {
+            await transaction.rollback();
+            throw new Error(error);
+        }
+    },
+
+    verifyUser: async (discussionId, socket) => {
+        if (!socket.user) {
+            return false;
+        }
+
+        const transaction = await db.sequelize.transaction();
+
+        try {
+            const discussion = await socketRepository.getDiscussionById(discussionId, transaction);
+            await transaction.commit();
+
+            return discussion.userId === Number(socket.user.userId);
+        } catch (error) {
+            await transaction.rollback();
+            throw new Error(error);
+        }
+    },
+
+    updateDiscussionProgress: async (discussionId, progress) => {
+        const transaction = await db.sequelize.transaction();
+
+        try {
+            await socketRepository.updateDiscussionProgress(discussionId, progress, transaction);
+            await transaction.commit();
         } catch (error) {
             await transaction.rollback();
             throw new Error(error);

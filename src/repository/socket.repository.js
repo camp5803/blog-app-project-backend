@@ -23,4 +23,8 @@ export const socketRepository = {
     getDiscussionById: async (discussionId, transaction) => {
         return await Discussion.findByPk(discussionId, {transaction});
     },
+
+    updateDiscussionProgress: async (discussionId, progress, transaction) => {
+        return await Discussion.update({progress}, {where: {discussionId}}, {transaction});
+    },
 };
