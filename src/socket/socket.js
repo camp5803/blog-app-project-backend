@@ -122,6 +122,14 @@ export const socket = (io) => {
                 io.to(discussionId).emit(event.discussionProgress, res);
             });
 
+            // 참여자/강퇴자 조회
+            socket.on(event.status, async (data) => {
+                const {discussionId} = data;
+                const discussionUsers = await socketService.getDiscussionUsers(discussionId);
+                discussionUsers.discussionId = discussionId;
+                io.to(socket.id).emit(event.status, discussionUsers);
+            });
+
             // 연결 끊김
             socket.on(event.disconnect, () => {
                 // 짧은 시간 동안 인터넷 연결이 끊길 수 있음 -> heartBeat 이벤트 사용
