@@ -52,6 +52,10 @@ export const discussion = (sequelize, DataTypes) => {
             allowNull: true,
             defaultValue: 100
         },
+        progress:{
+            type: DataTypes.TEXT('long'),
+            allowNull: true
+        }
     }, {
         tableName: 'discussion',
         underscored: true,
