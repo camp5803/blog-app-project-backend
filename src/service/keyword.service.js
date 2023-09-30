@@ -30,6 +30,22 @@ export const keywordService = {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
+    highlightKeywords: async (data) => {
+        try {
+            const result = await keywordRepository.searchKeywords(data);
+            return result.map(k => k.keyword);
+        } catch (error) {
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    },
+    highlightMyKeywords: async (data) => {
+        try {
+            const result = await keywordRepository.searchKeywords(data);
+            return result.map(k => k.keyword);
+        } catch (error) {
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    },
     createUserKeyword: async (userId, keywordName) => {
         try {
             await validateSchema.keyword.validateAsync(keywordName);
