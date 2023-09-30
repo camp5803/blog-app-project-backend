@@ -144,11 +144,11 @@ export const postController = {
             res.status(500).json(error);
         }
     }),
-    getMyPosts: asyncWrapper(async (req, res) => {
-        if (!req.params.type) {
+    getPostsByType: asyncWrapper(async (req, res) => {
+        if (!req.query.type) {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
         }
-        switch (req.params.type) {
+        switch (req.query.type) {
             case 'like':
                 const posts = await postService.getLikedPosts(req.user.userId);
                 return res.status(StatusCodes.OK).json(posts);
