@@ -1,5 +1,8 @@
+import { StatusCodes } from 'http-status-codes';
+import { customError } from '@/common/error';
 import {postRepository} from '@/repository/post.repository';
 import {verifyToken, redisCli as redisClient} from "@/utils";
+import { commentRepository } from '@/repository/comment.repository';
 
 export const postService = {
     getUserIdFromToken: async (req) => {
@@ -169,4 +172,52 @@ export const postService = {
             throw new Error('Error toggle like post');
         }
     },
+
+    getMyPosts: async (userId) => {
+        try {
+            const posts = await postRepository.getPostsById(userId);
+            if (posts.length === 0) {
+                throw customError(StatusCodes.NOT_FOUND, `No posts`);
+            }
+            return posts;
+        } catch (error) {
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    },
+    getLikedPosts: async (userId) => {
+        try {
+            const likedPostIds = await postRepository.getPostIdByLike(userId);
+            const posts = await postRepository.getPostsByPostIds(likedPostIds.dataValues);
+            if (posts.length === 0) {
+                throw customError(StatusCodes.NOT_FOUND, `No posts`);
+            }
+            return posts;
+        } catch (error) {
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    },
+    getBookmarkedPosts: async (userId) => {
+        try {
+            const bookmarkedPostIds = await postRepository.getPostIdByBookmark(userId);
+            const posts = await postRepository.getPostsByPostIds(bookmarkedPostIds.dataValues);
+            if (posts.length === 0) {
+                throw customError(StatusCodes.NOT_FOUND, `No posts`);
+            }
+            return posts;
+        } catch (error) {
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    },
+    getCommentedPosts: async (userId) => {
+        try {
+            const commentedPostIds = await commentRepository.getPostIdByUserId(userId);
+            const posts = await postRepository.getPostsByPostIds(commentedPostIds.dataValues);
+            if (posts.length === 0) {
+                throw customError(StatusCodes.NOT_FOUND, `No posts`);
+            }
+            return posts;
+        } catch (error) {
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    }
 };

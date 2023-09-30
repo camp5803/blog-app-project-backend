@@ -8,6 +8,7 @@ import { isAuthenticated, isAuthorized } from "@/middleware";
 router.get('/post/all/:sort', postController.getPostsByPage);
 router.get('/post/detail/:id', postController.getByPostDetail);
 router.get('/post/:id/verification', postController.verifyUser);
+router.get('/post/:id/:type', postController.getMyPosts);
 
 // 토큰 검증 필요 o
 router.post('/post', isAuthorized, postController.createPost);

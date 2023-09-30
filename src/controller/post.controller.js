@@ -144,4 +144,23 @@ export const postController = {
             res.status(500).json(error);
         }
     }),
+    getMyPosts: asyncWrapper(async (req, res) => {
+        if (!req.params.type) {
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+        }
+        switch (req.params.type) {
+            case 'like':
+                const posts = await postService.getLikedPosts(req.user.userId);
+                return res.status(StatusCodes.OK).json(posts);
+            case 'comment':
+                const posts = await postService.getCommentedPosts(req.user.userId);
+                return res.status(StatusCodes.OK).json(posts);
+            case 'bookmark':
+                const posts = await postService.getBookmarkedPosts(req.user.userId);
+                return res.status(StatusCodes.OK).json(posts);
+            case 'me':
+                const posts = await postService.getMyPosts(req.user.userId);
+                return res.status(StatusCodes.OK).json(posts);
+        }
+    }),
 }
