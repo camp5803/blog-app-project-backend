@@ -1,6 +1,9 @@
 import {discussionRepository} from '@/repository/discussion.repository';
+import { StatusCodes } from 'http-status-codes';
 import {verifyToken, redisCli as redisClient} from "@/utils";
 import db from '@/database/index';
+import { customError } from '@/common/error';
+import { neighborRepository } from '@/repository';
 
 export const discussionService = {
     validateDiscussionId: async (discussionId) => {
@@ -263,4 +266,31 @@ export const discussionService = {
             throw new Error(error);
         }
     },
+    getDiscussionById: async (userId) => {
+        try {
+            const discussions = await discussionRepository.findByUserId(userId);
+            if (discussions.length === 0) {
+                throw customError(StatusCodes.NOT_FOUND, `No discussions`);
+            }
+            return discussions;
+        } catch (error) {
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    },
+    getNeighborsDiscussions: async (userId) => {
+        try {
+            const neighbors = await neighborRepository.findFollowingsByUserId(userId);
+            const neighborsUserId = neighbors.map(n => n.userId);
+            if (neighborsUserId.length === 0) {
+                throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `No neighbors`);
+            }
+            const discussions = await discussionRepository.findByUserId(neighborsUserId);
+            if (discussions.length === 0) {
+                throw customError(StatusCodes.NOT_FOUND, `No discussions`);
+            }
+            return discussions;
+        } catch (error) {
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    }
 };

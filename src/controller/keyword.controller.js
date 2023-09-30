@@ -5,11 +5,15 @@ import { customError } from '@/common/error';
 
 export const keywordController = {
     getKeywords: asyncWrapper(async (req, res) => {
-        if (req.user) {
+        if (req.user.userId) {
             const keywords = await keywordService.getUserKeywords(req.user.userId);
             return res.status(StatusCodes.OK).json(keywords);
         }
         const keywords = await keywordService.getTrendyKeywords();
+        return res.status(StatusCodes.OK).json(keywords);
+    }),
+    getKeywordsById: asyncWrapper(async (req, res) => {
+        const keywords = await keywordService.getUserKeywords(req.user.userId);
         return res.status(StatusCodes.OK).json(keywords);
     }),
     highlightKeywords: asyncWrapper(async (req, res) => {

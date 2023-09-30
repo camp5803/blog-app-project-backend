@@ -48,4 +48,10 @@ export const commentRepository = {
         const [result] = await Comment.update({isDeleted: true, deletedAt: new Date()},{where: {userId, commentId}});
         return !!result;
     },
+    getPostIdByUserId: async (userId) => {
+        return await Comment.findAll({
+            where: { userId },
+            attribute: 'postId'
+        });
+    }
 };
