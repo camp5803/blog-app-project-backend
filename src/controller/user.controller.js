@@ -38,10 +38,16 @@ export const userController = {
         }
     }),
     validateEmail: asyncWrapper(async (req, res) => {
+        if (!req.query.value) {
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request query not present.`);
+        }
         await userService.isEmailExists(req.query.value);
         return res.status(StatusCodes.OK).end();
     }),
     validateNickname: asyncWrapper(async (req, res) => {
+        if (!req.query.value) {
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request query not present.`);
+        }
         await userService.isNicknameExists(req.query.value);
         return res.status(StatusCodes.OK).end();
     }),
@@ -68,9 +74,7 @@ export const userController = {
             await userService.updateUser(req.user.userId, { imageUrl: req.file.location });
             return res.status(StatusCodes.OK).end();
         }
-        return res.status(StatusCodes.BAD_REQUEST).json({
-            message: "[UploadError#1] Invalid mimetype or file upload error."
-        });
+        return res.status(StatusCodes.UNPROCESSABLE_ENTITY).json(`Request body not present.`);
     }),
     deleteUser: asyncWrapper(async (req, res) => {
         await userService.deleteUser(req.user.userId);
@@ -123,7 +127,7 @@ export const userController = {
         if (!req.params.block_id) {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
         }
-        const blockUserId = await userService.blockUser(req.user.userId, req.params.block_id);
+        const blockUserId = await neighborService.blockUser(req.user.userId, req.params.block_id);
         return res.status(StatusCodes.OK).json({ blockId: blockUserId });
     }),
     getBlockUser: asyncWrapper(async (req, res) => {
