@@ -1,6 +1,7 @@
 import db from '../database/index.js';
 
 const {Discussion, Profile, DiscussionImage, DiscussionCategory, DiscussionLike, DiscussionUser} = db;
+import { Op } from 'sequelize';
 
 export const discussionRepository = {
     getDiscussionById: async (discussionId) => {
@@ -109,4 +110,11 @@ export const discussionRepository = {
     deleteDiscussionUser: async (userId, discussionId) => {
         await DiscussionUser.destroy({where: {userId, discussionId}});
     },
+    findByUserId: async (userId) => {
+        return await Discussion.findAll({ 
+            where: { userId: { [Op.in]: userId }},
+            attributes: ['discussionId', 'title', 'content', 'createdAt', 'startTime', 'endTime', 'userId'],
+            include: [{ model: DiscussionCategory, attribute: 'category' }]
+        });
+    }
 };

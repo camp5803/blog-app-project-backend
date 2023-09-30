@@ -224,4 +224,12 @@ export const discussionController = {
             res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message: 'INTERNAL_SERVER_ERROR'});
         }
     }),
+    getDiscussionById: asyncWrapper(async (req, res) => {
+        const discussions = await discussionService.getDiscussionById(req.params.id || req.user.userId);
+        return res.status(StatusCodes.OK).json(discussions);
+    }),
+    getNeighborsDiscussion: asyncWrapper(async (req, res) => {
+        const discussions = await discussionService.getNeighborsDiscussions(req.user.userId);
+        return res.status(StatusCodes.OK).json(discussions);
+    })
 }
