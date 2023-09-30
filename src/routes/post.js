@@ -4,11 +4,13 @@ import {postController} from '@/controller/post.controller';
 const router = express.Router();
 import { isAuthenticated, isAuthorized } from "@/middleware";
 
+router.get('/post/previews', isAuthorized, postController.getPostsByType);
+router.get('/post/previews/:id', isAuthenticated); // 이웃 프로필 조회시 / 북마크 여부
+
 // 토큰 검증 필요 x
 router.get('/post/all/:sort', postController.getPostsByPage);
 router.get('/post/detail/:id', postController.getByPostDetail);
 router.get('/post/:id/verification', postController.verifyUser);
-router.get('/post/previews/:type', postController.getMyPosts);
 
 // 토큰 검증 필요 o
 router.post('/post', isAuthorized, postController.createPost);
