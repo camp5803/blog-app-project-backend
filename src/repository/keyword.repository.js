@@ -1,5 +1,5 @@
 import db from '@/database';
-import Sequelize from 'sequelize';
+import { fn, col, Op } from 'sequelize';
 const { Keyword, UserKeyword } = db;
 
 export const keywordRepository = {
@@ -14,8 +14,18 @@ export const keywordRepository = {
             attribute: 'keywordId',
             group: ['keywordId'],
             include: [{ model: Keyword, attribute: 'keyword' }],
-            order: [[ Sequelize.fn('COUNT', Sequelize.col('keywordId')), 'DESC' ]],
+            order: [[ fn('COUNT', col('keywordId')), 'DESC' ]],
             limit: 10
+        });
+    },
+    searchKeywords: async (data) => {
+        return await Keyword.findAll({
+            where: {
+                keyword: {
+                    [Op.like]: `%${data}%`
+                }
+            },
+            limit: 5
         });
     },
     associateKeywordToUser: async (userId, keywordId) => {

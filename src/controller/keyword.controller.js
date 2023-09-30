@@ -12,6 +12,13 @@ export const keywordController = {
         const keywords = await keywordService.getTrendyKeywords();
         return res.status(StatusCodes.OK).json(keywords);
     }),
+    highlightKeywords: asyncWrapper(async (req, res) => {
+        if (!req.query.value) {
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+        }
+        const result = await keywordService.highlightKeywords(req.query.value);
+        return res.status(StatusCodes.OK).json(result);
+    }),
     createMyKeyword: asyncWrapper(async (req, res) => {
         if (!req.body.keyword) {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
