@@ -8,6 +8,11 @@ export const socketRepository = {
         return userProfile.nickname;
     },
 
+    getUserIdBynickname: async (nickname) => {
+        const userProfile = await Profile.findOne({where: {nickname}});
+        return userProfile.userId;
+    },
+
     getDiscussionUser: async (discussionId, userId, transaction) => {
         return await DiscussionUser.findOne({where: {discussionId, userId}}, {transaction});
     },
@@ -26,5 +31,9 @@ export const socketRepository = {
 
     updateDiscussionProgress: async (discussionId, progress, transaction) => {
         return await Discussion.update({progress}, {where: {discussionId}}, {transaction});
+    },
+
+    banDiscussionUser: async (discussionId, userId, isBanned, transaction) => {
+        return await DiscussionUser.update({isBanned: true}, {where: {discussionId, userId}}, {transaction});
     },
 };

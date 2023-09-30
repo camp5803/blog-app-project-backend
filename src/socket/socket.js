@@ -24,13 +24,12 @@ export const socket = (io) => {
             const verifyResult = await socketService.isAuthenticated(socket);
 
             if (!verifyResult.error) {
-                user[socket.id] = verifyResult;
-                socket.user = user[socket.id];
+                user[verifyResult.nickname] = socket.id;
+                socket.user = verifyResult;
             }
 
             // 채팅 참여
             socket.on(event.join, async (data) => {
-                // console.log(socket.user);
                 const {discussionId} = data;
 
                 // discussionid 검증
@@ -56,7 +55,8 @@ export const socket = (io) => {
                 // 토의 참여자 리스트 반환
                 const discussionUsers = await socketService.getDiscussionUsers(discussionId);
                 // console.log(JSON.stringify(discussionUsers, null, 2));
-                discussionUsers.discussionId = discussionId;
+                discussionUsers.discussionId = discussionId;    // todo 이거 뭐지
+                // todo 비로그인 접속 시 참여자 리스트 업데이트x
                 io.to(discussionId).emit(event.status, discussionUsers);
 
                 // 헤당 유저에게 이전 채팅 내용 전송
@@ -128,6 +128,43 @@ export const socket = (io) => {
                 const discussionUsers = await socketService.getDiscussionUsers(discussionId);
                 discussionUsers.discussionId = discussionId;
                 io.to(socket.id).emit(event.status, discussionUsers);
+            });
+
+            // 강퇴
+            socket.on(event.ban, async (data) => {
+                const {discussionId, nickname} = data;
+
+                // discussionid 검증
+                const discussion = await socketService.validateDiscussionId(discussionId);
+                if (!discussion) {
+                    io.to(socket.id).emit(event.error, {message: '존재하지 않는 토의입니다.'});
+                    return;
+                }
+
+                // 작성자인지 확인
+                const isAuthor = await socketService.verifyUser(discussionId, socket);
+                if (!isAuthor) {
+                    io.to(socket.id).emit(event.error, {message: '작성자가 아닙니다.'});
+                    return;
+                }
+                console.log(user);
+                const result = await socketService.banDiscussionUser(discussionId, socket.user.userId, nickname);
+
+                // 해당 유저 강퇴
+                // 유저별 socket.id 저장해야함
+                const targetSocketId = user[nickname];
+                socket.leave(targetSocketId);
+                // 비정상 단절때도 요소 삭제 필요
+                delete user[nickname];
+                console.log(user);
+
+                // 작성자에게 강퇴했다고 안내메세지 전송
+                io.to(socket.id).emit(event.info, {message: `[${nickname}] 유저를 강퇴했습니다.`});
+
+                // 참여자/강퇴자 리스트 전송
+                const discussionUsers = await socketService.getDiscussionUsers(discussionId);
+                discussionUsers.discussionId = discussionId;
+                io.to(discussionId).emit(event.status, discussionUsers);
             });
 
             // 연결 끊김
