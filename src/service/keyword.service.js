@@ -64,9 +64,6 @@ export const keywordService = {
     },
     dissociateKeywordFromUser: async (userId, keywordName) => {
         try {
-            if (keywordName === undefined) {
-                throw customError(StatusCodes.UNPROCESSABLE_ENTITY, "Keyword not received.");
-            }
             const keyword = await keywordRepository.findKeywordByName(keywordName);
             if (keyword.dataValues === null) {
                 throw customError(StatusCodes.PRECONDITION_REQUIRED, "This keyword does not exist.");
