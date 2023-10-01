@@ -240,13 +240,16 @@ export const postRepository = {
     },
     getPostsByPostIds: async (postIds) => {
         return await Post.findAll({
-            where: { postId: { [Op.in]: postIds } }
+            where: { postId: { [Op.in]: postIds }},
+            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt'],
+            include: [{ model: Category, attribute: 'category' }],
         });
     },
     getPostsByIdWithBookmark: async (userId) => {
         return await Post.findAll({
             where: { userId },
-            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt']
+            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt'],
+            include: [{ model: Category, attribute: 'category' }],
         });
     },
     getBookmarkByUserId: async (userId) => {

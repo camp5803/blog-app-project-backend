@@ -231,11 +231,20 @@ export const postService = {
                 throw customError(StatusCodes.NOT_FOUND, `No posts`);
             }
             return posts.map(p => {
-                p.bookmark = false;
+                let bookmark = false;
                 if (bookmarks?.length > 0) {
-                    if (bookmarks.includes(p.postId)) p.bookmark = true;
+                    if (bookmarks.includes(p.postId)) bookmark = true;
                 }
-                return p;
+                return {
+                    postId: p.postId,
+                    userId: p.userId,
+                    content: p.content,
+                    like: p.like,
+                    view: p.like,
+                    createdAt: p.createdAt,
+                    category: p.category,
+                    bookmark
+                }
             });
         } catch (error) {
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
