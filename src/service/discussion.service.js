@@ -51,10 +51,10 @@ export const discussionService = {
             dto.like = 0;
 
             const discussion = await discussionRepository.createDiscussion(dto, transaction);
-            if (dto.category.length > 0) {
+            if (dto.category?.length > 0) {
                 promises.push(discussionRepository.createCategory(discussion.discussionId, dto.category, transaction));
             }
-            if (dto.image.length > 0) {
+            if (dto.image?.length > 0) {
                 promises.push(discussionRepository.createImage(discussion.discussionId, dto.image, transaction));
             }
             await discussionRepository.createDiscussionUser(dto.userId, discussion.discussionId, transaction);
