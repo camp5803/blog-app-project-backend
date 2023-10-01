@@ -268,22 +268,33 @@ export const discussionService = {
     },
     getDiscussionById: async (userId) => {
         try {
-            const discussions = await discussionRepository.findByUserId(userId);
-            if (discussions.length === 0) {
+            const discussions = await discussionRepository.findByUserId([userId]);
+            if (discussions?.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No discussions`);
             }
-            return discussions.map(d => {
-                const remainTime = (d.endTime - new Date()) / 1000 * 60;
+            return discussions.map(discussion => {
+                const currentTime = new Date();
+                const remainTime = (discussion.endTime - currentTime) / (1000 * 60);
+            
                 if (remainTime <= 0) {
-                    d.status = `before`
-                } else if ((d.startTime - new Date) > 0) { 
-                    d.status = `end`
+                    discussion.status = 'before';
+                } else if (discussion.startTime > currentTime) {
+                    discussion.status = 'end';
                 } else {
-                    d.status = `${remainTime / 60}:${remainTime % 60}`
+                    const hours = Math.floor(remainTime / 60);
+                    const minutes = Math.floor(remainTime % 60);
+                    discussion.status = `${hours}:${minutes}`;
                 }
-                delete d.startTime;
-                delete d.endTime;
-                return d;
+
+                return {
+                    discussionId: discussion.discussionId,
+                    title: discussion.title,
+                    content: discussion.content,
+                    status: discussion.status,
+                    createdAt: discussion.createdAt,
+                    userId: discussion.userId,
+                    categories: discussion.discussion_categories
+                };
             });
         } catch (error) {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
@@ -297,21 +308,32 @@ export const discussionService = {
                 throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `No neighbors`);
             }
             const discussions = await discussionRepository.findByUserId(neighborsUserId);
-            if (discussions.length === 0) {
+            if (discussions?.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No discussions`);
             }
-            return discussions.map(d => {
-                const remainTime = (d.endTime - new Date()) / 1000 * 60;
+            return discussions.map(discussion => {
+                const currentTime = new Date();
+                const remainTime = (discussion.endTime - currentTime) / (1000 * 60);
+            
                 if (remainTime <= 0) {
-                    d.status = `before`
-                } else if ((d.startTime - new Date) > 0) { 
-                    d.status = `end`
+                    discussion.status = 'before';
+                } else if (discussion.startTime > currentTime) {
+                    discussion.status = 'end';
                 } else {
-                    d.status = `${remainTime / 60}:${remainTime % 60}`
+                    const hours = Math.floor(remainTime / 60);
+                    const minutes = Math.floor(remainTime % 60);
+                    discussion.status = `${hours}:${minutes}`;
                 }
-                delete d.startTime;
-                delete d.endTime;
-                return d;
+
+                return {
+                    discussionId: discussion.discussionId,
+                    title: discussion.title,
+                    content: discussion.content,
+                    status: discussion.status,
+                    createdAt: discussion.createdAt,
+                    userId: discussion.userId,
+                    categories: discussion.discussion_categories
+                };
             });
         } catch (error) {
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
