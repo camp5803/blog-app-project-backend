@@ -149,18 +149,22 @@ export const postController = {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
         }
         switch (req.query.type) {
-            case 'like':
+            case 'like': {
                 const posts = await postService.getLikedPosts(req.user.userId);
                 return res.status(StatusCodes.OK).json(posts);
-            case 'comment':
+            }
+            case 'comment': {
                 const posts = await postService.getCommentedPosts(req.user.userId);
                 return res.status(StatusCodes.OK).json(posts);
-            case 'bookmark':
+            }
+            case 'bookmark': {
                 const posts = await postService.getBookmarkedPosts(req.user.userId);
                 return res.status(StatusCodes.OK).json(posts);
-            case 'me':
+            }
+            case 'me': {
                 const posts = await postService.getMyPosts(req.user.userId);
                 return res.status(StatusCodes.OK).json(posts);
+            }
         }
     }),
 }
