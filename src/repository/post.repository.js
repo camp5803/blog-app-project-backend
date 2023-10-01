@@ -246,7 +246,8 @@ export const postRepository = {
     getPostsByIdWithBookmark: async (userId) => {
         return await Post.findAll({
             where: { userId },
-            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt']
+            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt'],
+            include: [{ model: Category, attribute: 'category' }],
         });
     },
     getBookmarkByUserId: async (userId) => {
