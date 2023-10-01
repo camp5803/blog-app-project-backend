@@ -143,4 +143,54 @@ export const socketService = {
             throw new Error(error);
         }
     },
+
+    banDiscussionUser: async (discussionId, userId, nickname) => {
+        const transaction = await db.sequelize.transaction();
+
+        try {
+            // 해당 토의유저가 존재하는지
+            const discussionUserId = await socketRepository.getUserIdBynickname(nickname, transaction);
+            if (!discussionUserId) {
+                // 존재하지 않는 유저
+
+            }
+            if (discussionUserId === userId) {
+                // 작성자 자신을 강퇴
+
+            }
+            // 이미 깅퇴한 경우도 추가
+
+
+            await socketRepository.banDiscussionUser(discussionId, discussionUserId, transaction);
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw new Error(error);
+        }
+    },
+
+    unbanDiscussionUser: async (discussionId, userId, nickname) => {
+        const transaction = await db.sequelize.transaction();
+
+        try {
+            // 해당 토의유저가 존재하는지
+            const discussionUserId = await socketRepository.getUserIdBynickname(nickname, transaction);
+            if (!discussionUserId) {
+                // 존재하지 않는 유저
+
+            }
+            if (discussionUserId === userId) {
+                // 존재하지만 강퇴유저가 아닌 경우
+
+            }
+            // 이미 깅퇴한 경우도 추가
+
+
+            await socketRepository.unbanDiscussionUser(discussionId, discussionUserId, transaction);
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw new Error(error);
+        }
+    }
 }
