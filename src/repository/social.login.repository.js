@@ -54,7 +54,7 @@ const createProfileRecord = async (userId, data, type, transaction) => {
     const name = formatData('name', type, data);
     return await Profile.create({
         userId,
-        nickname: `${type}${name}`,
+        nickname: `${type.toUpperCase()}_${name}`,
         imageUrl: formatData('imageUrl', type, data),
     }, { transaction });
 };

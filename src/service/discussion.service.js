@@ -272,7 +272,19 @@ export const discussionService = {
             if (discussions.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No discussions`);
             }
-            return discussions;
+            return discussions.map(d => {
+                const remainTime = (d.endTime - new Date()) / 1000 * 60;
+                if (remainTime <= 0) {
+                    d.status = `before`
+                } else if ((d.startTime - new Date) > 0) { 
+                    d.status = `end`
+                } else {
+                    d.status = `${remainTime / 60}:${remainTime % 60}`
+                }
+                delete d.startTime;
+                delete d.endTime;
+                return d;
+            });
         } catch (error) {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
@@ -288,7 +300,19 @@ export const discussionService = {
             if (discussions.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No discussions`);
             }
-            return discussions;
+            return discussions.map(d => {
+                const remainTime = (d.endTime - new Date()) / 1000 * 60;
+                if (remainTime <= 0) {
+                    d.status = `before`
+                } else if ((d.startTime - new Date) > 0) { 
+                    d.status = `end`
+                } else {
+                    d.status = `${remainTime / 60}:${remainTime % 60}`
+                }
+                delete d.startTime;
+                delete d.endTime;
+                return d;
+            });
         } catch (error) {
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }

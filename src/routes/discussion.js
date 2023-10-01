@@ -3,9 +3,9 @@ const router = express.Router();
 import {validateDiscussionId, isAuthorized} from "@/middleware";
 import {discussionController} from '@/controller/discussion.controller';
 
-router.get('/discussions/previews', discussionController.getDiscussionById);
+router.get('/discussions/previews/me', isAuthorized, discussionController.getDiscussionById);
 router.get('/discussions/previews/:id', discussionController.getDiscussionById);
-router.get('/discussions/previews/:id/neighbors', discussionController.getNeighborsDiscussion);
+router.get('/discussions/previews/:id/neighbors', isAuthorized, discussionController.getNeighborsDiscussion);
 router.get('/discussions/all/:sort', discussionController.getDiscussionByPage);
 router.post('/discussions', isAuthorized, discussionController.createDiscussion);
 router.get('/discussions/:discussionId', validateDiscussionId, discussionController.getDiscussionByDetail);
