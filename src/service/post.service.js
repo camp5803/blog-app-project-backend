@@ -242,7 +242,7 @@ export const postService = {
                     like: p.like,
                     view: p.like,
                     createdAt: p.createdAt,
-                    category: p.category,
+                    categories: p.categories,
                     bookmark
                 }
             });
