@@ -187,8 +187,8 @@ export const postService = {
     getLikedPosts: async (userId) => {
         try {
             const likedPostIds = await postRepository.getPostIdByLike(userId);
-            const posts = await postRepository.getPostsByPostIds(likedPostIds.dataValues);
-            if (posts.length === 0) {
+            const posts = await postRepository.getPostsByPostIds(likedPostIds);
+            if (posts?.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No posts`);
             }
             return posts;
@@ -199,8 +199,8 @@ export const postService = {
     getBookmarkedPosts: async (userId) => {
         try {
             const bookmarkedPostIds = await postRepository.getPostIdByBookmark(userId);
-            const posts = await postRepository.getPostsByPostIds(bookmarkedPostIds.dataValues);
-            if (posts.length === 0) {
+            const posts = await postRepository.getPostsByPostIds(bookmarkedPostIds);
+            if (posts?.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No posts`);
             }
             return posts;
@@ -211,8 +211,8 @@ export const postService = {
     getCommentedPosts: async (userId) => {
         try {
             const commentedPostIds = await commentRepository.getPostIdByUserId(userId);
-            const posts = await postRepository.getPostsByPostIds(commentedPostIds.dataValues);
-            if (posts.length === 0) {
+            const posts = await postRepository.getPostsByPostIds(commentedPostIds);
+            if (posts?.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No posts`);
             }
             return posts;

@@ -10,7 +10,7 @@ export const keywordService = {
             return keywords.map(k => {
                 return { 
                     keywordId: k.keyword.keywordId,
-                    keyword: k.keyword.keyword 
+                    keyword: k.keyword.keyword
                 }
             });
         } catch (error) {
@@ -65,7 +65,7 @@ export const keywordService = {
     dissociateKeywordFromUser: async (userId, keywordName) => {
         try {
             const keyword = await keywordRepository.findKeywordByName(keywordName);
-            if (keyword.dataValues === null) {
+            if (keyword === null) {
                 throw customError(StatusCodes.PRECONDITION_REQUIRED, "This keyword does not exist.");
             }
             await keywordRepository.dissociateKeywordFromUser(userId, keyword.dataValues.keywordId);

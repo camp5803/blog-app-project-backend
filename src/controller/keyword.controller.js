@@ -5,7 +5,7 @@ import { customError } from '@/common/error';
 
 export const keywordController = {
     getKeywords: asyncWrapper(async (req, res) => {
-        if (req.user.userId) {
+        if (req.user?.userId !== undefined) {
             const keywords = await keywordService.getUserKeywords(req.user.userId);
             return res.status(StatusCodes.OK).json(keywords);
         }
@@ -13,12 +13,12 @@ export const keywordController = {
         return res.status(StatusCodes.OK).json(keywords);
     }),
     getKeywordsById: asyncWrapper(async (req, res) => {
-        const keywords = await keywordService.getUserKeywords(req.user.userId);
+        const keywords = await keywordService.getUserKeywords(req.params.id);
         return res.status(StatusCodes.OK).json(keywords);
     }),
     highlightKeywords: asyncWrapper(async (req, res) => {
         if (!req.query.value) {
-            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request query not present.`);
         }
         const result = await keywordService.highlightKeywords(req.query.value);
         return res.status(StatusCodes.OK).json(result);

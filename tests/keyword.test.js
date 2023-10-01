@@ -14,8 +14,15 @@ describe("GET /api/keywords", () => {
             .post('/api/users')
             .send({ email: "jiyong@sch.ac.kr", password: "dudals123!", nickname: "test" });
         
+        const loginResponse = await request(app) // 로컬 로그인으로 쿠키 발급
+            .post('/api/auth/login')
+            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
+        
+        const cookies = loginResponse.headers['set-cookie'];
+
         await request(app)
             .post("/api/keywords")
+            .set('Cookie', cookies)
             .send({ keyword: "히히테스트" });
     });
 
@@ -173,7 +180,7 @@ describe("GET /keywords/:id", () => {
     });
 });
 
-describe("GET /keywords/search/:value", () => {
+describe("GET /keywords/search", () => {
     let app;
 
     beforeAll(async () => {
@@ -181,14 +188,15 @@ describe("GET /keywords/search/:value", () => {
         await db.sequelize.sync({ force: false });
     });
 
-    test("[GET /keywords/search/:value] Success", async () => {
+    test("[GET /keywords/search] Success", async () => {
         const loginResponse = await request(app) // 로컬 로그인으로 쿠키 발급
             .post('/api/auth/login')
             .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
         
         const cookies = loginResponse.headers['set-cookie'];
         const response = await request(app)
-            .get(`/api/keywords/search/히히`)
+            .get(`/api/keywords/search`)
+            .query({ value: "히히 "})
             .set("Cookie", cookies)
             .expect(StatusCodes.OK)
 
@@ -197,23 +205,3 @@ describe("GET /keywords/search/:value", () => {
         });
     });
 });
-
-/**
-describe("", () => {
-    let app;
-
-    beforeAll(async () => {
-        app = createApp();
-        await db.sequelize.sync({ force: false });
-    });
-
-    test("", async () => {
-        const loginResponse = await request(app) // 로컬 로그인으로 쿠키 발급
-            .post('/api/auth/login')
-            .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
-        
-        const cookies = loginResponse.headers['set-cookie'];
-    });
-});
-
- */
