@@ -187,10 +187,11 @@ export const postService = {
     getLikedPosts: async (userId) => {
         try {
             const likedPostIds = await postRepository.getPostIdByLike(userId);
-            const posts = await postRepository.getPostsByPostIds(likedPostIds);
-            if (posts?.length === 0) {
+            if (likedPostIds?.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No posts`);
             }
+            const postIds = likedPostIds.map(likedPostId => likedPostId.postId);
+            const posts = await postRepository.getPostsByPostIds(postIds);
             return posts;
         } catch (error) {
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
@@ -199,10 +200,11 @@ export const postService = {
     getBookmarkedPosts: async (userId) => {
         try {
             const bookmarkedPostIds = await postRepository.getPostIdByBookmark(userId);
-            const posts = await postRepository.getPostsByPostIds(bookmarkedPostIds);
-            if (posts?.length === 0) {
+            if (bookmarkedPostIds?.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No posts`);
             }
+            const postIds = bookmarkedPostIds.map(bookmarkedPostId => bookmarkedPostId.postId);
+            const posts = await postRepository.getPostsByPostIds(postIds);
             return posts;
         } catch (error) {
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
@@ -211,11 +213,26 @@ export const postService = {
     getCommentedPosts: async (userId) => {
         try {
             const commentedPostIds = await commentRepository.getPostIdByUserId(userId);
-            const posts = await postRepository.getPostsByPostIds(commentedPostIds);
+            if (commentedPostIds?.length === 0) {
+                throw customError(StatusCodes.NOT_FOUND, `No posts`);
+            }
+            const postIds = commentedPostIds.map(commentedPostId => commentedPostId.postId);
+            const posts = await postRepository.getPostsByPostIds(postIds);
+            return posts;
+        } catch (error) {
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    },
+    getPostsWithBookmark: async (userId) => {
+        try {
+            const posts = await postRepository.getPostsByIdWithBookmark(userId);
             if (posts?.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No posts`);
             }
-            return posts;
+            return posts.map(p => {
+                p.bookmark = p?.bookmark ? true : false;
+                return p;
+            });
         } catch (error) {
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }

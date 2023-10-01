@@ -1,7 +1,7 @@
 import db from '../database/index.js';
 
 const {Post, Image, Category, Profile, Neighbor, Bookmark, Like} = db;
-import { Op } from 'sequelize';
+import { col, literal, Op } from 'sequelize';
 
 export const postRepository = {
     findByPostId: async (postId) => {
@@ -241,6 +241,22 @@ export const postRepository = {
     getPostsByPostIds: async (postIds) => {
         return await Post.findAll({
             where: { postId: { [Op.in]: postIds } }
+        });
+    },
+    getPostsByIdWithBookmark: async (userId) => {
+        return await Post.findAll({
+            where: { userId },
+            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt'],
+            include: [{
+                model: Bookmark,
+                required: false,
+                attribute: literal('post_id AS bookmark'),
+                on: {
+                    postId: col('post_id'),
+                    userId: col('user_id')
+                }
+            }],
+            raw: true
         });
     }
 };

@@ -5,7 +5,7 @@ const router = express.Router();
 import { isAuthenticated, isAuthorized } from "@/middleware";
 
 router.get('/post/previews', isAuthorized, postController.getPostsByType);
-router.get('/post/previews/:id', isAuthenticated); // 이웃 프로필 조회시 / 북마크 여부
+router.get('/post/previews/:id', isAuthenticated, postController.getPostsByUserId); // 이웃 프로필 조회시 / 북마크 여부
 
 // 토큰 검증 필요 x
 router.get('/post/all/:sort', postController.getPostsByPage);
