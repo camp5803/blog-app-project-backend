@@ -81,6 +81,7 @@ export const commentService = {
             const totalPages = Math.ceil(rootCommentList.count / pageSize);
 
             const result = {
+                userId,
                 totalResults,
                 totalPages,
                 comment: rootCommentList.rows,
