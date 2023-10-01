@@ -246,17 +246,13 @@ export const postRepository = {
     getPostsByIdWithBookmark: async (userId) => {
         return await Post.findAll({
             where: { userId },
-            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt'],
-            include: [{
-                model: Bookmark,
-                required: false,
-                attribute: literal('post_id AS bookmark'),
-                on: {
-                    postId: col('post_id'),
-                    userId: col('user_id')
-                }
-            }],
-            raw: true
+            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt']
+        });
+    },
+    getBookmarkByUserId: async (userId) => {
+        return await Bookmark.findAll({
+            where: { userId },
+            attribute: 'postId'
         });
     }
 };

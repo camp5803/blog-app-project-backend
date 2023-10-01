@@ -226,11 +226,15 @@ export const postService = {
     getPostsWithBookmark: async (userId) => {
         try {
             const posts = await postRepository.getPostsByIdWithBookmark(userId);
+            const bookmarks = await postRepository.getBookmarkByUserId(userId);
             if (posts?.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No posts`);
             }
             return posts.map(p => {
-                p.bookmark = p?.bookmark ? true : false;
+                p.bookmark = false;
+                if (bookmarks?.length > 0) {
+                    if (bookmarks.includes(p.postId)) p.bookmark = true;
+                }
                 return p;
             });
         } catch (error) {
