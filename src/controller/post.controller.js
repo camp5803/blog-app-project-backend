@@ -171,4 +171,8 @@ export const postController = {
             }
         }
     }),
+    getPostsByUserId: asyncWrapper(async (req, res) => {
+        const posts = await postService.getPostsWithBookmark(req.user.userId);
+        res.status(StatusCodes.OK).json(posts);
+    })
 }
