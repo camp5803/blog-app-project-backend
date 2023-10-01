@@ -1,6 +1,7 @@
 import {asyncWrapper} from '@/common';
 import {postService} from '@/service/post.service';
 import {StatusCodes} from 'http-status-codes';
+import { customError } from '@/common/error';
 
 export const postController = {
     createPost: asyncWrapper(async (req, res) => {
@@ -146,7 +147,7 @@ export const postController = {
     }),
     getPostsByType: asyncWrapper(async (req, res) => {
         if (!req.query.type) {
-            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Invaild argument.`);
         }
         switch (req.query.type) {
             case 'like': {
@@ -164,6 +165,9 @@ export const postController = {
             case 'me': {
                 const posts = await postService.getMyPosts(req.user.userId);
                 return res.status(StatusCodes.OK).json(posts);
+            }
+            default: {
+                throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Invaild argument.`);
             }
         }
     }),
