@@ -9,7 +9,8 @@ router.route('/keywords')
     .post(isAuthorized, keywordController.createMyKeyword)
     .delete(isAuthorized, keywordController.dissociateMyKeyword);
 
+
+router.get('/keywords/search', keywordController.highlightKeywords);
 router.get('/keywords/:id', keywordController.getKeywordsById);
-router.get('/keywords/search/:value', keywordController.highlightKeywords);
 
 export default router;
