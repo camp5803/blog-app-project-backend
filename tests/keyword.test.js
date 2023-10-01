@@ -175,7 +175,7 @@ describe("GET /keywords/:id", () => {
             .expect(StatusCodes.OK)
         
         response.body.forEach(k => {
-            expect(k.keywordId).toBe(loginResponse.body.userId);
+            expect(k.keywordId).toBe(loginResponse.body.userId.toString());
         });
     });
 });
