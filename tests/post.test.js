@@ -41,9 +41,9 @@ describe("GET /api/post/previews", () => {
             .send({ email: "jiyong@sch.ac.kr", password: "dudals123!" });
         
         const cookies = loginResponse.headers['set-cookie'];
-        await request(app)
-            .get('/api/post/2/like')
-            .set('Cookie', cookies);
+        await request(app) // 원본에서 수정해야함
+            .post('/api/post/2/like')
+            .set('Cookie', cookies)
         
         await request(app)
             .post('/api/comment')
@@ -57,19 +57,19 @@ describe("GET /api/post/previews", () => {
         const likeResponse = await request(app)
             .get('/api/post/previews')
             .set('Cookie', cookies)
-            .query({ value: "like" })
+            .query({ type: "like" })
             .expect(StatusCodes.OK);
         
         const commentResponse = await request(app)
             .get('/api/post/previews')
             .set('Cookie', cookies)
-            .query({ value: "comment" })
+            .query({ type: "comment" })
             .expect(StatusCodes.OK);
         
         const meResponse = await request(app)
             .get('/api/post/previews')
             .set('Cookie', cookies)
-            .query({ value: "me" })
+            .query({ type: "me" })
             .expect(StatusCodes.OK);
 
         expect(likeResponse.body.title).toBe("이건좋아요");
