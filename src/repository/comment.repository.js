@@ -17,7 +17,7 @@ export const commentRepository = {
 
     getCommentList: async (filter, pagenation = null) => {
         const options = {
-            attributes: ['createdAt', 'commentId', 'content', 'profile.image_url', 'profile.nickname', 'isDeleted'],
+            attributes: ['userId', 'createdAt', 'commentId', 'content', 'profile.image_url', 'profile.nickname', 'isDeleted'],
             where: filter,
             include: [
                 {
