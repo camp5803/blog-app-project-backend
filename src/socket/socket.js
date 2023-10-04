@@ -1,5 +1,6 @@
 import {socketService} from "@/service/socket.service";
 import {redisCli as redisClient} from "@/utils";
+import Message from './message';
 
 const event = {
     connection: 'connection',
@@ -44,27 +45,28 @@ export const socket = (io) => {
                     const checkUser = await socketService.checkDiscussionUser(discussionId, socket.user.userId);
                     if (checkUser.error) {
                         // 강퇴 유저 에러처리
-                        io.to(socket.id).emit(event.error, {message: '강퇴당한 유저입니다.'});
-                    } else {
-                        // 토의 참여 완료
-                        socket.join(discussionId);
+                        // io.to(socket.id).emit(event.error, {message: '강퇴당한 유저입니다.'});
                     }
                 }
 
-
-                // 토의 참여자 리스트 반환
-                const discussionUsers = await socketService.getDiscussionUsers(discussionId);
-                discussionUsers.discussionId = discussionId;    // todo 이거 뭐지
-                // todo 비로그인 접속 시 참여자 리스트 업데이트x
-                io.to(discussionId).emit(event.status, discussionUsers);
+                // 토의 참여 완료
+                socket.join(discussionId);
 
                 // 헤당 유저에게 이전 채팅 내용 전송
-                // todo 조회 로직 추가
-                io.to(socket.id).emit(event.history, {messages: ['이전 채팅 내역']});
-
+                const messages = await Message
+                    .find({discussionId})
+                    .sort({createdAt: -1})
+                    .limit(25);
+                io.to(socket.id).emit(event.history, {messages});
 
                 // 유저 참여했다고 모든 유저들에게 메세지 전송
                 if (socket.user) {
+                    // 토의 참여자 리스트 반환
+                    const discussionUsers = await socketService.getDiscussionUsers(discussionId);
+                    discussionUsers.discussionId = discussionId;
+                    // todo 비로그인 접속 시 참여자 리스트 업데이트x
+                    io.to(discussionId).emit(event.status, discussionUsers);
+
                     io.to(discussionId).emit(event.info, `${socket.user.nickname} 님이 채팅에 참여하셨습니다.`);
                 }
             });
