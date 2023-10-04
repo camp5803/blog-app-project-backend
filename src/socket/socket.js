@@ -113,6 +113,33 @@ export const socket = (io) => {
                 io.to(discussionId).emit(event.message, res);
             });
 
+            // 이전 채팅 내역 조회
+            socket.on(event.history, async (data) => {
+                const {discussionId, messageId} = data;
+
+                // discussionid 검증
+                const discussion = await socketService.validateDiscussionId(discussionId);
+                if (!discussion) {
+                    io.to(socket.id).emit(event.error, {message: '존재하지 않는 토의입니다.'});
+                    return;
+                }
+
+                let messages = {};
+                if (messageId) {
+                    messages = await Message
+                        .find({discussionId, _id: {$lt: messageId}})
+                        .sort({createdAt: -1})
+                        .limit(25);
+                } else {
+                    messages = await Message
+                        .find({discussionId})
+                        .sort({createdAt: -1})
+                        .limit(25);
+                }
+
+                io.to(socket.id).emit(event.history, {messages});
+            });
+
             // 토의 진행 현황 업데이트
             socket.on(event.discussionProgress, async (data) => {
                 const {discussionId, progress} = data;
