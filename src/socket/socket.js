@@ -72,23 +72,43 @@ export const socket = (io) => {
             });
 
             // 채팅 메세지
-            socket.on(event.message, (data) => {
-                const {discussionId, jwt, message} = data;
+            socket.on(event.message, async (data) => {
+                const {discussionId, message} = data;
 
-                // jwt 검증
-                const nickname = '';
+                // discussionid 검증
+                const discussion = await socketService.validateDiscussionId(discussionId);
+                if (!discussion) {
+                    io.to(socket.id).emit(event.error, {message: '존재하지 않는 토의입니다.'});
+                    return;
+                }
 
-                // 채팅 저장
-                const {messageId, createdAt} = '';
+                if (socket.user) {
+                    const checkUser = await socketService.checkDiscussionUser(discussionId, socket.user.userId);
+                    if (checkUser.error) {
+                        // 강퇴 유저 에러처리
+                        io.to(socket.id).emit(event.error, {message: '강퇴당한 유저입니다.'});
+                        return;
+                    }
+                } else {
+                    io.to(socket.id).emit(event.error, {message: '로그인 후 참여 가능합니다.'});
+                    return;
+                }
+
+                const newMessage = new Message({
+                    discussionId,
+                    userId: socket.user.userId,
+                    message
+                });
+                await newMessage.save();
 
                 // 채팅 모든 유저에게 전송
                 const res = {
+                    messageId: newMessage._id,
                     discussionId,
-                    nickname,
-                    messageId,
+                    nickname: socket.user.nickname,
                     message,
-                    createdAt,
-                }
+                    createdAt: newMessage.createdAt,
+                };
 
                 io.to(discussionId).emit(event.message, res);
             });
