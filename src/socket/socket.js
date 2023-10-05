@@ -1,22 +1,7 @@
 import {socketService} from "@/service/socket.service";
 import {redisCli as redisClient} from "@/utils";
-import Message from './message';
-
-const event = {
-    connection: 'connection',
-    disconnect: 'disconnect',
-    info: 'info',
-    error: 'error',
-    join: 'join',
-    message: 'message',
-    status: 'status',
-    ban: 'ban',
-    unban: 'unban',
-    discussionProgress: 'discussionProgress',
-    history: 'history'
-}
-
-Object.freeze(event);
+import event from "@/socket/event";
+import Message from "@/socket/message";
 
 export const socket = (io) => {
     io.on(event.connection, async (socket) => {
@@ -103,7 +88,7 @@ export const socket = (io) => {
 
                 // 채팅 모든 유저에게 전송
                 const res = {
-                    messageId: newMessage._id,
+                    messageId: newMessage.id,
                     discussionId,
                     nickname: socket.user.nickname,
                     message,
@@ -136,6 +121,16 @@ export const socket = (io) => {
                         .sort({createdAt: -1})
                         .limit(25);
                 }
+
+                messages = messages.map(message => {
+                    return {
+                        messageId: message.id,
+                        discussionId: message.discussionId,
+                        userId: message.userId,
+                        message: message.message,
+                        createdAt: message.createdAt,
+                    }
+                });
 
                 io.to(socket.id).emit(event.history, {messages});
             });
