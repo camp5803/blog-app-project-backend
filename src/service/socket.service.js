@@ -192,5 +192,22 @@ export const socketService = {
             await transaction.rollback();
             throw new Error(error);
         }
+    },
+
+    saveElapsedTime: async (discussionId, userId, elapsedTime) => {
+        const transaction = await db.sequelize.transaction();
+
+        try {
+            // 해당 토의유저가 존재하는지
+            const discussionUser = await socketRepository.getDiscussionUser(discussionId, userId, transaction);
+            discussionUser.elapsedTime += elapsedTime;
+            discussionUser.save();
+            // 예외처리
+
+            await transaction.commit();
+        } catch (error) {
+            await transaction.rollback();
+            throw new Error(error);
+        }
     }
 }
