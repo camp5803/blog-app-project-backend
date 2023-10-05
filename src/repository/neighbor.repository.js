@@ -12,7 +12,7 @@ export const neighborRepository = { // 이거 고쳐야함
     findFollowingUserIds: async (userId) => {
         return await Neighbor.findAll({
             where: { userId },
-            attributes: ['follows_to']
+            attributes: ['followsTo']
         });
     },
     findProfileByUserIds: async (userIds) => {
@@ -20,6 +20,11 @@ export const neighborRepository = { // 이거 고쳐야함
             where: { userId: { [Op.in]: userIds }},
             attributes: ['userId', 'nickname', 'imageUrl']
         })
+    },
+    findNeighborCounts: async (userId) => {
+        const following = await Neighbor.count({ where: { userId }});
+        const follower = await Neighbor.count({ where: { followsTo: userId }});
+        return { following, follower }
     },
     follow: async (id, targetId) => {
         return await Neighbor.create({
