@@ -192,7 +192,18 @@ export const postService = {
             }
             const postIds = likedPostIds.map(likedPostId => likedPostId.postId);
             const posts = await postRepository.getPostsByPostIds(postIds);
-            return posts;
+            return posts.map(p => {
+                return {
+                    postId: p.postId,
+                    userId: p.userId,
+                    content: p.content,
+                    like: p.like,
+                    view: p.like,
+                    createdAt: p.createdAt,
+                    nickname: p['user.profile.nickname'],
+                    categories: p['category.categories']
+                }
+            })
         } catch (error) {
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
@@ -205,7 +216,18 @@ export const postService = {
             }
             const postIds = bookmarkedPostIds.map(bookmarkedPostId => bookmarkedPostId.postId);
             const posts = await postRepository.getPostsByPostIds(postIds);
-            return posts;
+            return posts.map(p => {
+                return {
+                    postId: p.postId,
+                    userId: p.userId,
+                    content: p.content,
+                    like: p.like,
+                    view: p.like,
+                    createdAt: p.createdAt,
+                    nickname: p['user.profile.nickname'],
+                    categories: p['category.categories']
+                }
+            })
         } catch (error) {
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
@@ -218,7 +240,18 @@ export const postService = {
             }
             const postIds = commentedPostIds.map(commentedPostId => commentedPostId.postId);
             const posts = await postRepository.getPostsByPostIds(postIds);
-            return posts;
+            return posts.map(p => {
+                return {
+                    postId: p.postId,
+                    userId: p.userId,
+                    content: p.content,
+                    like: p.like,
+                    view: p.like,
+                    createdAt: p.createdAt,
+                    nickname: p['user.profile.nickname'],
+                    categories: p['category.categories']
+                }
+            })
         } catch (error) {
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }

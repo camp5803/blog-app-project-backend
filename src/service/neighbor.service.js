@@ -27,6 +27,13 @@ export const neighborService = {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
+    getNeighborsCounts: async (userId) => {
+        try {
+            return await neighborRepository.findNeighborCounts(userId);
+        } catch (error) {
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    },
     follow: async (userId, targetUserId) => {
         try {
             const user = await userRepository.findByUserId(targetUserId);

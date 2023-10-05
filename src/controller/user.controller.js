@@ -142,18 +142,22 @@ export const userController = {
         const followings = await neighborService.getFollowings(req.params.id);
         return res.status(StatusCodes.OK).json(followings);
     }),
+    getNeighborsCount: asyncWrapper(async (req, res) => {
+        const counts = await neighborService.getNeighborsCounts(req.user.userId);
+        return res.status(StatusCodes.OK).json(counts);
+    }),
     followNeighbor: asyncWrapper(async (req, res) => {
-        if (!req.body.targetId) {
+        if (!req.params.id) {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
         }
-        await neighborService.follow(req.user.userId, req.body.targetId);
+        await neighborService.follow(req.user.userId, req.params.id);
         return res.status(StatusCodes.OK).end()
     }),
     unfollowNeighbor: asyncWrapper(async (req, res) => {
-        if (!req.body.targetId) {
+        if (!req.params.id) {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
         }
-        await neighborService.unfollow(req.user.userId, req.body.targetId);
+        await neighborService.unfollow(req.user.userId, req.params.id);
         return res.status(StatusCodes.OK).end()
     })
 }

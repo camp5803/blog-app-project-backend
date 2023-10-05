@@ -30,6 +30,7 @@ router.route('/users/neighbors/:id')
 router.get('/users/me', isAuthenticated, userController.getMyProfile);
 router.get('/users/block', isAuthorized, userController.getBlockUser);
 router.get('/users/email', userController.validateEmail);
+router.get('/users/neighbors/count', userController.getNeighborsCount);
 router.get('/users/neighbors/follower/:id', userController.getFollowers);
 router.get('/users/neighbors/following/:id', userController.getFollowings);
 
