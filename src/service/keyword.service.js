@@ -31,20 +31,22 @@ export const keywordService = {
         }
     },
     // getUserDiscussionKeyword: async (userId) => {
-    //     const result = [];
+    //     const keywords = new Set();
     //     const data = await discussionRepository.getDiscussionByUserId(userId);
     //     const discussions = data.map(d => d.discussion);
     //     const categories = await discussionRepository.getDiscussionCategory(
     //         discussions.map(
     //             d => d.discussionId));
         
-    //     categories.forEach(category => {
-    //         category.map(c => {
-    //             if (result.includes(c)) {
-                    
-    //             }
-    //         })
+    //     categories.forEach(c => {
+    //         keywords.add(c.category);
     //     });
+    //     for (let k of keywords.values()) {
+    //         const ids = categories.filter(c => c.category === k).map(c => c.discussionId);
+    //         ids.forEach(id => {
+    //             discussions.filter(d => d.discussionId === id).map(d => d.spendTime);
+    //         })
+    //     }
     // },
     highlightKeywords: async (data) => {
         try {
