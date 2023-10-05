@@ -302,8 +302,8 @@ export const discussionService = {
     },
     getNeighborsDiscussions: async (userId) => {
         try {
-            const neighbors = await neighborRepository.findFollowingsByUserId(userId);
-            const neighborsUserId = neighbors.map(n => n.userId);
+            const neighbors = await neighborRepository.findFollowingUserIds(userId);
+            const neighborsUserId = neighbors.map(n => n.followsTo);
             if (neighborsUserId.length === 0) {
                 throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `No neighbors`);
             }
