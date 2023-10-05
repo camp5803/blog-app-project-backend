@@ -5,30 +5,24 @@ import { StatusCodes } from 'http-status-codes';
 export const neighborService = {
     getFollowers: async (userId) => {
         try {
-            const data = await neighborRepository.findFollowersByUserId(userId);
-            const followers = data.map(follower => {
-                return {
-                    userId: follower.userId,
-                    nickname: follower.nickname,
-                    imageUrl: follower.imageUrl
-                }
-            });
-            return followers;
+            const followerIds = await neighborRepository.findFollowersUserIds(userId);
+            if (followerIds?.length === 0) {
+                throw customError(StatusCodes.NOT_FOUND, `No posts`);
+            }
+            const userIds = followerIds.map(follower => follower.userId);
+            return await neighborRepository.findProfileByUserIds(userIds);
         } catch (error) {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     getFollowings: async (userId) => {
         try {
-            const data = await neighborRepository.findFollowingsByUserId(userId);
-            const followings = data.map(following => {
-                return {
-                    userId: following.userId,
-                    nickname: following.nickname,
-                    imageUrl: following.imageUrl
-                }
-            });
-            return followings;
+            const followingIds = await neighborRepository.findFollowingUserIds(userId);
+            if (followingIds?.length === 0) {
+                throw customError(StatusCodes.NOT_FOUND, `No posts`);
+            }
+            const userIds = followingIds.map(following => following.userId);
+            return await neighborRepository.findProfileByUserIds(userIds);
         } catch (error) {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
