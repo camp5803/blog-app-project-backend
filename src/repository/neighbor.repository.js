@@ -1,48 +1,25 @@
 import db from '@/database';
-const { Neighbor, Profile, User } = db;
+const { Neighbor, Profile } = db;
+import { Op } from 'sequelize';
 
 export const neighborRepository = { // 이거 고쳐야함
-    findFollowersByUserId: async (userId) => {
+    findFollowersUserIds: async (userId) => {
         return await Neighbor.findAll({
             where: { followsTo: userId },
-            attribute: "followsTo",
-            include: [{
-                model: User,
-                attributes: [],
-                include: [{
-                    model: Profile,
-                    attributes: ["nickname", "imageUrl"],
-                    required: true
-                }]
-            }],
-            order: [[
-                { model: User, as: 'user' }, 
-                { model: Profile, as: 'profile' }, 
-                'nickname', 'ASC'
-            ]], 
-            raw: true
+            attributes: ['userId'],
         });
     },
-    findFollowingsByUserId: async (userId) => {
+    findFollowingUserIds: async (userId) => {
         return await Neighbor.findAll({
             where: { userId },
-            attribute: "followsTo",
-            include: [{
-                model: User,
-                attributes: [],
-                include: [{
-                    model: Profile,
-                    attributes: ["nickname", "imageUrl"],
-                    required: true
-                }]
-            }],
-            order: [[
-                { model: User, as: 'user' }, 
-                { model: Profile, as: 'profile' }, 
-                'nickname', 'ASC'
-            ]], 
-            raw: true
+            attributes: ['follows_to']
         });
+    },
+    findProfileByUserIds: async (userIds) => {
+        return await Profile.findAll({
+            where: { userId: { [Op.in]: userIds }},
+            attributes: ['userId', 'nickname', 'imageUrl']
+        })
     },
     follow: async (id, targetId) => {
         return await Neighbor.create({
