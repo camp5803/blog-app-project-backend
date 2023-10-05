@@ -1,5 +1,5 @@
 import { customError } from "@/common/error";
-import { keywordRepository } from "@/repository";
+import { discussionRepository, keywordRepository } from "@/repository";
 import { validateSchema } from '@/utils';
 import { StatusCodes } from 'http-status-codes';
 
@@ -30,6 +30,22 @@ export const keywordService = {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
+    // getUserDiscussionKeyword: async (userId) => {
+    //     const result = [];
+    //     const data = await discussionRepository.getDiscussionByUserId(userId);
+    //     const discussions = data.map(d => d.discussion);
+    //     const categories = await discussionRepository.getDiscussionCategory(
+    //         discussions.map(
+    //             d => d.discussionId));
+        
+    //     categories.forEach(category => {
+    //         category.map(c => {
+    //             if (result.includes(c)) {
+                    
+    //             }
+    //         })
+    //     });
+    // },
     highlightKeywords: async (data) => {
         try {
             const result = await keywordRepository.searchKeywords(data);
