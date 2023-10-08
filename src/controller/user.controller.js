@@ -143,7 +143,10 @@ export const userController = {
         return res.status(StatusCodes.OK).json(followings);
     }),
     getNeighborsCount: asyncWrapper(async (req, res) => {
-        const counts = await neighborService.getNeighborsCounts(req.user.userId);
+        if (!req.params.id) {
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+        }
+        const counts = await neighborService.getNeighborsCounts(req.params.id);
         return res.status(StatusCodes.OK).json(counts);
     }),
     followNeighbor: asyncWrapper(async (req, res) => {
