@@ -194,7 +194,7 @@ export const postService = {
                     view: p.like,
                     createdAt: p.createdAt,
                     nickname: p['user.profile.nickname'],
-                    categories: p['category.categories'],
+                    categories: p['categories.category'],
                     isBookmarked: bookmark
                 }
             })
@@ -225,7 +225,7 @@ export const postService = {
                     view: p.like,
                     createdAt: p.createdAt,
                     nickname: p['user.profile.nickname'],
-                    categories: p['category.categories'],
+                    categories: p['categories.category'],
                     isBookmarked: bookmark
                 }
             })
@@ -256,7 +256,7 @@ export const postService = {
                     view: p.like,
                     createdAt: p.createdAt,
                     nickname: p['user.profile.nickname'],
-                    categories: p['category.categories'],
+                    categories: p['categories.category'],
                     isBookmarked: bookmark
                 }
             })
@@ -287,7 +287,7 @@ export const postService = {
                     view: p.like,
                     createdAt: p.createdAt,
                     nickname: p['user.profile.nickname'],
-                    categories: p['category.categories'],
+                    categories: p['categories.category'],
                     isBookmarked: bookmark
                 }
             })
@@ -315,7 +315,7 @@ export const postService = {
                     like: p.like,
                     view: p.like,
                     createdAt: p.createdAt,
-                    categories: p.categories,
+                    categories: p['categories.category'],
                     isBookmarked: bookmark
                 }
             });
