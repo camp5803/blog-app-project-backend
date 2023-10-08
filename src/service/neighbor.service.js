@@ -86,9 +86,9 @@ export const neighborService = {
             const blockUserProfile = await profileRepository.findUsersInformationById(blockUserIds.map(b => b.blockUserId));
             return blockUserProfile.map(b => {
                 return {
-                    userId: blockUserProfile.userId,
-                    nickname: blockUserProfile.nickname,
-                    imageUrl: blockUserProfile.imageUrl,
+                    userId: b.userId,
+                    nickname: b.nickname,
+                    imageUrl: b.imageUrl,
                 }
             })
         } catch (error) {
