@@ -33,7 +33,7 @@ export const socketRepository = {
         return await Discussion.update({progress}, {where: {discussionId}}, {transaction});
     },
 
-    banDiscussionUser: async (discussionId, userId, isBanned, transaction) => {
+    banDiscussionUser: async (discussionId, userId, transaction) => {
         return await DiscussionUser.update({isBanned: true}, {where: {discussionId, userId}}, {transaction});
     },
 

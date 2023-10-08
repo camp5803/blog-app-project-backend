@@ -38,14 +38,29 @@ export const socket = (io) => {
                 socket.join(discussionId);
 
                 // 헤당 유저에게 이전 채팅 내용 전송
-                const messages = await Message
+                let messages = await Message
                     .find({discussionId})
                     .sort({createdAt: -1})
                     .limit(25);
+
+                messages = messages.map(message => {
+                    return {
+                        messageId: message.id,
+                        discussionId: message.discussionId,
+                        userId: message.userId,     // nickname을 줘야지
+                        message: message.message,
+                        createdAt: message.createdAt,
+                    }
+                });
+
                 io.to(socket.id).emit(event.history, {messages});
 
                 // 유저 참여했다고 모든 유저들에게 메세지 전송
                 if (socket.user) {
+                    // 토의 시작 시간 저장
+                    socket.discussionId = discussionId;
+                    socket.startTime = new Date();
+
                     // 토의 참여자 리스트 반환
                     const discussionUsers = await socketService.getDiscussionUsers(discussionId);
                     discussionUsers.discussionId = discussionId;
@@ -126,7 +141,7 @@ export const socket = (io) => {
                     return {
                         messageId: message.id,
                         discussionId: message.discussionId,
-                        userId: message.userId,
+                        userId: message.userId,     // nickname을 줘야지
                         message: message.message,
                         createdAt: message.createdAt,
                     }
@@ -245,7 +260,11 @@ export const socket = (io) => {
             // 연결 끊김
             socket.on(event.disconnect, async () => {
                 // 짧은 시간 동안 인터넷 연결이 끊길 수 있음 -> heartBeat 이벤트 사용
-                if (socket.user) {
+                if (socket.user && socket.discussionId) {
+                    // 토의 시간 저장
+                    const elapsedTime = Math.floor((new Date() - socket.startTime) / 1000);
+                    await socketService.saveElapsedTime(socket.discussionId, socket.user.userId, elapsedTime);
+
                     const userKey = `chat:nickname:${socket.user.nickname}:socketId`;
                     await redisClient.del(userKey);
                 }
