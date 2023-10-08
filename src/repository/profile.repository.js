@@ -1,6 +1,7 @@
 import db from '@/database';
 import { verifyToken } from "@/utils";
 const { Profile, Preference } = db;
+import { Op } from 'sequelize';
 
 export const profileRepository = {
     findUserIdByToken: (token) => {
@@ -22,6 +23,18 @@ export const profileRepository = {
             imageUrl: profile.dataValues.imageUrl || '',
             darkmode: preference.dataValues.darkmodeStatus ? 1 : 0
         }
+    },
+    findNicknameByIds: async (userIds) => {
+        return await Profile.findAll({
+            attributes: ['nickname', 'userId'],
+            where: { userId: { [Op.in]: userIds } }
+        })
+    },
+    findUsersInformationById: async (userIds) => {
+        return await Profile.findAll({
+            where: { userId: { [Op.in]: userIds }},
+            attributes: ['nickname', 'imageUrl', 'userId']
+        });
     },
     findByUserId: async (userId) => {
         return await Profile.findOne({ where: { userId } });

@@ -3,7 +3,12 @@ import { StatusCodes } from 'http-status-codes';
 import {verifyToken, redisCli as redisClient} from "@/utils";
 import db from '@/database/index';
 import { customError } from '@/common/error';
-import { neighborRepository } from '@/repository';
+import { neighborRepository, profileRepository } from '@/repository';
+
+const getUserNickname = async (discussions) => {
+    const profiles = await profileRepository.findNicknameByIds(discussions.map(d => d.userId));
+    return new Map(profiles.map(item => [item.userId, item.nickname]));
+}
 
 export const discussionService = {
     validateDiscussionId: async (discussionId) => {
@@ -273,14 +278,15 @@ export const discussionService = {
             if (discussions?.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No discussions`);
             }
+            const profile = await profileRepository.findUserInformationById(userId);
             return discussions.map(discussion => {
                 const currentTime = new Date();
                 const remainTime = (discussion.endTime - currentTime) / (1000 * 60);
             
                 if (remainTime <= 0) {
-                    discussion.status = 'before';
-                } else if (discussion.startTime > currentTime) {
                     discussion.status = 'end';
+                } else if (discussion.startTime > currentTime) {
+                    discussion.status = 'before';
                 } else {
                     const hours = Math.floor(remainTime / 60);
                     const minutes = Math.floor(remainTime % 60);
@@ -291,10 +297,11 @@ export const discussionService = {
                     discussionId: discussion.discussionId,
                     title: discussion.title,
                     content: discussion.content,
+                    nickname: profile.nickname,
                     status: discussion.status,
                     createdAt: discussion.createdAt,
                     userId: discussion.userId,
-                    categories: discussion.discussion_categories
+                    categories: discussion.discussion_categories.map(c => c.category)
                 };
             });
         } catch (error) {
@@ -303,8 +310,8 @@ export const discussionService = {
     },
     getNeighborsDiscussions: async (userId) => {
         try {
-            const neighbors = await neighborRepository.findFollowingsByUserId(userId);
-            const neighborsUserId = neighbors.map(n => n.userId);
+            const neighbors = await neighborRepository.findFollowingUserIds(userId);
+            const neighborsUserId = neighbors.map(n => n.followsTo);
             if (neighborsUserId.length === 0) {
                 throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `No neighbors`);
             }
@@ -312,14 +319,15 @@ export const discussionService = {
             if (discussions?.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No discussions`);
             }
+            const nicknames = await getUserNickname(discussions);
             return discussions.map(discussion => {
                 const currentTime = new Date();
                 const remainTime = (discussion.endTime - currentTime) / (1000 * 60);
             
                 if (remainTime <= 0) {
-                    discussion.status = 'before';
-                } else if (discussion.startTime > currentTime) {
                     discussion.status = 'end';
+                } else if (discussion.startTime > currentTime) {
+                    discussion.status = 'before';
                 } else {
                     const hours = Math.floor(remainTime / 60);
                     const minutes = Math.floor(remainTime % 60);
@@ -330,10 +338,11 @@ export const discussionService = {
                     discussionId: discussion.discussionId,
                     title: discussion.title,
                     content: discussion.content,
+                    nickname: nicknames.get(discussion.userId),
                     status: discussion.status,
                     createdAt: discussion.createdAt,
                     userId: discussion.userId,
-                    categories: discussion.discussion_categories
+                    categories: discussion.discussion_categories.map(c => c.category)
                 };
             });
         } catch (error) {

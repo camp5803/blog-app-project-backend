@@ -13,22 +13,7 @@ export const blockRepository = {
     findBlockedUser: async (userId) => {
         return await Block.findAll({
             where: { userId },
-            attribute: "blockUserId",
-            include: [{
-                model: User,
-                attributes: [],
-                include: [{
-                    model: Profile,
-                    attributes: ["nickname", "imageUrl"],
-                    required: true
-                }]
-            }],
-            order: [[
-                { model: User, as: 'user' }, 
-                { model: Profile, as: 'profile' }, 
-                'nickname', 'ASC'
-            ]], 
-            raw: true
+            attribute: "blockUserId" 
         })
     }
 }

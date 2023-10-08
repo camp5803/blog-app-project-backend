@@ -32,6 +32,7 @@ router.get('/users/block', isAuthorized, userController.getBlockUser);
 router.get('/users/email', userController.validateEmail);
 router.get('/users/neighbors/follower/:id', userController.getFollowers);
 router.get('/users/neighbors/following/:id', userController.getFollowings);
+router.get('/users/neighbors/:id/count', userController.getNeighborsCount);
 
 router.patch('/users/password-reset', userController.resetPassword);
 router.post('/users/password-reset/request', userController.sendMail);

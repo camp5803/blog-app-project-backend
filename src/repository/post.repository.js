@@ -1,6 +1,6 @@
 import db from '../database/index.js';
 
-const {Post, Image, Category, Profile, Neighbor, Bookmark, Like} = db;
+const {Post, Image, Category, Profile, Neighbor, Bookmark, Like, User} = db;
 import { col, literal, Op } from 'sequelize';
 
 export const postRepository = {
@@ -222,7 +222,7 @@ export const postRepository = {
     getPostsById: async (userId) => {
         return await Post.findAll({ 
             where: { userId },
-            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt'],
+            attributes: ['postId', 'userId', 'title', 'content', 'like', 'view', 'createdAt'],
             include: [{ model: Category, attribute: 'category' }],
         });
     },
@@ -241,14 +241,14 @@ export const postRepository = {
     getPostsByPostIds: async (postIds) => {
         return await Post.findAll({
             where: { postId: { [Op.in]: postIds }},
-            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt'],
+            attributes: ['postId', 'userId', 'title', 'content', 'like', 'view', 'createdAt'],
             include: [{ model: Category, attribute: 'category' }],
         });
     },
     getPostsByIdWithBookmark: async (userId) => {
         return await Post.findAll({
             where: { userId },
-            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt'],
+            attributes: ['postId', 'userId', 'title', 'content', 'like', 'view', 'createdAt'],
             include: [{ model: Category, attribute: 'category' }],
         });
     },
