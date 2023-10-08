@@ -1,6 +1,7 @@
 import db from '@/database';
 import { verifyToken } from "@/utils";
 const { Profile, Preference } = db;
+import { Op } from 'sequelize';
 
 export const profileRepository = {
     findUserIdByToken: (token) => {
@@ -25,8 +26,8 @@ export const profileRepository = {
     },
     findNicknameByIds: async (userIds) => {
         return await Profile.findAll({
-            attributes: ['nickname'],
-            where: { [Op.in]: userIds }
+            attributes: ['nickname', 'userId'],
+            where: { userId: { [Op.in]: userIds } }
         })
     },
     findByUserId: async (userId) => {
