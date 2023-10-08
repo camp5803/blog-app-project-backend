@@ -3,6 +3,7 @@ import { customError } from '@/common/error';
 import {postRepository} from '@/repository/post.repository';
 import {verifyToken, redisCli as redisClient} from "@/utils";
 import { commentRepository } from '@/repository/comment.repository';
+import { profileRepository } from '@/repository';
 
 export const postService = {
     getUserIdFromToken: async (req) => {
@@ -179,6 +180,7 @@ export const postService = {
             if (posts.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No posts`);
             }
+            const profile = await profileRepository.findUserInformationById(userId);
             const bookmarks = await postRepository.getBookmarkByUserId(userId);
             return posts.map(p => {
                 let bookmark = false;
@@ -193,8 +195,8 @@ export const postService = {
                     like: p.like,
                     view: p.like,
                     createdAt: p.createdAt,
-                    nickname: p['user.profile.nickname'],
-                    categories: p['categories.category'],
+                    categories: p.categories.map(c => c.category),
+                    nickname: profile.nickname,
                     isBookmarked: bookmark
                 }
             })
@@ -210,6 +212,9 @@ export const postService = {
             }
             const postIds = likedPostIds.map(likedPostId => likedPostId.postId);
             const posts = await postRepository.getPostsByPostIds(postIds);
+            const ids = posts.map(p => p.userId);
+            const profiles = await profileRepository.findNicknameByIds(ids);
+            const nicknames = new Map(profiles.map(item => [item.userId, item.nickname]));
             const bookmarks = await postRepository.getBookmarkByUserId(userId);
             return posts.map(p => {
                 let bookmark = false;
@@ -224,8 +229,8 @@ export const postService = {
                     like: p.like,
                     view: p.like,
                     createdAt: p.createdAt,
-                    nickname: p['user.profile.nickname'],
-                    categories: p['categories.category'],
+                    nickname: nicknames[p.userId],
+                    categories: p.categories,
                     isBookmarked: bookmark
                 }
             })
@@ -241,6 +246,9 @@ export const postService = {
             }
             const postIds = bookmarkedPostIds.map(bookmarkedPostId => bookmarkedPostId.postId);
             const posts = await postRepository.getPostsByPostIds(postIds);
+            const ids = posts.map(p => p.userId);
+            const profiles = await profileRepository.findNicknameByIds(ids);
+            const nicknames = new Map(profiles.map(item => [item.userId, item.nickname]));
             const bookmarks = await postRepository.getBookmarkByUserId(userId);
             return posts.map(p => {
                 let bookmark = false;
@@ -255,8 +263,8 @@ export const postService = {
                     like: p.like,
                     view: p.like,
                     createdAt: p.createdAt,
-                    nickname: p['user.profile.nickname'],
-                    categories: p['categories.category'],
+                    nickname: nicknames[p.userId],
+                    categories: p.categories,
                     isBookmarked: bookmark
                 }
             })
@@ -272,6 +280,9 @@ export const postService = {
             }
             const postIds = commentedPostIds.map(commentedPostId => commentedPostId.postId);
             const posts = await postRepository.getPostsByPostIds(postIds);
+            const ids = posts.map(p => p.userId);
+            const profiles = await profileRepository.findNicknameByIds(ids);
+            const nicknames = new Map(profiles.map(item => [item.userId, item.nickname]));
             const bookmarks = await postRepository.getBookmarkByUserId(userId);
             return posts.map(p => {
                 let bookmark = false;
@@ -286,8 +297,8 @@ export const postService = {
                     like: p.like,
                     view: p.like,
                     createdAt: p.createdAt,
-                    nickname: p['user.profile.nickname'],
-                    categories: p['categories.category'],
+                    nickname: nicknames[p.userId],
+                    categories: p.categories,
                     isBookmarked: bookmark
                 }
             })
@@ -315,7 +326,7 @@ export const postService = {
                     like: p.like,
                     view: p.like,
                     createdAt: p.createdAt,
-                    categories: p['categories.category'],
+                    categories: p.categories,
                     isBookmarked: bookmark
                 }
             });

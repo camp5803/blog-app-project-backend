@@ -231,7 +231,6 @@ export const postRepository = {
                     attributes: ['nickname']
                 }]
             }],
-            raw: true
         });
     },
     getPostIdByLike: async (userId) => {
@@ -258,7 +257,6 @@ export const postRepository = {
                     attributes: ['nickname']
                 }]
             }],
-            raw: true
         });
     },
     getPostsByIdWithBookmark: async (userId) => {
@@ -273,7 +271,6 @@ export const postRepository = {
                     attributes: ['nickname']
                 }]
             }],
-            raw: true
         });
     },
     getBookmarkByUserId: async (userId) => {
