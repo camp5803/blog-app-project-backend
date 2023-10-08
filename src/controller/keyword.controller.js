@@ -17,7 +17,7 @@ export const keywordController = {
         return res.status(StatusCodes.OK).json(keywords);
     }),
     highlightKeywords: asyncWrapper(async (req, res) => {
-        if (!req.query.value) {
+        if (!req.params.value) {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request query not present.`);
         }
         const result = await keywordService.highlightKeywords(req.query.value);

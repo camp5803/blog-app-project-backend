@@ -116,5 +116,19 @@ export const discussionRepository = {
             attributes: ['discussionId', 'title', 'content', 'createdAt', 'startTime', 'endTime', 'userId'],
             include: [{ model: DiscussionCategory, attribute: 'category' }]
         });
+    },
+    getDiscussionByUserId: async (userId) => {
+        return await DiscussionUser.findAll({
+            where: { userId },
+            attributes: [],
+            include: [{
+                model: Discussion
+            }]
+        });
+    },
+    getDiscussionCategory: async (userIds) => {
+        return await DiscussionCategory.findAll({
+            where: {[Op.in]: userIds}
+        });
     }
 };
