@@ -52,8 +52,8 @@ export const authController = {
     }),
     logout: asyncWrapper(async (req, res) => {
         await authService.logout(req.user.userId);
-        res.clearCookie('accessToken');
-        res.clearCookie('refreshToken');
+        res.clearCookie('accessToken', cookieOptions);
+        res.clearCookie('refreshToken', cookieOptions);
         return res.status(StatusCodes.OK).end();
     })
 }

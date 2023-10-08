@@ -7,6 +7,7 @@ import { customError } from '@/common/error';
 const cookieOptions = {
     httpOnly: true,
     sameSite: process.env.NODE_ENV === 'production' ? 'Strict' : 'None',
+    maxAge: 1000 * 60 * 60 * 24 * 14 // 14d
 }
 
 if (process.env.SECURE_ENABLED) {
