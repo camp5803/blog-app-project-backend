@@ -33,7 +33,7 @@ export const neighborRepository = { // 이거 고쳐야함
         });
     },
     unfollow: async (id, targetId) => {
-        return await Neighbor.delete({
+        return await Neighbor.destroy({
             userId: id,
             followsTo: targetId
         });
