@@ -179,10 +179,11 @@ export const discussionService = {
                 // elapsedTime:
             };
 
-            const userProfile = await discussionRepository.getProfileById(discussion.userId);
-            result.nickname = userProfile.nickname;
+            result.nickname = (await discussionRepository.getProfileById(discussion.userId)).nickname;
+            result.participants = await discussionRepository.getDiscussionUserCount(discussion.discussionId);
 
             if (userId) {
+                result.participating = !!(await discussionRepository.getDiscussionUser(userId, discussion.discussionId));
                 result.liked = !!(await discussionRepository.getLikeById(userId, discussion.discussionId));
                 result.isAuthor = Number(discussion.userId) === Number(userId)
             }

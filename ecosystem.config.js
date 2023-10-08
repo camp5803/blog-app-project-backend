@@ -33,7 +33,8 @@ module.exports = {
                 AWS_REGION: process.env.AWS_REGION,
                 AWS_BUCKET_NAME: process.env.AWS_BUCKET_NAME,
                 ZOHO_USER: process.env.ZOHO_USER,
-                ZOHO_APP_SECRET: process.env.ZOHO_APP_SECRET
+                ZOHO_APP_SECRET: process.env.ZOHO_APP_SECRET,
+                MONGODB_HOST: process.env.MONGODB_HOST
             },
             env_production: {
                 NODE_ENV: 'production',
