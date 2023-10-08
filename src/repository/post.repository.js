@@ -222,7 +222,7 @@ export const postRepository = {
     getPostsById: async (userId) => {
         return await Post.findAll({ 
             where: { userId },
-            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt'],
+            attributes: ['postId', 'userId', 'title', 'content', 'like', 'view', 'createdAt'],
             include: [{ model: Category, attribute: 'category' }, {
                 model: User,
                 attributes: [],
@@ -231,6 +231,7 @@ export const postRepository = {
                     attributes: ['nickname']
                 }]
             }],
+            raw: true
         });
     },
     getPostIdByLike: async (userId) => {
@@ -248,21 +249,7 @@ export const postRepository = {
     getPostsByPostIds: async (postIds) => {
         return await Post.findAll({
             where: { postId: { [Op.in]: postIds }},
-            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt'],
-            include: [{ model: Category, attribute: 'category' }, {
-                model: User,
-                attributes: [],
-                include: [{
-                    model: Profile,
-                    attributes: ['nickname']
-                }]
-            }]
-        });
-    },
-    getPostsByIdWithBookmark: async (userId) => {
-        return await Post.findAll({
-            where: { userId },
-            attributes: ['postId', 'userId', 'content', 'like', 'view', 'createdAt'],
+            attributes: ['postId', 'userId', 'title', 'content', 'like', 'view', 'createdAt'],
             include: [{ model: Category, attribute: 'category' }, {
                 model: User,
                 attributes: [],
@@ -271,6 +258,22 @@ export const postRepository = {
                     attributes: ['nickname']
                 }]
             }],
+            raw: true
+        });
+    },
+    getPostsByIdWithBookmark: async (userId) => {
+        return await Post.findAll({
+            where: { userId },
+            attributes: ['postId', 'userId', 'title', 'content', 'like', 'view', 'createdAt'],
+            include: [{ model: Category, attribute: 'category' }, {
+                model: User,
+                attributes: [],
+                include: [{
+                    model: Profile,
+                    attributes: ['nickname']
+                }]
+            }],
+            raw: true
         });
     },
     getBookmarkByUserId: async (userId) => {
