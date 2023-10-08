@@ -5,7 +5,7 @@ import { customError } from '@/common/error';
 
 export const keywordController = {
     getKeywords: asyncWrapper(async (req, res) => {
-        if (req.user?.userId !== undefined) {
+        if (req.query.type === 'me' && req.user.userId) {
             const keywords = await keywordService.getUserKeywords(req.user.userId);
             return res.status(StatusCodes.OK).json(keywords);
         }
