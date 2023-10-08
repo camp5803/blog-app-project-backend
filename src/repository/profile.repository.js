@@ -23,6 +23,12 @@ export const profileRepository = {
             darkmode: preference.dataValues.darkmodeStatus ? 1 : 0
         }
     },
+    findNicknameByIds: async (userIds) => {
+        return await Profile.findAll({
+            attributes: ['nickname'],
+            where: { [Op.in]: userIds }
+        })
+    },
     findByUserId: async (userId) => {
         return await Profile.findOne({ where: { userId } });
     },
