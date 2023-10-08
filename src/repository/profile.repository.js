@@ -30,6 +30,12 @@ export const profileRepository = {
             where: { userId: { [Op.in]: userIds } }
         })
     },
+    findUsersInformationById: async (userIds) => {
+        return await Profile.findAll({
+            where: { userId: { [Op.in]: userIds }},
+            attributes: ['nickname', 'imageUrl', 'userId']
+        });
+    },
     findByUserId: async (userId) => {
         return await Profile.findOne({ where: { userId } });
     },

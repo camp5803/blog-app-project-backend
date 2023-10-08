@@ -1,4 +1,4 @@
-import { neighborRepository, userRepository, blockRepository } from '@/repository';
+import { neighborRepository, userRepository, blockRepository, profileRepository } from '@/repository';
 import { customError } from '@/common/error';
 import { StatusCodes } from 'http-status-codes';
 
@@ -82,15 +82,15 @@ export const neighborService = {
     },
     getBlockUsers: async (userId) => {
         try {
-            const data = await blockRepository.findBlockedUser(userId);
-            const blockedUsers = data.map(block => {
+            const blockUserIds = await blockRepository.findBlockedUser(userId);
+            const blockUserProfile = await profileRepository.findUsersInformationById(blockUserIds.map(b => b.blockUserId));
+            return blockUserProfile.map(b => {
                 return {
-                    userId: block.userId,
-                    nickname: block.nickname,
-                    imageUrl: block.imageUrl
+                    userId: blockUserProfile.userId,
+                    nickname: blockUserProfile.nickname,
+                    imageUrl: blockUserProfile.imageUrl,
                 }
-            });
-            return blockedUsers;
+            })
         } catch (error) {
             throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
