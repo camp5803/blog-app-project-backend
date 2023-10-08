@@ -9,7 +9,6 @@ export const keywordService = {
             const keywords = await keywordRepository.findUserKeywords(userId);
             return keywords.map(k => {
                 return { 
-                    keywordId: k.keyword.keywordId,
                     keyword: k.keyword.keyword
                 }
             });
@@ -22,7 +21,6 @@ export const keywordService = {
             const keywords = await keywordRepository.findTrendyKeyword();
             return keywords.map(k => {
                 return {
-                    keywordId: k.keyword.keywordId,
                     keyword : k.keyword.keyword
                 }
             });
