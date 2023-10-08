@@ -223,14 +223,7 @@ export const postRepository = {
         return await Post.findAll({ 
             where: { userId },
             attributes: ['postId', 'userId', 'title', 'content', 'like', 'view', 'createdAt'],
-            include: [{ model: Category, attribute: 'category' }, {
-                model: User,
-                attributes: [],
-                include: [{
-                    model: Profile,
-                    attributes: ['nickname']
-                }]
-            }],
+            include: [{ model: Category, attribute: 'category' }],
         });
     },
     getPostIdByLike: async (userId) => {
@@ -249,28 +242,14 @@ export const postRepository = {
         return await Post.findAll({
             where: { postId: { [Op.in]: postIds }},
             attributes: ['postId', 'userId', 'title', 'content', 'like', 'view', 'createdAt'],
-            include: [{ model: Category, attribute: 'category' }, {
-                model: User,
-                attributes: [],
-                include: [{
-                    model: Profile,
-                    attributes: ['nickname']
-                }]
-            }],
+            include: [{ model: Category, attribute: 'category' }],
         });
     },
     getPostsByIdWithBookmark: async (userId) => {
         return await Post.findAll({
             where: { userId },
             attributes: ['postId', 'userId', 'title', 'content', 'like', 'view', 'createdAt'],
-            include: [{ model: Category, attribute: 'category' }, {
-                model: User,
-                attributes: [],
-                include: [{
-                    model: Profile,
-                    attributes: ['nickname']
-                }]
-            }],
+            include: [{ model: Category, attribute: 'category' }],
         });
     },
     getBookmarkByUserId: async (userId) => {

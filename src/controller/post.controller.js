@@ -163,7 +163,7 @@ export const postController = {
                 return res.status(StatusCodes.OK).json(posts);
             }
             case 'me': {
-                const posts = await postService.getMyPosts(req.user.userId);
+                const posts = await postService.getPostsById(req.user.userId);
                 return res.status(StatusCodes.OK).json(posts);
             }
             default: {
@@ -172,7 +172,10 @@ export const postController = {
         }
     }),
     getPostsByUserId: asyncWrapper(async (req, res) => {
-        const posts = await postService.getPostsWithBookmark(req.user.userId);
+        if (!req.params.id) {
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Invaild argument.`);
+        }
+        const posts = await postService.getPostsById(req.params.id);
         res.status(StatusCodes.OK).json(posts);
     })
 }
