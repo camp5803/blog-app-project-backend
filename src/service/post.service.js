@@ -179,7 +179,25 @@ export const postService = {
             if (posts.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No posts`);
             }
-            return posts;
+            const bookmarks = await postRepository.getBookmarkByUserId(userId);
+            return posts.map(p => {
+                let bookmark = false;
+                if (bookmarks?.length > 0) {
+                    if (bookmarks.includes(p.postId)) bookmark = true;
+                }
+                return {
+                    postId: p.postId,
+                    userId: p.userId,
+                    title: p.title,
+                    content: p.content,
+                    like: p.like,
+                    view: p.like,
+                    createdAt: p.createdAt,
+                    nickname: p['user.profile.nickname'],
+                    categories: p['category.categories'],
+                    isBookmarked: bookmark
+                }
+            })
         } catch (error) {
             throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
@@ -192,16 +210,23 @@ export const postService = {
             }
             const postIds = likedPostIds.map(likedPostId => likedPostId.postId);
             const posts = await postRepository.getPostsByPostIds(postIds);
+            const bookmarks = await postRepository.getBookmarkByUserId(userId);
             return posts.map(p => {
+                let bookmark = false;
+                if (bookmarks?.length > 0) {
+                    if (bookmarks.includes(p.postId)) bookmark = true;
+                }
                 return {
                     postId: p.postId,
                     userId: p.userId,
+                    title: p.title,
                     content: p.content,
                     like: p.like,
                     view: p.like,
                     createdAt: p.createdAt,
                     nickname: p['user.profile.nickname'],
-                    categories: p['category.categories']
+                    categories: p['category.categories'],
+                    isBookmarked: bookmark
                 }
             })
         } catch (error) {
@@ -216,16 +241,23 @@ export const postService = {
             }
             const postIds = bookmarkedPostIds.map(bookmarkedPostId => bookmarkedPostId.postId);
             const posts = await postRepository.getPostsByPostIds(postIds);
+            const bookmarks = await postRepository.getBookmarkByUserId(userId);
             return posts.map(p => {
+                let bookmark = false;
+                if (bookmarks?.length > 0) {
+                    if (bookmarks.includes(p.postId)) bookmark = true;
+                }
                 return {
                     postId: p.postId,
                     userId: p.userId,
+                    title: p.title,
                     content: p.content,
                     like: p.like,
                     view: p.like,
                     createdAt: p.createdAt,
                     nickname: p['user.profile.nickname'],
-                    categories: p['category.categories']
+                    categories: p['category.categories'],
+                    isBookmarked: bookmark
                 }
             })
         } catch (error) {
@@ -240,16 +272,23 @@ export const postService = {
             }
             const postIds = commentedPostIds.map(commentedPostId => commentedPostId.postId);
             const posts = await postRepository.getPostsByPostIds(postIds);
+            const bookmarks = await postRepository.getBookmarkByUserId(userId);
             return posts.map(p => {
+                let bookmark = false;
+                if (bookmarks?.length > 0) {
+                    if (bookmarks.includes(p.postId)) bookmark = true;
+                }
                 return {
                     postId: p.postId,
                     userId: p.userId,
+                    title: p.title,
                     content: p.content,
                     like: p.like,
                     view: p.like,
                     createdAt: p.createdAt,
                     nickname: p['user.profile.nickname'],
-                    categories: p['category.categories']
+                    categories: p['category.categories'],
+                    isBookmarked: bookmark
                 }
             })
         } catch (error) {
@@ -271,12 +310,13 @@ export const postService = {
                 return {
                     postId: p.postId,
                     userId: p.userId,
+                    title: p.title,
                     content: p.content,
                     like: p.like,
                     view: p.like,
                     createdAt: p.createdAt,
                     categories: p.categories,
-                    bookmark
+                    isBookmarked: bookmark
                 }
             });
         } catch (error) {
