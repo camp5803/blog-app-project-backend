@@ -13,6 +13,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 const messageSchema = new mongoose.Schema({
     discussionId: Number,
     userId: Number,
+    nickname: String,
     message: String,
     createdAt: { type: Date, default: Date.now }
 });

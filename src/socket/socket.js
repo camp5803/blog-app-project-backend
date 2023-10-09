@@ -14,7 +14,7 @@ export const socket = (io) => {
                 socket.user = verifyResult;
             }
 
-            // 채팅 참여
+            /** 채팅 참여 */
             socket.on(event.join, async (data) => {
                 const {discussionId} = data;
 
@@ -38,14 +38,30 @@ export const socket = (io) => {
                 socket.join(discussionId);
 
                 // 헤당 유저에게 이전 채팅 내용 전송
-                const messages = await Message
+                let messages = await Message
                     .find({discussionId})
                     .sort({createdAt: -1})
                     .limit(25);
+
+                messages = messages.map(message => {
+                    return {
+                        messageId: message.id,
+                        discussionId: message.discussionId,
+                        // userId: message.userId,
+                        nickname: message.nickname, // todo 닉네임을 mongodb에 저장 x, profile에서 가져오도록
+                        message: message.message,
+                        createdAt: message.createdAt,
+                    }
+                });
+
                 io.to(socket.id).emit(event.history, {messages});
 
                 // 유저 참여했다고 모든 유저들에게 메세지 전송
                 if (socket.user) {
+                    // 토의 시작 시간 저장
+                    socket.discussionId = discussionId;
+                    socket.startTime = new Date();
+
                     // 토의 참여자 리스트 반환
                     const discussionUsers = await socketService.getDiscussionUsers(discussionId);
                     discussionUsers.discussionId = discussionId;
@@ -56,7 +72,7 @@ export const socket = (io) => {
                 }
             });
 
-            // 채팅 메세지
+            /** 채팅 메세지 */
             socket.on(event.message, async (data) => {
                 const {discussionId, message} = data;
 
@@ -82,14 +98,16 @@ export const socket = (io) => {
                 const newMessage = new Message({
                     discussionId,
                     userId: socket.user.userId,
+                    nickname: socket.user.nickname,
                     message
                 });
                 await newMessage.save();
 
-                // 채팅 모든 유저에게 전송
+                /** 채팅 모든 유저에게 전송 */
                 const res = {
                     messageId: newMessage.id,
                     discussionId,
+                    // userId: socket.user.userId,
                     nickname: socket.user.nickname,
                     message,
                     createdAt: newMessage.createdAt,
@@ -98,7 +116,7 @@ export const socket = (io) => {
                 io.to(discussionId).emit(event.message, res);
             });
 
-            // 이전 채팅 내역 조회
+            /** 이전 채팅 내역 조회 */
             socket.on(event.history, async (data) => {
                 const {discussionId, messageId} = data;
 
@@ -126,7 +144,8 @@ export const socket = (io) => {
                     return {
                         messageId: message.id,
                         discussionId: message.discussionId,
-                        userId: message.userId,
+                        // userId: message.userId,
+                        nickname: message.nickname,
                         message: message.message,
                         createdAt: message.createdAt,
                     }
@@ -135,7 +154,7 @@ export const socket = (io) => {
                 io.to(socket.id).emit(event.history, {messages});
             });
 
-            // 토의 진행 현황 업데이트
+            /** 토의 진행 현황 업데이트 */
             socket.on(event.discussionProgress, async (data) => {
                 const {discussionId, progress} = data;
 
@@ -165,7 +184,7 @@ export const socket = (io) => {
                 io.to(discussionId).emit(event.discussionProgress, res);
             });
 
-            // 참여자/강퇴자 조회
+            /** 참여자/강퇴자 조회 */
             socket.on(event.status, async (data) => {
                 const {discussionId} = data;
                 const discussionUsers = await socketService.getDiscussionUsers(discussionId);
@@ -173,7 +192,7 @@ export const socket = (io) => {
                 io.to(socket.id).emit(event.status, discussionUsers);
             });
 
-            // 강퇴
+            /** 강퇴 */
             socket.on(event.ban, async (data) => {
                 const {discussionId, nickname} = data;
 
@@ -210,7 +229,7 @@ export const socket = (io) => {
                 io.to(discussionId).emit(event.status, discussionUsers);
             });
 
-            // 강퇴 취소
+            /** 강퇴 취소 */
             socket.on(event.unban, async (data) => {
                 const {discussionId, nickname} = data;
 
@@ -242,10 +261,14 @@ export const socket = (io) => {
                 io.to(discussionId).emit(event.status, discussionUsers);
             });
 
-            // 연결 끊김
+            /** 연결 끊김 */
             socket.on(event.disconnect, async () => {
                 // 짧은 시간 동안 인터넷 연결이 끊길 수 있음 -> heartBeat 이벤트 사용
-                if (socket.user) {
+                if (socket.user && socket.discussionId) {
+                    // 토의 시간 저장
+                    const elapsedTime = Math.floor((new Date() - socket.startTime) / 1000);
+                    await socketService.saveElapsedTime(socket.discussionId, socket.user.userId, elapsedTime);
+
                     const userKey = `chat:nickname:${socket.user.nickname}:socketId`;
                     await redisClient.del(userKey);
                 }
