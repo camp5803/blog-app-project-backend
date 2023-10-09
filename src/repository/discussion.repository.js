@@ -119,7 +119,7 @@ export const discussionRepository = {
     },
     getDiscussionByUserId: async (userId) => {
         return await DiscussionUser.findAll({
-            where: { discussionId, userId, elapsedTime },
+            where: { userId },
         });
     },
     getDiscussionCategory: async (userIds) => {

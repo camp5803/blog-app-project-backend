@@ -29,36 +29,43 @@ export const keywordService = {
         }
     },
     getUserDiscussionKeyword: async (userId) => {
-        const keywords = new Map();
-        const data = await discussionRepository.getDiscussionByUserId(userId);
-        const discussionIds = data.map(d => d.discussionId);
-        const categories = await discussionRepository.getDiscussionCategory(discussionIds);
-        const discussionCategories = data.map(d => {
-            return {
-                discussionId: d.discussionId,
-                elapsedTime: d.elapsedTime,
-                category: categories.filter(c => c.discussionId === d.discussionId).map(c => c.category)
+        try {
+            const keywords = new Map();
+            const data = await discussionRepository.getDiscussionByUserId(userId);
+            const discussionIds = data.map(d => d.discussionId);
+            if (discussionIds?.length === 0) {
+                throw customError(StatusCodes.NOT_FOUND, `No discussions`);
             }
-        })
-        categories.forEach(c => {
-            c.category.map(keyword => {
-                keywords.set(keyword, 0);
-            })
-        });
-        discussionCategories.forEach(dc => {
-            dc.category.map(c => {
-                keywords.set(c, keywords.get(c) + dc.elapsedTime);
-            });
-        });
-        return Array.from(keywords.entries()).map(k => {
-            return {
-                keyword: k[0],
-                time: {
-                    hours: Math.round(k[1] / 3600),
-                    minutes: Math.round(k[1] % 3600)
+            const categories = await discussionRepository.getDiscussionCategory(discussionIds);
+            const discussionCategories = data.map(d => {
+                return {
+                    discussionId: d.discussionId,
+                    elapsedTime: d.elapsedTime,
+                    category: categories.filter(c => c.discussionId === d.discussionId).map(c => c.category)
                 }
-            }
-        });
+            });
+            categories.forEach(c => {
+                c.category.forEach(keyword => {
+                    keywords.set(keyword, 0);
+                })
+            });
+            discussionCategories.forEach(dc => {
+                dc.category.forEach(c => {
+                    keywords.set(c, keywords.get(c) + dc.elapsedTime);
+                });
+            });
+            return Array.from(keywords.entries()).map(k => {
+                return {
+                    keyword: k[0],
+                    time: {
+                        hours: Math.round(k[1] / 3600),
+                        minutes: Math.round(k[1] % 3600)
+                    }
+                }
+            });
+        } catch (error) {
+            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
     },
     highlightKeywords: async (data) => {
         try {
