@@ -96,6 +96,13 @@ export const userController = {
         await preferenceService.updatePreferences(req.user.userId, req.body);
         return res.status(StatusCodes.OK).end();
     }),
+    updateUserDarkmode: asyncWrapper(async (req, res) => {
+        if (!req.body.value) {
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+        }
+        await preferenceService.updateDarkmode(req.user.userId, req.body.value);
+        return res.status(StatusCodes.OK).end();
+    }),
     sendMail: asyncWrapper(async (req, res) => {
         if (!req.body.email) {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
@@ -129,6 +136,13 @@ export const userController = {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
         }
         const blockUserId = await neighborService.blockUser(req.user.userId, req.params.block_id);
+        return res.status(StatusCodes.OK).json({ blockId: blockUserId });
+    }),
+    unBlockUser: asyncWrapper(async (req, res) => {
+        if (!req.params.block_id) {
+            throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
+        }
+        const blockUserId = await neighborService.unBlockUser(req.user.userId, req.params.block_id);
         return res.status(StatusCodes.OK).json({ blockId: blockUserId });
     }),
     getBlockUser: asyncWrapper(async (req, res) => {

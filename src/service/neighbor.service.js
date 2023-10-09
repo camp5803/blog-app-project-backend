@@ -80,6 +80,18 @@ export const neighborService = {
             throw customError(error.status || error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
+    unBlockUser: async (userId, blockUserId) => {
+        try {
+            const isBlocked = await blockRepository.isBlocked(userId, blockUserId);
+            if (!isBlocked) {
+                throw customError(StatusCodes.CONFLICT, "Already not blocked user.");
+            }
+            const data = await blockRepository.unBlock(userId, blockUserId);
+            return data.dataValues.blockUserId;
+        } catch (error) {
+            throw customError(error.status || error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+        }
+    },
     getBlockUsers: async (userId) => {
         try {
             const blockUserIds = await blockRepository.findBlockedUser(userId);

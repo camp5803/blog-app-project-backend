@@ -18,7 +18,8 @@ router.route('/users/preferences')
     .patch(isAuthorized, userController.updateUserPreferences);
 
 router.route('/users/block/:block_id')
-    .post(isAuthorized, userController.blockUser);
+    .post(isAuthorized, userController.blockUser)
+    .delete(isAuthorized, userController.unBlockUser);
 
 router.patch('/users/image', isAuthenticated,
     upload.single('image'), userController.updateProfileImage);
@@ -30,6 +31,7 @@ router.route('/users/neighbors/:id')
 router.get('/users/me', isAuthenticated, userController.getMyProfile);
 router.get('/users/block', isAuthorized, userController.getBlockUser);
 router.get('/users/email', userController.validateEmail);
+router.patch('/users/preference/darkmode', isAuthorized, userController.updateUserDarkmode);
 router.get('/users/neighbors/follower/:id', userController.getFollowers);
 router.get('/users/neighbors/following/:id', userController.getFollowings);
 router.get('/users/neighbors/:id/count', userController.getNeighborsCount);
