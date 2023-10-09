@@ -9,7 +9,7 @@ router.route('/keywords')
     .post(isAuthorized, keywordController.createMyKeyword)
     .delete(isAuthorized, keywordController.dissociateMyKeyword);
 
-
+router.get('/keywords/discussions', isAuthorized, keywordController.getMyCategories);
 router.get('/keywords/search/:value', keywordController.highlightKeywords);
 router.get('/keywords/:id', keywordController.getKeywordsById);
 

@@ -5,7 +5,7 @@ import { customError } from '@/common/error';
 
 export const keywordController = {
     getKeywords: asyncWrapper(async (req, res) => {
-        if (req.user?.userId !== undefined) {
+        if (req.query.type === 'me' && req.user.userId) {
             const keywords = await keywordService.getUserKeywords(req.user.userId);
             return res.status(StatusCodes.OK).json(keywords);
         }
@@ -15,6 +15,10 @@ export const keywordController = {
     getKeywordsById: asyncWrapper(async (req, res) => {
         const keywords = await keywordService.getUserKeywords(req.params.id);
         return res.status(StatusCodes.OK).json(keywords);
+    }),
+    getMyCategories: asyncWrapper(async (req, res) => {
+        const categories = await keywordService.getUserDiscussionKeyword(req.user.userId);
+        return res.status(StatusCodes.OK).json(categories);
     }),
     highlightKeywords: asyncWrapper(async (req, res) => {
         if (!req.params.value) {

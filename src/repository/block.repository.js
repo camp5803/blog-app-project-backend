@@ -10,6 +10,11 @@ export const blockRepository = {
             userId, blockUserId
         });
     },
+    unBlock: async (userId, blockUserId) => {
+        return await Block.destroy({
+            where: { userId, blockUserId }
+        });
+    },
     findBlockedUser: async (userId) => {
         return await Block.findAll({
             where: { userId },

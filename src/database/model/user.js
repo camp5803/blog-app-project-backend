@@ -40,6 +40,7 @@ export const user = (sequelize, DataTypes) => {
         
         User.hasMany(models.Neighbor, { foreignKey: {
             name: "followsTo",
+            primaryKey: true,
             allowNull: false
         }, sourceKey: "userId", onDelete: 'CASCADE' });
         
