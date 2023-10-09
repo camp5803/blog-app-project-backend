@@ -16,6 +16,10 @@ export const keywordController = {
         const keywords = await keywordService.getUserKeywords(req.params.id);
         return res.status(StatusCodes.OK).json(keywords);
     }),
+    getMyCategories: asyncWrapper(async (req, res) => {
+        const categories = await keywordService.getUserDiscussionKeyword(req.user.userId);
+        return res.status(StatusCodes.OK).json(categories);
+    }),
     highlightKeywords: asyncWrapper(async (req, res) => {
         if (!req.params.value) {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request query not present.`);
