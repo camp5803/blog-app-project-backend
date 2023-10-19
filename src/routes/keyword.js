@@ -10,7 +10,7 @@ router.route('/keywords')
     .delete(isAuthorized, keywordController.dissociateMyKeyword);
 
 router.get('/keywords/discussions', isAuthorized, keywordController.getMyCategories);
-router.get('/keywords/search/:value', keywordController.highlightKeywords);
+router.get('/keywords/search', keywordController.highlightKeywords);
 router.get('/keywords/:id', keywordController.getKeywordsById);
 
 export default router;

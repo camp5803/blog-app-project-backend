@@ -32,10 +32,10 @@ export const keywordService = {
         try {
             const keywords = new Map();
             const data = await discussionRepository.getDiscussionByUserId(userId);
-            const discussionIds = data.map(d => d.discussionId);
-            if (discussionIds?.length === 0) {
+            if (data?.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No discussions`);
             }
+            const discussionIds = data.map(d => d.discussionId);
             const categories = await discussionRepository.getDiscussionCategory(discussionIds);
             const discussionCategories = data.map(d => {
                 return {
