@@ -31,7 +31,7 @@ router.route('/users/neighbors/:id')
 router.get('/users/me', isAuthenticated, userController.getMyProfile);
 router.get('/users/block', isAuthorized, userController.getBlockUser);
 router.get('/users/email', userController.validateEmail);
-router.patch('/users/preference/darkmode', isAuthorized, userController.updateUserDarkmode);
+router.patch('/users/preferences/darkmode', isAuthorized, userController.updateUserDarkmode);
 router.get('/users/neighbors/follower/:id', userController.getFollowers);
 router.get('/users/neighbors/following/:id', userController.getFollowings);
 router.get('/users/neighbors/:id/count', userController.getNeighborsCount);
