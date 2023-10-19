@@ -1,9 +1,9 @@
-import { StatusCodes } from 'http-status-codes';
-import { customError } from '@/common/error';
+import {StatusCodes} from 'http-status-codes';
+import {customError} from '@/common/error';
 import {postRepository} from '@/repository/post.repository';
-import {verifyToken, redisCli as redisClient} from "@/utils";
-import { commentRepository } from '@/repository/comment.repository';
-import { profileRepository } from '@/repository';
+import {redisCli as redisClient, verifyToken} from "@/utils";
+import {commentRepository} from '@/repository/comment.repository';
+import {profileRepository} from '@/repository';
 
 const getUserNickname = async (posts) => {
     const profiles = await profileRepository.findNicknameByIds(posts.map(p => p.userId));
@@ -11,8 +11,7 @@ const getUserNickname = async (posts) => {
 }
 
 const getBookmark = async (userId) => {
-    const bookmarks = await postRepository.getBookmarkByUserId(userId);
-    return bookmarks.map(b => b.postId);
+    return await postRepository.getBookmarkByUserId(userId);
 }
 
 export const postService = {
