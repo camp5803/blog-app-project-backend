@@ -29,10 +29,12 @@ export const userController = {
                 throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Request body not present.`);
             }
             const profile = await profileRepository.findByUserId(req.params.id);
+            const counts = await neighborService.getNeighborsCounts(req.params.id);
             return res.status(StatusCodes.OK).json({
                 userId: profile.userId, 
                 nickname: profile.nickname, 
-                imageUrl: profile.imageUrl
+                imageUrl: profile.imageUrl,
+                counts
             });
         } catch (error) {
             return res.status(error.status || StatusCodes.INTERNAL_SERVER_ERROR).end();
