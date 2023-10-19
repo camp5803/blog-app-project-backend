@@ -86,8 +86,8 @@ export const neighborService = {
             if (!isBlocked) {
                 throw customError(StatusCodes.CONFLICT, "Already not blocked user.");
             }
-            const data = await blockRepository.unBlock(userId, blockUserId);
-            return data.dataValues.blockUserId;
+            await blockRepository.unBlock(userId, blockUserId);
+            return blockUserId;
         } catch (error) {
             throw customError(error.status || error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }

@@ -34,8 +34,10 @@ export const neighborRepository = { // 이거 고쳐야함
     },
     unfollow: async (id, targetId) => {
         return await Neighbor.destroy({
-            userId: id,
-            followsTo: targetId
+            where: {
+                userId: id,
+                followsTo: targetId
+            }
         });
     },
     isFollowing: async (userId, targetId) => {
