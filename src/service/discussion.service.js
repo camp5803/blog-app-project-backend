@@ -281,15 +281,15 @@ export const discussionService = {
             const profile = await profileRepository.findUserInformationById(userId);
             return discussions.map(discussion => {
                 const currentTime = new Date();
-                const remainTime = (discussion.endTime - currentTime) / (1000 * 60);
+                const remainTime = (discussion.endTime - currentTime) / 1000;
             
-                if (remainTime <= 0) {
-                    discussion.status = 'end';
-                } else if (discussion.startTime > currentTime) {
+                if (currentTime < discussion.startTime) {
                     discussion.status = 'before';
+                } else if (currentTime > discussion.endTime) {
+                    discussion.status = 'end';
                 } else {
-                    const hours = Math.floor(remainTime / 60);
-                    const minutes = Math.floor(remainTime % 60);
+                    const hours = Math.floor(remainTime / (60 * 60));
+                    const minutes = Math.floor(remainTime / 60);
                     discussion.status = `${hours}:${minutes}`;
                 }
 
