@@ -183,19 +183,21 @@ export const postService = {
         }
     },
 
-    getPostsById: async (userId) => {
+    getPostsById: async (userId, myUserId) => {
         try {
             const posts = await postRepository.getPostsById(userId);
-            if (posts.length === 0) {
+            if (posts?.length === 0) {
                 throw customError(StatusCodes.NOT_FOUND, `No posts`);
             }
             const nicknames = await getUserNickname(posts);
-            const bookmarks = await getBookmark(userId);
+            const bookmarks = await getBookmark(myUserId ? myUserId : 0);
             return posts.map(p => {
                 let bookmark = false;
-                if (bookmarks?.length > 0) {
-                    if (bookmarks.includes(p.postId)) bookmark = true;
-                }
+                bookmarks.map(b => {
+                    if (b.postId === p.postId) {
+                        bookmark = true;
+                    }
+                });
                 return {
                     postId: p.postId,
                     userId: p.userId,
@@ -224,9 +226,11 @@ export const postService = {
             const bookmarks = await getBookmark(userId);
             return posts.map(p => {
                 let bookmark = false;
-                if (bookmarks?.length > 0) {
-                    if (bookmarks.includes(p.postId)) bookmark = true;
-                }
+                bookmarks.map(b => {
+                    if (b.postId === p.postId) {
+                        bookmark = true;
+                    }
+                });
                 return {
                     postId: p.postId,
                     userId: p.userId,
@@ -255,9 +259,11 @@ export const postService = {
             const bookmarks = await getBookmark(userId);
             return posts.map(p => {
                 let bookmark = false;
-                if (bookmarks?.length > 0) {
-                    if (bookmarks.includes(p.postId)) bookmark = true;
-                }
+                bookmarks.map(b => {
+                    if (b.postId === p.postId) {
+                        bookmark = true;
+                    }
+                });
                 return {
                     postId: p.postId,
                     userId: p.userId,

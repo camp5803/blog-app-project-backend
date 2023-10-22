@@ -175,7 +175,7 @@ export const postController = {
         if (!req.params.id) {
             throw customError(StatusCodes.UNPROCESSABLE_ENTITY, `Invaild argument.`);
         }
-        const posts = await postService.getPostsById(req.params.id);
+        const posts = await postService.getPostsById(req.params.id, req.user.userId);
         res.status(StatusCodes.OK).json(posts);
     })
 }
