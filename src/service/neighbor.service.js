@@ -7,24 +7,24 @@ export const neighborService = {
         try {
             const followerIds = await neighborRepository.findFollowersUserIds(userId);
             if (followerIds?.length === 0) {
-                throw customError(StatusCodes.NOT_FOUND, `No posts`);
+                throw customError(StatusCodes.NOT_FOUND, `No followers`);
             }
             const userIds = followerIds.map(follower => follower.userId);
             return await neighborRepository.findProfileByUserIds(userIds);
         } catch (error) {
-            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     getFollowings: async (userId) => {
         try {
             const followingIds = await neighborRepository.findFollowingUserIds(userId);
             if (followingIds?.length === 0) {
-                throw customError(StatusCodes.NOT_FOUND, `No posts`);
+                throw customError(StatusCodes.NOT_FOUND, `No followings`);
             }
-            const userIds = followingIds.map(following => following.userId);
+            const userIds = followingIds.map(following => following.followsTo);
             return await neighborRepository.findProfileByUserIds(userIds);
         } catch (error) {
-            throw customError(StatusCodes.INTERNAL_SERVER_ERROR, error.message);
+            throw customError(error.status || StatusCodes.INTERNAL_SERVER_ERROR, error.message);
         }
     },
     getNeighborsCounts: async (userId) => {
